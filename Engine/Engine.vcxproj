@@ -51,6 +51,7 @@
     <ClInclude Include="Include\Engine\Resource\ResourceManager.h" />
     <ClInclude Include="Include\Engine\Resource\Texture\Texture.h" />
     <ClInclude Include="Include\Engine\Resource\ResourceType.h" />
+    <ClInclude Include="Include\Engine\System\TimeManager.h" />
     <ClInclude Include="Source\Engine\Core\EnginePCH.h" />
     <ClInclude Include="Include\Engine\Graphics\Command\DrawCommand.h" />
     <ClInclude Include="Include\Engine\Graphics\Command\CommandBuffer.h" />
@@ -105,6 +106,7 @@
     <ClCompile Include="Source\Engine\Resource\ResourceManager.cpp" />
     <ClCompile Include="Source\Engine\Resource\Texture\Texture.cpp" />
     <ClCompile Include="Source\Engine\System\InputManager.cpp" />
+    <ClCompile Include="Source\Engine\System\TimeManager.cpp" />
     <ClCompile Include="ThirdParty\DirectXTK\Src\DDSTextureLoader.cpp">
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">pch.h</PrecompiledHeaderFile>
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)pch.pch</PrecompiledHeaderOutputFile>

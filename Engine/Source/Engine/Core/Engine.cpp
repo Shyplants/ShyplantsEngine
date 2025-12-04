@@ -4,6 +4,7 @@
 #include "Engine/Graphics/D3D11/D3D11Renderer.h"
 #include "Engine/Resource/ResourceManager.h"
 #include "Engine/System/InputManager.h"
+#include "Engine/System/TimeManager.h"
 
 #include "Engine/Core/World/World.h"
 
@@ -68,6 +69,9 @@ bool Engine::Init(HWND hWnd)
 	// InputManager 积己
 	InputManager::Create();
 
+	// TimeManager 积己
+	TimeManager::Create();
+
 	// World 积己
 	m_world = std::make_unique<World>();
 
@@ -76,49 +80,39 @@ bool Engine::Init(HWND hWnd)
 
 void Engine::Run()
 {
-	m_frameCount++;
-
 	// begin
 	uint64 curTick = GetTickCount64();
 
 	TickOnce(curTick);
 	Render();
 
-	if (curTick - m_prevFrameCheckTick > 1000)
+	if (m_fps != TimeManager::Get().GetFPS())
 	{
-		m_prevFrameCheckTick = curTick;
+		m_fps = TimeManager::Get().GetFPS();
 
 		WCHAR wchText[64];
-		DWORD dwTextLen = swprintf_s(wchText, L"FPS: %u", m_FPS);
+		DWORD dwTextLen = swprintf_s(wchText, L"FPS: %u", m_fps);
 
 		SetWindowText(m_hWnd, wchText);
-
-		m_FPS = m_frameCount;
-		m_frameCount = 0;
 	}
-
-
 }
 
 bool Engine::TickOnce(uint64 curTick)
 {
-	uint64 deltaMs = curTick - m_prevUpdateTick;
+	auto& timeManager = TimeManager::Get();
+	timeManager.Update(curTick);
 
-	// 16ms (60fps)
-	const uint64 TARGET_FRAME_MS = 1000 / 60;
+	float deltaTime = timeManager.GetDeltaTime();
 
-	if (deltaMs < TARGET_FRAME_MS)
-	{
+	// 60 FPS 力茄
+	const float TARGET_DT = 1.0f / 60.0f;
+	if (deltaTime < TARGET_DT)
 		return false;
-	}
+
 
 	// 虐 涝仿 诀单捞飘
 	InputManager::Get().Update();
 	
-	m_prevUpdateTick = curTick;
-
-	float deltaTime = static_cast<float>(deltaMs) / 1000.0f;
-
 	if (m_world)
 		m_world->Tick(deltaTime);
 

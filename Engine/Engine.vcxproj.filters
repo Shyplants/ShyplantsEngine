@@ -166,6 +166,9 @@
     <ClInclude Include="Include\Engine\System\InputManager.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
+    <ClInclude Include="Include\Engine\System\TimeManager.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Engine\Core\Engine.cpp">
@@ -247,6 +250,9 @@
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="Source\Engine\System\InputManager.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\System\TimeManager.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>

@@ -36,10 +36,12 @@ private:
 private:
 	HWND m_hWnd{ nullptr };
 
-	uint64 m_prevFrameCheckTick{ 0 };
+	uint32 m_fps{ 0 };
+
+	/*uint64 m_prevFrameCheckTick{ 0 };
 	uint64 m_prevUpdateTick{ 0 };
 	uint32 m_frameCount{ 0 };
-	uint32 m_FPS{ 0 };
+	uint32 m_FPS{ 0 };*/
 
 private:
 	std::unique_ptr<D3D11Renderer> m_renderer{ nullptr };
