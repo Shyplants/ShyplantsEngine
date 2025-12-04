@@ -5,7 +5,8 @@
 class Level;
 class Actor;
 class D3D11Renderer;
-class CameraComponent;
+// class CameraComponent;
+class CameraComponent2D;
 
 class World
 {
@@ -35,14 +36,14 @@ public:
 	Level* GetCurrentLevel() const { return m_currentLevel.get(); }
 
 	// Camera Management
-	void SetActiveCamera(CameraComponent* camera) { m_activeCamera = camera; }
-	CameraComponent* GetActiveCamera() const { return m_activeCamera; }
-	bool HasActiveCamera() const { return m_activeCamera != nullptr; }
+	CameraComponent2D* GetMainCamera() const { return m_mainCamera; }
+	void SetMainCamera(CameraComponent2D* camera);
+	
 private:
 	Actor* SpawnActor_Impl(std::unique_ptr<Actor> actor);
 
 private:
 	std::unique_ptr<Level> m_currentLevel{ nullptr };
 
-	CameraComponent* m_activeCamera{ nullptr };
+	CameraComponent2D* m_mainCamera{ nullptr };
 };

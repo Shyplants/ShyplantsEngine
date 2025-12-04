@@ -4,13 +4,13 @@
 #include "Engine/Core/World/Actor.h"
 #include "Engine/Core/Component/ActorComponent.h"
 #include "Engine/Core/Component/RendererComponent.h"
-#include "Engine/Core/Component/CameraComponent.h"
+// #include "Engine/Core/Component/CameraComponent.h"
+#include "Engine/Core/Component/CameraComponent2D.h"
 #include "Engine/Graphics/D3D11/D3D11Renderer.h"
 
 
 World::World()
 {
-
 }
 
 World::~World()
@@ -29,7 +29,7 @@ void World::Render(D3D11Renderer& renderer)
 	if (!m_currentLevel)
 		return;
 
-	m_currentLevel->Render(renderer, m_activeCamera);
+	m_currentLevel->Render(renderer);
 }
 
 void World::DestroyActor(Actor* actor)
@@ -45,7 +45,10 @@ void World::LoadLevel(std::unique_ptr<Level> level)
 	m_currentLevel = std::move(level);
 
 	if (m_currentLevel)
+	{
+		m_currentLevel->OnLoad();
 		m_currentLevel->OnBeginPlay();
+	}
 }
 
 void World::UnloadCurrentLevel()
@@ -54,6 +57,20 @@ void World::UnloadCurrentLevel()
 	{
 		m_currentLevel.reset();
 	}
+}
+
+void World::SetMainCamera(CameraComponent2D* camera)
+{
+	if (m_mainCamera == camera)
+		return;
+
+	if (m_mainCamera)
+		m_mainCamera->SetAsMainCamera(false);
+
+	m_mainCamera = camera;
+
+	if(camera)
+		camera->SetAsMainCamera(true);
 }
 
 Actor* World::SpawnActor_Impl(std::unique_ptr<Actor> actor)

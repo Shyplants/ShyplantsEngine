@@ -9,6 +9,7 @@ public:
 	explicit DemoLevel(World* world);
 	~DemoLevel() override;
 
+	void OnLoad() override;
 	void OnBeginPlay() override;
 	void Tick(float deltaTime) override;
 };

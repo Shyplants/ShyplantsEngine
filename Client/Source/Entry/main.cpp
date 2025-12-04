@@ -84,51 +84,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     World* world = engine.GetWorld();
     world->LoadLevel(std::make_unique<DemoLevel>(world));
 
-    // Test
-    /*D3D11Renderer* renderer = engine.GetRenderer();
-
-    ResourceManager& resourceManager = ResourceManager::Get();
-    auto iuTexture = resourceManager.Load<Texture>(L"../Resources/iu.png");
-
-    std::unique_ptr<DrawCommand> drawCommand = std::make_unique<DrawCommand>();
-
-    SpriteMesh* spriteMesh = renderer->GetSpriteMesh();
-    GraphicsPSO* pso = renderer->GetPSO(L"SpritePSO");
-
-    drawCommand->PSOHashID = pso->GetHashID();
-    drawCommand->sortKey.PSOHashID = pso->GetHashID();
-    drawCommand->sortKey.renderLayer = 0;
-    drawCommand->sortKey.contentLayer = 0;
-
-    drawCommand->primitiveType = pso->GetPrimitiveType();
-
-    drawCommand->vertexBuffer = spriteMesh->GetVertexBuffer();
-    drawCommand->vertexStride = spriteMesh->GetVertexStride();
-    drawCommand->vertexOffset = spriteMesh->GetVertexOffset();
-    drawCommand->indexBuffer = spriteMesh->GetIndexBuffer();
-    drawCommand->indexFormat = DXGI_FORMAT_R16_UINT;
-    drawCommand->numIndices = spriteMesh->GetIndexCount();
-
-    drawCommand->spriteConstantBuffer.ScreenRes.x = static_cast<float>(renderer->INL_GetScreenWidth());
-    drawCommand->spriteConstantBuffer.ScreenRes.y = static_cast<float>(renderer->INL_GetScreenHeight());
-    drawCommand->spriteConstantBuffer.Pos = DirectX::XMFLOAT2(100.0f, 20.0f);
-    drawCommand->spriteConstantBuffer.Scale = DirectX::XMFLOAT2(1.0f, 1.0f);
-    drawCommand->spriteConstantBuffer.Z = +0.5f;
-    drawCommand->spriteConstantBuffer.Alpha = 1.0f;
-    drawCommand->spriteConstantBuffer.PivotMode = 0;
-
-    drawCommand->spriteConstantBuffer.TexSize.x = static_cast<float>(iuTexture->GetWidth());
-    drawCommand->spriteConstantBuffer.TexSize.y = static_cast<float>(iuTexture->GetHeight());
-    drawCommand->spriteConstantBuffer.TexSamplePos.x = 0.0f;
-    drawCommand->spriteConstantBuffer.TexSamplePos.y = 0.0f;
-    drawCommand->spriteConstantBuffer.TexSampleSize.x = static_cast<float>(iuTexture->GetWidth());
-    drawCommand->spriteConstantBuffer.TexSampleSize.y = static_cast<float>(iuTexture->GetHeight());
-
-    drawCommand->VSConstantBuffer = renderer->GetSpriteVSConstantBuffer();
-    drawCommand->PSTextureSRV = iuTexture->GetSRV();
-    drawCommand->PSSampler = renderer->GetDefaultSamplerState();*/
-
-
 
     MSG msg;
 
@@ -148,13 +103,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
         }
         else
         {
-            // Test
-            /*std::unique_ptr<DrawCommand> tempCommand = std::make_unique<DrawCommand>(*drawCommand);
-            renderer->Submit(std::move(tempCommand));*/
-
             engine.Run();
-
-            
+ 
         }
     }
 

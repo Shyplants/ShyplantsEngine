@@ -5,7 +5,7 @@
 
 class Actor;
 class World;
-class CameraComponent;
+// class CameraComponent;
 class D3D11Renderer;
 
 class Level
@@ -13,12 +13,13 @@ class Level
 public:
 	explicit Level(World* world);
 	virtual ~Level();
-
+	
+	virtual void OnLoad() {}
 	virtual void OnBeginPlay();
 	virtual void Tick(float deltaTime);
 
 public:
-	void Render(D3D11Renderer& renderer, const CameraComponent* camera);
+	void Render(D3D11Renderer& renderer);
 
 	// Actor Management
 	Actor* SpawnActorInternal(std::unique_ptr<Actor> actor);

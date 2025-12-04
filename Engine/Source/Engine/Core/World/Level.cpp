@@ -2,7 +2,8 @@
 #include "Engine/Core/World/Level.h"
 #include "Engine/Core/World/Actor.h"
 #include "Engine/Graphics/D3D11/D3D11Renderer.h"
-#include "Engine/Core/Component/CameraComponent.h"
+// #include "Engine/Core/Component/CameraComponent.h"
+#include "Engine/Core/Component/CameraComponent2D.h"
 #include "Engine/Core/Component/RendererComponent.h"
 #include "Engine/Core/World/World.h"
 
@@ -38,12 +39,14 @@ void Level::Tick(float deltaTime)
 	}
 }
 
-void Level::Render(D3D11Renderer& renderer, const CameraComponent* camera)
+void Level::Render(D3D11Renderer& renderer)
 {
+	
+	CameraComponent2D* camera = m_world->GetMainCamera();
 	if (!camera)
 		return;
 
-	const DirectX::XMMATRIX viewProj = camera->GetViewProjMatrix();
+	auto viewProj = camera->GetViewProjMatrix();
 
 	for (auto& actor : m_actors)
 	{
@@ -68,14 +71,13 @@ Actor* Level::SpawnActorInternal(std::unique_ptr<Actor> actor)
 	Actor* rawPtr = actor.get();
 
 	rawPtr->SetWorld(m_world);
-
 	rawPtr->OnSpawned();
+	m_actors.push_back(std::move(actor));
 
 	if (m_hasBegunPlay)
 		rawPtr->BeginPlay();
 
-	m_actors.push_back(std::move(actor));
-
+	
 	return rawPtr;
 }
 

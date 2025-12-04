@@ -32,6 +32,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Include\Engine\Core\Component\CameraComponent.h" />
+    <ClInclude Include="Include\Engine\Core\Component\CameraComponent2D.h" />
     <ClInclude Include="Include\Engine\Core\Component\RendererComponent.h" />
     <ClInclude Include="Include\Engine\Core\Component\SceneComponent.h" />
     <ClInclude Include="Include\Engine\Core\Engine.h" />
@@ -84,6 +85,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Engine\Core\Component\CameraComponent.cpp" />
+    <ClCompile Include="Source\Engine\Core\Component\CameraComponent2D.cpp" />
     <ClCompile Include="Source\Engine\Core\Component\RendererComponent.cpp" />
     <ClCompile Include="Source\Engine\Core\Component\SceneComponent.cpp" />
     <ClCompile Include="Source\Engine\Core\World\Actor.cpp" />
