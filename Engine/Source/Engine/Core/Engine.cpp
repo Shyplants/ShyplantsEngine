@@ -3,6 +3,8 @@
 
 #include "Engine/Graphics/D3D11/D3D11Renderer.h"
 #include "Engine/Resource/ResourceManager.h"
+#include "Engine/System/InputManager.h"
+
 #include "Engine/Core/World/World.h"
 
 Engine* Engine::Instance = nullptr;
@@ -39,6 +41,7 @@ Engine::~Engine()
 
 	m_renderer.reset();
 	ResourceManager::Destroy();
+	InputManager::Destroy();
 }
 
 bool Engine::Init(HWND hWnd)
@@ -61,6 +64,9 @@ bool Engine::Init(HWND hWnd)
 		__debugbreak();
 		return false;
 	}
+
+	// InputManager 생성
+	InputManager::Create();
 
 	// World 생성
 	m_world = std::make_unique<World>();
@@ -105,6 +111,9 @@ bool Engine::TickOnce(uint64 curTick)
 	{
 		return false;
 	}
+
+	// 키 입력 업데이트
+	InputManager::Get().Update();
 	
 	m_prevUpdateTick = curTick;
 

@@ -1,5 +1,6 @@
 #include "ClientPCH/ClientPCH.h"
 #include "Engine/Core/Engine.h"
+#include "Engine/System/InputManager.h"
 
 // Test
 //#include "Engine/Resource/ResourceManager.h"
@@ -247,6 +248,9 @@ HWND InitInstance(HINSTANCE hInstance, int nCmdShow)
 //
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
+    if(InputManager::IsValid())
+        InputManager::Get().ProcessMessage(message, wParam, lParam);
+
     switch (message)
     {
     case WM_PAINT:
