@@ -40,7 +40,7 @@ void SpriteRendererComponent::RenderWorld(D3D11Renderer& renderer, const DirectX
 	if (!m_mesh)
 		m_mesh = renderer.GetSpriteMesh();
 
-	SceneComponent* sc = GetSceneComponent();
+	SceneComponent* sc = GetAttachComponent();
 	if (!sc)
 		return;
 	

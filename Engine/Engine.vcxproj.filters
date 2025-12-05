@@ -196,6 +196,9 @@
     <ClInclude Include="Include\Engine\Core\Component\TextRendererComponent.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
+    <ClInclude Include="Include\Engine\Core\World\UIActor.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Engine\Core\Engine.cpp">
@@ -292,6 +295,9 @@
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="Source\Engine\Core\Component\TextRendererComponent.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\Core\World\UIActor.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>

@@ -85,6 +85,7 @@
     <ClInclude Include="Include\Engine\Core\World\Actor.h" />
     <ClInclude Include="Include\Engine\Core\Component\ActorComponent.h" />
     <ClInclude Include="Include\Engine\Core\World\Level.h" />
+    <ClInclude Include="Include\Engine\Core\World\UIActor.h" />
     <ClInclude Include="Include\Engine\Core\World\World.h" />
     <ClInclude Include="Include\Engine\Core\Component\SpriteRendererComponent.h" />
     <ClInclude Include="Include\Engine\Graphics\ConstantBuffer\SpriteConstantBuffer.h" />
@@ -140,6 +141,7 @@
     <ClCompile Include="Source\Engine\Core\World\Actor.cpp" />
     <ClCompile Include="Source\Engine\Core\Component\ActorComponent.cpp" />
     <ClCompile Include="Source\Engine\Core\World\Level.cpp" />
+    <ClCompile Include="Source\Engine\Core\World\UIActor.cpp" />
     <ClCompile Include="Source\Engine\Core\World\World.cpp" />
     <ClCompile Include="Source\Engine\Graphics\Command\CommandBuffer.cpp" />
     <ClCompile Include="Source\Engine\Core\Engine.cpp" />

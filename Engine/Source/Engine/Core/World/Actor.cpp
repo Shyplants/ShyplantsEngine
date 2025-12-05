@@ -3,6 +3,7 @@
 #include "Engine/Core/World/World.h"
 #include "Engine/Core/Component/ActorComponent.h"
 #include "Engine/Core/Component/SceneComponent.h"
+#include "Engine/Core/Component/RendererComponent.h"
 
 Actor::Actor()
 {

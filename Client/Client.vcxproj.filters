@@ -24,6 +24,9 @@
     <ClInclude Include="Source\Actors\DemoActor.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Actors\DemoUIActor.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\ClientPCH\ClientPCH.cpp">
@@ -36,6 +39,9 @@
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="Source\Actors\DemoActor.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Actors\DemoUIActor.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>

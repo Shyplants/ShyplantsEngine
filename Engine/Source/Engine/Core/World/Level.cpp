@@ -126,6 +126,9 @@ void Level::RenderUI(D3D11Renderer& renderer)
 		if (actor->IsPendingDestroy())
 			continue;
 
+		if (!actor->IsUIActor())
+			continue;
+
 		const auto& comps = actor->GetComponents();
 
 		for (const auto& comp : comps)

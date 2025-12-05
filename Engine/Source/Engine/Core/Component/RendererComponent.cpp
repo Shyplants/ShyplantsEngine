@@ -1,6 +1,8 @@
 #include "Engine/Core/EnginePCH.h"
 #include "Engine/Core/Component/RendererComponent.h"
 #include "Engine/Core/Component/SceneComponent.h"
+
+#include "Engine/Core/Engine.h"
 #include "Engine/Core/World/Actor.h"
 #include "Engine/Core/World/World.h"
 
@@ -15,11 +17,7 @@ RendererComponent::~RendererComponent()
 {
 }
 
-SceneComponent* RendererComponent::GetSceneComponent() const
+D3D11Renderer& RendererComponent::GetRenderer() const
 {
-	Actor* owner = GetOwner();
-	if (!owner)
-		return nullptr;
-
-	return owner->GetRootComponent();
+	return *Engine::Get().GetRenderer();
 }

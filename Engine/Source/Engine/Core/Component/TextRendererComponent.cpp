@@ -2,6 +2,7 @@
 #include "Engine/Core/Component/TextRendererComponent.h"
 #include "Engine/Core/Component/SceneComponent.h"
 
+#include "Engine/Core/World/World.h"
 #include "Engine/Core/World/Actor.h"
 #include "Engine/Graphics/D3D11/D3D11Renderer.h"
 
@@ -12,7 +13,7 @@ using namespace DirectX;
 TextRendererComponent::TextRendererComponent(Actor* owner)
 	: RendererComponent(owner)
 {
-
+	m_font = GetRenderer().GetDefaultFont();
 }
 
 TextRendererComponent::~TextRendererComponent()
@@ -45,7 +46,7 @@ void TextRendererComponent::RenderUI(D3D11Renderer& renderer)
 		return;
 
 	// 월드 좌표 -> 화면 좌표 변환을 위해 Actor의 SceneComponent 기준 transform 사용
-	SceneComponent* sc = GetSceneComponent();
+	SceneComponent* sc = GetAttachComponent();
 	XMFLOAT3 pos = sc->GetWorldPosition();
 
 	m_font->DrawString(

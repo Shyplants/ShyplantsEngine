@@ -5,6 +5,7 @@
 
 class ActorComponent;
 class SceneComponent;
+class RendererComponent;
 class World;
 
 class Actor
@@ -18,6 +19,8 @@ public:
 	virtual void BeginPlay() {}
 	virtual void Tick(float deltaTime);
 
+	virtual bool IsUIActor() const { return false; }
+
 	// 컴포넌트 시스템
 	template <typename T, typename... Args>
 	T* AddComponent(Args&&... args)
@@ -27,7 +30,7 @@ public:
 		auto comp = std::make_unique<T>(std::forward<Args>(args)...);
 		T* rawPtr = comp.get();
 
-		// SceneComponent일 경우 RootComponent에 
+		// SceneComponent일 경우
 		if constexpr (std::is_base_of_v<SceneComponent, T>)
 		{
 			SceneComponent* sceneComp = static_cast<SceneComponent*>(rawPtr);
@@ -36,6 +39,15 @@ public:
 			{
 				sceneComp->AttachTo(m_rootComponent);
 			}
+		}
+
+		// RendererComponent일 경우
+		else if constexpr (std::is_base_of_v<RendererComponent, T>)
+		{
+			RendererComponent* renderComp = static_cast<RendererComponent*>(rawPtr);
+
+			if(m_rootComponent)
+				renderComp->SetAttachComponent(m_rootComponent);
 		}
 
 		m_components.push_back(std::move(comp));
