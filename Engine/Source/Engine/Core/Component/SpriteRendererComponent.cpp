@@ -31,7 +31,7 @@ void SpriteRendererComponent::OnRegister()
 
 void SpriteRendererComponent::RenderWorld(D3D11Renderer& renderer, const DirectX::XMMATRIX& viewProj)
 {
-	if (!m_visible)
+	if (!m_visible || !m_texture)
 		return;
 
 	if (!m_pso)
@@ -43,13 +43,61 @@ void SpriteRendererComponent::RenderWorld(D3D11Renderer& renderer, const DirectX
 	SceneComponent* sc = GetAttachComponent();
 	if (!sc)
 		return;
+
+	float spriteW = static_cast<float>(m_rect.right - m_rect.left);
+	float spriteH = static_cast<float>(m_rect.bottom - m_rect.top);
+
+	// Pivot 계산
+	XMFLOAT2 pivotPixel = { 0.0f, 0.0f };
+
+	switch (m_pivotMode)
+	{
+	case SpritePivot::Center:
+		pivotPixel = { spriteW * 0.5f, spriteH * 0.5f };
+		break;
+
+	case SpritePivot::TopLeft:
+		pivotPixel = { 0.0f, 0.0f };
+		break;
+
+	case SpritePivot::TopRight:
+		pivotPixel = { spriteW, 0.0f };
+		break;
+
+	case SpritePivot::BottomLeft:
+		pivotPixel = { 0.0f, spriteH };
+		break;
+
+	case SpritePivot::BottomRight:
+		pivotPixel = { spriteW, spriteH };
+		break;
+
+	default:
+		break;
+	}
+
+	// Actor의 World Transform
+	XMMATRIX W = sc->GetWorldMatrix();
 	
-	XMMATRIX S = XMMatrixScaling((float)m_texture->GetWidth(), 
-		(float)m_texture->GetHeight(),
-		1.0f);
+	// Y위치 반전
+	W.r[3].m128_f32[1] *= -1.0f;
 
-	XMMATRIX wvp = S * sc->GetWorldMatrix() * viewProj;
+	// Pixel Offset 적용
+	XMMATRIX T_offset = XMMatrixTranslation(m_offset.x, m_offset.y, 0.0f);
 
+	// Pivot 보정
+	XMMATRIX T_pivot = XMMatrixTranslation(-pivotPixel.x, -pivotPixel.y, 0);
+
+	// Scaling
+	XMMATRIX S = XMMatrixScaling(spriteW * m_scale.x, spriteH * m_scale.y, 1.0f);
+
+
+	// 최종 WVP 계산
+	XMMATRIX world = T_offset * S * T_pivot * W;
+	XMMATRIX wvp = world * viewProj;
+
+
+	// DrawCommand 생성
 	DrawCommand dc = {};
 
 	// PSO/정렬 기준
@@ -72,9 +120,14 @@ void SpriteRendererComponent::RenderWorld(D3D11Renderer& renderer, const DirectX
 
 	cb.WVP = XMMatrixTranspose(wvp);
 	cb.Color = m_color;
+	cb.Color.w *= m_alpha;
 
-	float invW = 1.0f / m_texture->GetWidth();
-	float invH = 1.0f / m_texture->GetHeight();
+	// UV Rect 반영
+	float texW = static_cast<float>(m_texture->GetWidth());
+	float texH = static_cast<float>(m_texture->GetHeight());
+
+	float invW = 1.0f / texW;
+	float invH = 1.0f / texH;
 
 	cb.TexCoord.x = m_rect.left * invW;
 	cb.TexCoord.y = m_rect.top * invH;

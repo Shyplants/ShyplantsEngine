@@ -114,8 +114,8 @@ void CameraComponent::UpdateProjMatrix() const
 
 		m_projMatrix =
 			XMMatrixOrthographicOffCenterLH(
-				-halfW, +halfW,
-				-halfH, +halfH,    
+				0.0f, m_orthoWidth,
+				m_orthoHeight, 0.0f,
 				m_nearZ, m_farZ);
 	}
 

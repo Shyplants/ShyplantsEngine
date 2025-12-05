@@ -112,7 +112,7 @@ void CameraComponent2D::UpdateProjMatrix(uint32 viewportW, uint32 viewportH) con
 
 	m_projMatrix = XMMatrixOrthographicOffCenterLH(
 		-halfW, +halfW,
-		-halfH, +halfH,
+		+halfH, -halfH,
 		m_nearZ, m_farZ
 	);
 

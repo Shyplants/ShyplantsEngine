@@ -3,6 +3,7 @@
 #include "Engine/Core/Component/RendererComponent.h"
 #include "DirectXMath.h"
 #include "Engine/Graphics/Render/GameLayer.h"
+#include "Engine/Graphics/Render/SpritePivot.h"
 
 class Texture;
 class SpriteMesh;
@@ -28,7 +29,7 @@ public:
 
 	void SetAlpha(float alpha) { m_alpha = alpha; }
 	void SetDepth(float depth) { m_depth = depth; }
-	void SetPivot(int pivotMode) { m_pivotMode = pivotMode; }
+	void SetPivot(SpritePivot pivotMode) { m_pivotMode = pivotMode; }
 
 	void SetScale(float sx, float sy) { m_scale = DirectX::XMFLOAT2(sx, sy); }
 	void SetOffset(float ox, float oy) { m_offset = DirectX::XMFLOAT2(ox, oy); }
@@ -46,7 +47,7 @@ private:
 	DirectX::XMFLOAT4 m_color{ 1.0f,1.0f,1.0f,1.0f };
 	RECT m_rect{ 0, 0, 0, 0 };
 
-	int m_pivotMode{ 0 };
+	SpritePivot m_pivotMode{ SpritePivot::Center };
 	float m_depth{ 0.0f };
 	float m_alpha{ 1.0f };
 

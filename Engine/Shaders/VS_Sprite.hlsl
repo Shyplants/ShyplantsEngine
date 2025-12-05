@@ -24,9 +24,10 @@ struct PSInput
 PSInput VS_Main(VSInput input)
 {
     PSInput output;
-
+    
     float4 localPos = float4(input.pos, 1.0f);
     output.posH = mul(localPos, WVP);
+    output.posH.y *= -1.0f;
 
     output.color = input.color * Color;
     

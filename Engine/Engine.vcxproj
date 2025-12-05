@@ -97,6 +97,7 @@
     <ClInclude Include="Include\Engine\Graphics\PSO\GraphicsPSO.h" />
     <ClInclude Include="Include\Engine\Graphics\RenderStates.h" />
     <ClInclude Include="Include\Engine\Graphics\Render\GameLayer.h" />
+    <ClInclude Include="Include\Engine\Graphics\Render\SpritePivot.h" />
     <ClInclude Include="Include\Engine\Graphics\Vertex\SpriteVertex.h" />
     <ClInclude Include="Include\Engine\Resource\Resource.h" />
     <ClInclude Include="Include\Engine\Resource\ResourceManager.h" />
