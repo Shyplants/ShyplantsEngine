@@ -3,12 +3,13 @@
 #include "Common/Types.h"
 #include "Engine/Graphics/PSO/GraphicsPSO.h"
 #include "Engine/Graphics/ConstantBuffer/SpriteConstantBuffer.h"
+#include "Engine/Graphics/Render/GameLayer.h"
 
 struct DrawCommandSortKey
 {
     uint64 PSOHashID = 0;
-    int renderLayer = 0;
-    int contentLayer = 0;
+    GameLayer renderLayer = GameLayer::Background;
+    uint32 contentLayer = 0;
 
     // 오름차순 정렬 기준
     bool operator<(const DrawCommandSortKey& rhs) const

@@ -2,6 +2,7 @@
 
 #include "Engine/Core/Component/RendererComponent.h"
 #include "DirectXMath.h"
+#include "Engine/Graphics/Render/GameLayer.h"
 
 class Texture;
 class SpriteMesh;
@@ -32,6 +33,8 @@ public:
 	void SetScale(float sx, float sy) { m_scale = DirectX::XMFLOAT2(sx, sy); }
 	void SetOffset(float ox, float oy) { m_offset = DirectX::XMFLOAT2(ox, oy); }
 	
+	void SetGameLayer(GameLayer layer) { m_gameLayer = layer; }
+	void SetOrderInLayer(uint32 order) { m_orderInLayer = order; }
 
 private:
 	Texture* m_texture{ nullptr };
@@ -46,4 +49,7 @@ private:
 	int m_pivotMode{ 0 };
 	float m_depth{ 0.0f };
 	float m_alpha{ 1.0f };
+
+	GameLayer m_gameLayer{ 0 };
+	uint32 m_orderInLayer{ 0 };
 };

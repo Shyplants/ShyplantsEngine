@@ -55,8 +55,8 @@ void SpriteRendererComponent::RenderWorld(D3D11Renderer& renderer, const DirectX
 	// PSO/정렬 기준
 	dc.PSOHashID = m_pso->GetHashID();
 	dc.sortKey.PSOHashID = m_pso->GetHashID();
-	dc.sortKey.renderLayer = 0;
-	dc.sortKey.contentLayer = 0;
+	dc.sortKey.renderLayer = m_gameLayer;
+	dc.sortKey.contentLayer = m_orderInLayer;
 
 	// 버퍼 정보
 	dc.primitiveType = m_pso->GetPrimitiveType();
