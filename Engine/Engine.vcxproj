@@ -82,6 +82,8 @@
     <ClInclude Include="Include\Engine\Core\Component\SceneComponent.h" />
     <ClInclude Include="Include\Engine\Core\Component\TextRendererComponent.h" />
     <ClInclude Include="Include\Engine\Core\Engine.h" />
+    <ClInclude Include="Include\Engine\Core\GameFramework\GameMode.h" />
+    <ClInclude Include="Include\Engine\Core\GameFramework\GameState.h" />
     <ClInclude Include="Include\Engine\Core\World\Actor.h" />
     <ClInclude Include="Include\Engine\Core\Component\ActorComponent.h" />
     <ClInclude Include="Include\Engine\Core\World\Level.h" />
@@ -139,6 +141,8 @@
     <ClCompile Include="Source\Engine\Core\Component\RendererComponent.cpp" />
     <ClCompile Include="Source\Engine\Core\Component\SceneComponent.cpp" />
     <ClCompile Include="Source\Engine\Core\Component\TextRendererComponent.cpp" />
+    <ClCompile Include="Source\Engine\Core\GameFramework\GameMode.cpp" />
+    <ClCompile Include="Source\Engine\Core\GameFramework\GameState.cpp" />
     <ClCompile Include="Source\Engine\Core\World\Actor.cpp" />
     <ClCompile Include="Source\Engine\Core\Component\ActorComponent.cpp" />
     <ClCompile Include="Source\Engine\Core\World\Level.cpp" />

@@ -7,10 +7,12 @@
 // #include "Engine/Core/Component/CameraComponent.h"
 #include "Engine/Core/Component/CameraComponent2D.h"
 #include "Engine/Graphics/D3D11/D3D11Renderer.h"
-
+#include "Engine/Core/GameFramework/GameMode.h"
+#include "Engine/Core/GameFramework/GameState.h"
 
 World::World()
 {
+	CreateGameFramework();
 }
 
 World::~World()
@@ -20,6 +22,9 @@ World::~World()
 
 void World::Tick(float deltaTime)
 {
+	if (m_gameMode)
+		m_gameMode->Tick(deltaTime);
+
 	if (m_currentLevel)
 		m_currentLevel->Tick(deltaTime);
 }
@@ -44,11 +49,16 @@ void World::LoadLevel(std::unique_ptr<Level> level)
 
 	m_currentLevel = std::move(level);
 
+	if (m_gameMode)
+		m_gameMode->OnBeginPlay();
+
 	if (m_currentLevel)
 	{
 		m_currentLevel->OnLoad();
 		m_currentLevel->OnBeginPlay();
 	}
+
+	
 }
 
 void World::UnloadCurrentLevel()
@@ -57,6 +67,11 @@ void World::UnloadCurrentLevel()
 	{
 		m_currentLevel.reset();
 	}
+}
+
+GameState* World::GetGameState() const
+{
+	return m_gameMode ? m_gameMode->GetGameState() : nullptr;
 }
 
 void World::SetMainCamera(CameraComponent2D* camera)
@@ -71,6 +86,11 @@ void World::SetMainCamera(CameraComponent2D* camera)
 
 	if(camera)
 		camera->SetAsMainCamera(true);
+}
+
+void World::CreateGameFramework()
+{
+	m_gameMode = std::make_unique<GameMode>(this);
 }
 
 Actor* World::SpawnActor_Impl(std::unique_ptr<Actor> actor)

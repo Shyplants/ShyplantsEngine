@@ -202,6 +202,12 @@
     <ClInclude Include="Include\Engine\Graphics\Render\GameLayer.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
+    <ClInclude Include="Include\Engine\Core\GameFramework\GameMode.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Engine\Core\GameFramework\GameState.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Engine\Core\Engine.cpp">
@@ -301,6 +307,12 @@
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="Source\Engine\Core\World\UIActor.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\Core\GameFramework\GameMode.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\Core\GameFramework\GameState.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>

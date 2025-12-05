@@ -7,6 +7,8 @@ class Actor;
 class D3D11Renderer;
 // class CameraComponent;
 class CameraComponent2D;
+class GameMode;
+class GameState;
 
 class World
 {
@@ -35,15 +37,23 @@ public:
 
 	Level* GetCurrentLevel() const { return m_currentLevel.get(); }
 
+	// GameMode/GameState Management
+	GameMode* GetGameMode() const { return m_gameMode.get(); }
+	GameState* GetGameState() const;
+
 	// Camera Management
 	CameraComponent2D* GetMainCamera() const { return m_mainCamera; }
 	void SetMainCamera(CameraComponent2D* camera);
+
+private:
+	void CreateGameFramework();
 	
 private:
 	Actor* SpawnActor_Impl(std::unique_ptr<Actor> actor);
 
 private:
 	std::unique_ptr<Level> m_currentLevel{ nullptr };
+	std::unique_ptr<GameMode> m_gameMode;
 
 	CameraComponent2D* m_mainCamera{ nullptr };
 };
