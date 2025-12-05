@@ -36,7 +36,7 @@ void DemoLevel::OnBeginPlay()
 
 
 	auto demoActor = world->SpawnActor<DemoActor>();
-	demoActor->GetRootComponent()->SetLocalPosition({ 0,0,0.15f });
+	demoActor->GetRootComponent()->SetLocalPosition({ 100.0f,0,0.15f });
 }
 
 void DemoLevel::Tick(float deltaTime)

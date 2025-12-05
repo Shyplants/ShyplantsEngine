@@ -15,7 +15,7 @@ public:
 	~SpriteRendererComponent() override;
 
 	void OnRegister() override;
-	void Render(D3D11Renderer& renderer, const DirectX::XMMATRIX& viewProj) override;
+	void RenderWorld(D3D11Renderer& renderer, const DirectX::XMMATRIX& viewProj) override;
 
 public:
 

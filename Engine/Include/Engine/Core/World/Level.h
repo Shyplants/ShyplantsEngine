@@ -34,6 +34,10 @@ protected:
 	World* GetWorld() const { return m_world; }
 
 private:
+	void RenderWorldObjects(D3D11Renderer& renderer);
+	void RenderUI(D3D11Renderer& renderer);
+
+private:
 	World* m_world = nullptr;
 
 	std::vector<std::unique_ptr<Actor>> m_actors;

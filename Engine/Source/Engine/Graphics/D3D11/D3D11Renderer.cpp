@@ -10,6 +10,7 @@
 #include "Engine/Graphics/Command/CommandBuffer.h"
 
 using Microsoft::WRL::ComPtr;
+using namespace DirectX;
 
 D3D11Renderer::D3D11Renderer()
 {
@@ -149,6 +150,10 @@ bool D3D11Renderer::Init(HWND hWnd)
 
 	m_cmdBuffer = std::make_unique<CommandBuffer>();
 
+
+	// Init Font
+	m_spriteBatch = std::make_unique<SpriteBatch>(m_immediateContext.Get());
+	m_defaultFont = std::make_unique<SpriteFont>(m_device.Get(), L"../Resources/Fonts/pretendard.spritefont");
 
 	/*InitCamera();
 

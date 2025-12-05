@@ -29,12 +29,58 @@
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
       <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">VS_Main</EntryPointName>
     </FxCompile>
+    <FxCompile Include="ThirdParty\DirectXTK\Src\Shaders\AlphaTestEffect.fx">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="ThirdParty\DirectXTK\Src\Shaders\BasicEffect.fx">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="ThirdParty\DirectXTK\Src\Shaders\DebugEffect.fx">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="ThirdParty\DirectXTK\Src\Shaders\DGSLEffect.fx">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="ThirdParty\DirectXTK\Src\Shaders\DGSLLambert.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="ThirdParty\DirectXTK\Src\Shaders\DGSLPhong.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="ThirdParty\DirectXTK\Src\Shaders\DGSLUnlit.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="ThirdParty\DirectXTK\Src\Shaders\DualTextureEffect.fx">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="ThirdParty\DirectXTK\Src\Shaders\EnvironmentMapEffect.fx">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="ThirdParty\DirectXTK\Src\Shaders\NormalMapEffect.fx">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="ThirdParty\DirectXTK\Src\Shaders\PBREffect.fx">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="ThirdParty\DirectXTK\Src\Shaders\PostProcess.fx">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="ThirdParty\DirectXTK\Src\Shaders\SkinnedEffect.fx">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="ThirdParty\DirectXTK\Src\Shaders\SpriteEffect.fx">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="ThirdParty\DirectXTK\Src\Shaders\ToneMap.fx">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Include\Engine\Core\Component\CameraComponent.h" />
     <ClInclude Include="Include\Engine\Core\Component\CameraComponent2D.h" />
     <ClInclude Include="Include\Engine\Core\Component\RendererComponent.h" />
     <ClInclude Include="Include\Engine\Core\Component\SceneComponent.h" />
+    <ClInclude Include="Include\Engine\Core\Component\TextRendererComponent.h" />
     <ClInclude Include="Include\Engine\Core\Engine.h" />
     <ClInclude Include="Include\Engine\Core\World\Actor.h" />
     <ClInclude Include="Include\Engine\Core\Component\ActorComponent.h" />
@@ -79,15 +125,18 @@
     <ClInclude Include="ThirdParty\DirectXTK\Inc\VertexTypes.h" />
     <ClInclude Include="ThirdParty\DirectXTK\Inc\WICTextureLoader.h" />
     <ClInclude Include="ThirdParty\DirectXTK\Inc\XboxDDSTextureLoader.h" />
+    <ClInclude Include="ThirdParty\DirectXTK\Src\AlignedNew.h" />
     <ClInclude Include="ThirdParty\DirectXTK\Src\DDS.h" />
     <ClInclude Include="ThirdParty\DirectXTK\Src\pch.h" />
     <ClInclude Include="ThirdParty\DirectXTK\Src\PlatformHelpers.h" />
+    <ClInclude Include="ThirdParty\DirectXTK\Src\SharedResourcePool.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Engine\Core\Component\CameraComponent.cpp" />
     <ClCompile Include="Source\Engine\Core\Component\CameraComponent2D.cpp" />
     <ClCompile Include="Source\Engine\Core\Component\RendererComponent.cpp" />
     <ClCompile Include="Source\Engine\Core\Component\SceneComponent.cpp" />
+    <ClCompile Include="Source\Engine\Core\Component\TextRendererComponent.cpp" />
     <ClCompile Include="Source\Engine\Core\World\Actor.cpp" />
     <ClCompile Include="Source\Engine\Core\Component\ActorComponent.cpp" />
     <ClCompile Include="Source\Engine\Core\World\Level.cpp" />
@@ -130,6 +179,14 @@
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">pch.h</PrecompiledHeaderFile>
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)pch.pch</PrecompiledHeaderOutputFile>
     </ClCompile>
+    <ClCompile Include="ThirdParty\DirectXTK\Src\SpriteBatch.cpp">
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)pch.pch</PrecompiledHeaderOutputFile>
+    </ClCompile>
+    <ClCompile Include="ThirdParty\DirectXTK\Src\SpriteFont.cpp">
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)pch.pch</PrecompiledHeaderOutputFile>
+    </ClCompile>
     <ClCompile Include="ThirdParty\DirectXTK\Src\WICTextureLoader.cpp">
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">pch.h</PrecompiledHeaderFile>
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)pch.pch</PrecompiledHeaderOutputFile>
@@ -137,6 +194,32 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="ThirdParty\DirectXTK\Inc\SimpleMath.inl" />
+    <None Include="ThirdParty\DirectXTK\Src\Shaders\Common.fxh">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </None>
+    <None Include="ThirdParty\DirectXTK\Src\Shaders\Compiled\SpriteEffect_SpritePixelShader.inc" />
+    <None Include="ThirdParty\DirectXTK\Src\Shaders\Compiled\SpriteEffect_SpriteVertexShader.inc" />
+    <None Include="ThirdParty\DirectXTK\Src\Shaders\CompileShaders.cmd">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </None>
+    <None Include="ThirdParty\DirectXTK\Src\Shaders\Lighting.fxh">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </None>
+    <None Include="ThirdParty\DirectXTK\Src\Shaders\PBRCommon.fxh">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </None>
+    <None Include="ThirdParty\DirectXTK\Src\Shaders\PixelPacking_Velocity.hlsli">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </None>
+    <None Include="ThirdParty\DirectXTK\Src\Shaders\Skinning.fxh">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </None>
+    <None Include="ThirdParty\DirectXTK\Src\Shaders\Structures.fxh">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </None>
+    <None Include="ThirdParty\DirectXTK\Src\Shaders\Utilities.fxh">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </None>
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
@@ -192,7 +275,7 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>$(SolutionDir)Build\$(Configuration)\Lib\</OutDir>
-    <IncludePath>$(SolutionDir)Common/Include;$(ProjectDir)Include;$(ProjectDir)Include/Engine;$(ProjectDir)Source;$(ProjectDir)Source/Engine;$(ProjectDir)ThirdParty/DirectXTK/Inc;$(ProjectDir)ThirdParty/DirectXTK/Src;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)Common/Include;$(ProjectDir)Include;$(ProjectDir)Include/Engine;$(ProjectDir)Source;$(ProjectDir)Source/Engine;$(ProjectDir)ThirdParty/DirectXTK/Inc;$(ProjectDir)ThirdParty/DirectXTK/Src;$(ProjectDir)ThirdParty/DirectXTK/Src/Shaders/Compiled;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <OutDir>$(SolutionDir)Build\$(Configuration)\Lib\</OutDir>

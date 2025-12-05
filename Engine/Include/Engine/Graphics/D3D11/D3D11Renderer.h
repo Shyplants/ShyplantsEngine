@@ -11,6 +11,9 @@
 #include "Common/Types.h"
 #include "Engine/Graphics/RenderStates.h"
 
+#include "SpriteBatch.h"
+#include "SpriteFont.h"
+
 const UINT SWAP_CHAIN_FRAME_COUNT = 2;
 
 class GraphicsPSO;
@@ -69,6 +72,11 @@ public:
 
 	SpriteMesh* GetSpriteMesh() const { return m_spriteMesh.get(); }
 
+public:
+	// Font
+	DirectX::SpriteBatch* GetSpriteBatch() const { return m_spriteBatch.get(); }
+	DirectX::SpriteFont* GetDefaultFont() const { return m_defaultFont.get(); }
+
 
 private:
 	bool CreateDepthStencil(UINT width, UINT height);
@@ -115,7 +123,10 @@ private:
 
 private:
 	std::unique_ptr<SpriteMesh> m_spriteMesh{ nullptr };
-
 	std::unique_ptr<CommandBuffer> m_cmdBuffer{ nullptr };
+
+private:
+	std::unique_ptr<DirectX::SpriteBatch> m_spriteBatch;
+	std::unique_ptr<DirectX::SpriteFont> m_defaultFont;
 	
 };

@@ -11,8 +11,9 @@ public:
 	explicit RendererComponent(Actor* owner);
 	~RendererComponent() override;
 
-	// Actor가 렌더링을 호출할 때만 실행됨
-	virtual void Render(D3D11Renderer& renderer, const DirectX::XMMATRIX& viewProj) = 0;
+	virtual void RenderWorld(D3D11Renderer& renderer, const DirectX::XMMATRIX& viewProj) {}
+	virtual void RenderUI(D3D11Renderer& renderer) {}
+	virtual bool IsUIRenderer() const { return false; }
 
 public:
 	void SetVisible(bool visible) { m_visible = visible; }

@@ -4,6 +4,7 @@
 #include "Engine/Core/World/Actor.h"
 #include "Engine/Core/World/World.h"
 #include "Engine/Core/Component/SceneComponent.h"
+#include "Engine/Core/Component/CameraComponent2D.h"
 
 #include "Engine/Graphics/D3D11/D3D11Renderer.h"
 #include "Engine/Graphics/PSO/GraphicsPSO.h"
@@ -28,7 +29,7 @@ void SpriteRendererComponent::OnRegister()
 
 }
 
-void SpriteRendererComponent::Render(D3D11Renderer& renderer, const DirectX::XMMATRIX& viewProj)
+void SpriteRendererComponent::RenderWorld(D3D11Renderer& renderer, const DirectX::XMMATRIX& viewProj)
 {
 	if (!m_visible)
 		return;

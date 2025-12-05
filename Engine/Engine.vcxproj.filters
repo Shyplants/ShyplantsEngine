@@ -17,6 +17,21 @@
   <ItemGroup>
     <FxCompile Include="Shaders\PS_Sprite.hlsl" />
     <FxCompile Include="Shaders\VS_Sprite.hlsl" />
+    <FxCompile Include="ThirdParty\DirectXTK\Src\Shaders\AlphaTestEffect.fx" />
+    <FxCompile Include="ThirdParty\DirectXTK\Src\Shaders\BasicEffect.fx" />
+    <FxCompile Include="ThirdParty\DirectXTK\Src\Shaders\DebugEffect.fx" />
+    <FxCompile Include="ThirdParty\DirectXTK\Src\Shaders\DGSLEffect.fx" />
+    <FxCompile Include="ThirdParty\DirectXTK\Src\Shaders\DGSLLambert.hlsl" />
+    <FxCompile Include="ThirdParty\DirectXTK\Src\Shaders\DGSLPhong.hlsl" />
+    <FxCompile Include="ThirdParty\DirectXTK\Src\Shaders\DGSLUnlit.hlsl" />
+    <FxCompile Include="ThirdParty\DirectXTK\Src\Shaders\DualTextureEffect.fx" />
+    <FxCompile Include="ThirdParty\DirectXTK\Src\Shaders\EnvironmentMapEffect.fx" />
+    <FxCompile Include="ThirdParty\DirectXTK\Src\Shaders\NormalMapEffect.fx" />
+    <FxCompile Include="ThirdParty\DirectXTK\Src\Shaders\PBREffect.fx" />
+    <FxCompile Include="ThirdParty\DirectXTK\Src\Shaders\PostProcess.fx" />
+    <FxCompile Include="ThirdParty\DirectXTK\Src\Shaders\SkinnedEffect.fx" />
+    <FxCompile Include="ThirdParty\DirectXTK\Src\Shaders\SpriteEffect.fx" />
+    <FxCompile Include="ThirdParty\DirectXTK\Src\Shaders\ToneMap.fx" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Include\Engine\Core\Engine.h">
@@ -172,6 +187,15 @@
     <ClInclude Include="Include\Engine\Core\Component\CameraComponent2D.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
+    <ClInclude Include="ThirdParty\DirectXTK\Src\AlignedNew.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ThirdParty\DirectXTK\Src\SharedResourcePool.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Engine\Core\Component\TextRendererComponent.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Engine\Core\Engine.cpp">
@@ -261,9 +285,32 @@
     <ClCompile Include="Source\Engine\Core\Component\CameraComponent2D.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
+    <ClCompile Include="ThirdParty\DirectXTK\Src\SpriteBatch.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="ThirdParty\DirectXTK\Src\SpriteFont.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\Core\Component\TextRendererComponent.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="ThirdParty\DirectXTK\Inc\SimpleMath.inl">
+      <Filter>헤더 파일</Filter>
+    </None>
+    <None Include="ThirdParty\DirectXTK\Src\Shaders\Common.fxh" />
+    <None Include="ThirdParty\DirectXTK\Src\Shaders\CompileShaders.cmd" />
+    <None Include="ThirdParty\DirectXTK\Src\Shaders\Lighting.fxh" />
+    <None Include="ThirdParty\DirectXTK\Src\Shaders\PBRCommon.fxh" />
+    <None Include="ThirdParty\DirectXTK\Src\Shaders\PixelPacking_Velocity.hlsli" />
+    <None Include="ThirdParty\DirectXTK\Src\Shaders\Skinning.fxh" />
+    <None Include="ThirdParty\DirectXTK\Src\Shaders\Structures.fxh" />
+    <None Include="ThirdParty\DirectXTK\Src\Shaders\Utilities.fxh" />
+    <None Include="ThirdParty\DirectXTK\Src\Shaders\Compiled\SpriteEffect_SpritePixelShader.inc">
+      <Filter>헤더 파일</Filter>
+    </None>
+    <None Include="ThirdParty\DirectXTK\Src\Shaders\Compiled\SpriteEffect_SpriteVertexShader.inc">
       <Filter>헤더 파일</Filter>
     </None>
   </ItemGroup>

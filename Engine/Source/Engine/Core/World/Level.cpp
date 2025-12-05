@@ -7,6 +7,8 @@
 #include "Engine/Core/Component/RendererComponent.h"
 #include "Engine/Core/World/World.h"
 
+#include "SpriteBatch.h"
+
 Level::Level(World* world)
 	: m_world(world)
 {
@@ -41,29 +43,11 @@ void Level::Tick(float deltaTime)
 
 void Level::Render(D3D11Renderer& renderer)
 {
-	
-	CameraComponent2D* camera = m_world->GetMainCamera();
-	if (!camera)
-		return;
+	// WORLD PASS
+	RenderWorldObjects(renderer);
 
-	auto viewProj = camera->GetViewProjMatrix();
-
-	for (auto& actor : m_actors)
-	{
-		if (actor->IsPendingDestroy())
-			continue;
-
-		const auto& comps = actor->GetComponents();
-
-		for (const auto& comp : comps)
-		{
-			// RendererComponent만 DrawCommand 제출
-			if (auto rc = dynamic_cast<RendererComponent*>(comp.get()))
-			{
-				rc->Render(renderer, viewProj);
-			}
-		}
-	}
+	// UI PASS (항상 화면 최상위)
+	RenderUI(renderer);
 }
 
 Actor* Level::SpawnActorInternal(std::unique_ptr<Actor> actor)
@@ -105,4 +89,53 @@ void Level::ProcessDestroyedActors()
 	);
 
 	m_destroyQueue.clear();
+}
+
+void Level::RenderWorldObjects(D3D11Renderer& renderer)
+{
+	CameraComponent2D* camera = m_world->GetMainCamera();
+	if (!camera)
+		return;
+
+	auto viewProj = camera->GetViewProjMatrix();
+
+	for (auto& actor : m_actors)
+	{
+		if (actor->IsPendingDestroy())
+			continue;
+
+		const auto& comps = actor->GetComponents();
+
+		for (const auto& comp : comps)
+		{
+			if (auto rc = dynamic_cast<RendererComponent*>(comp.get()))
+			{
+				rc->RenderWorld(renderer, viewProj);
+			}
+		}
+	}
+}
+
+void Level::RenderUI(D3D11Renderer& renderer)
+{
+	auto spriteBatch = renderer.GetSpriteBatch();
+	spriteBatch->Begin(DirectX::SpriteSortMode_Deferred);
+
+	for (auto& actor : m_actors)
+	{
+		if (actor->IsPendingDestroy())
+			continue;
+
+		const auto& comps = actor->GetComponents();
+
+		for (const auto& comp : comps)
+		{
+			if (auto rc = dynamic_cast<RendererComponent*>(comp.get()))
+			{
+				rc->RenderUI(renderer);
+			}
+		}
+	}
+
+	spriteBatch->End();
 }
