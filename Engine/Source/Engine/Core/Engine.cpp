@@ -105,9 +105,14 @@ bool Engine::TickOnce(uint64 curTick)
 	float deltaTime = timeManager.GetDeltaTime();
 
 	// 60 FPS 제한
+	static float accumulator = 0.0f;
+	accumulator += deltaTime;
+
 	const float TARGET_DT = 1.0f / 60.0f;
-	if (deltaTime < TARGET_DT)
-		// return false;
+	if (accumulator < TARGET_DT)
+		return false;
+
+	accumulator -= TARGET_DT;
 
 
 	// 키 입력 업데이트
