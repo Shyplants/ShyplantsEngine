@@ -24,7 +24,7 @@ void DemoLevel::OnLoad()
 	Actor* camActor = GetWorld()->SpawnActor<Actor>();
 	auto cam = camActor->AddComponent<CameraComponent2D>(camActor);
 
-	camActor->GetRootComponent()->SetLocalPosition({ 0.0f, 0.0f, 0.0f });
+	camActor->GetRootComponent()->SetLocalPosition({ 0.0f, 200.0f, 0.0f });
 	cam->SetZoom(1.0f);
 
 	GetWorld()->SetMainCamera(cam);
@@ -36,7 +36,7 @@ void DemoLevel::OnBeginPlay()
 
 
 	auto demoActor = world->SpawnActor<DemoActor>();
-	demoActor->GetRootComponent()->SetLocalPosition({ +50.0f, +50.0f, 0.15f });
+	// demoActor->GetRootComponent()->SetLocalPosition({ +50.0f, +250.0f, 0.15f });
 
 	auto demoUIActor = world->SpawnActor<DemoUIActor>();
 }

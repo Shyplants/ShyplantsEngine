@@ -98,6 +98,9 @@ void CameraComponent2D::UpdateViewMatrix() const
 	XMFLOAT3 pos;
 	XMStoreFloat3(&pos, world.r[3]);
 
+	// Y위치 반전
+	pos.y *= -1.0f;
+
 	m_viewMatrix = XMMatrixTranslation(-pos.x, -pos.y, 0);
 	m_viewDirty = false;
 }
