@@ -287,7 +287,7 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>$(SolutionDir)Build\$(Configuration)\Lib\</OutDir>
-    <IncludePath>$(SolutionDir)Common/Include;$(ProjectDir)Include;$(ProjectDir)Include/Engine;$(ProjectDir)Source;$(ProjectDir)Source/Engine;$(ProjectDir)ThirdParty/DirectXTK/Inc;$(ProjectDir)ThirdParty/DirectXTK/Src;$(ProjectDir)ThirdParty/DirectXTK/Src/Shaders/Compiled;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)../Common/Include;$(ProjectDir)Include;$(ProjectDir)Include/Engine;$(ProjectDir)Source;$(ProjectDir)Source/Engine;$(ProjectDir)ThirdParty/DirectXTK/Inc;$(ProjectDir)ThirdParty/DirectXTK/Src;$(ProjectDir)ThirdParty/DirectXTK/Src/Shaders/Compiled;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <OutDir>$(SolutionDir)Build\$(Configuration)\Lib\</OutDir>

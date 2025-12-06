@@ -71,7 +71,7 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>$(SolutionDir)Common/Include;$(SolutionDir)Engine/Include;$(SolutionDir)Engine/ThirdParty/DirectXTK/Inc;$(ProjectDir)Include;$(ProjectDir)Source;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)../Common/Include;$(ProjectDir)../Engine/Include;$(ProjectDir)../Engine/ThirdParty/DirectXTK/Inc;$(ProjectDir)Include;$(ProjectDir)Source;$(IncludePath)</IncludePath>
     <OutDir>$(SolutionDir)Build\$(Configuration)\Bin\</OutDir>
     <LibraryPath>$(SolutionDir)Build\$(Configuration)\Lib\;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
