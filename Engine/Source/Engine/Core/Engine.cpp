@@ -107,7 +107,7 @@ bool Engine::TickOnce(uint64 curTick)
 	// 60 FPS 제한
 	const float TARGET_DT = 1.0f / 60.0f;
 	if (deltaTime < TARGET_DT)
-		return false;
+		// return false;
 
 
 	// 키 입력 업데이트

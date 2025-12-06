@@ -146,12 +146,14 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Source\Actors\DemoActor.h" />
+    <ClInclude Include="Source\Actors\DemoAnimationActor.h" />
     <ClInclude Include="Source\Actors\DemoUIActor.h" />
     <ClInclude Include="Source\ClientPCH\ClientPCH.h" />
     <ClInclude Include="Source\Levels\DemoLevel.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Actors\DemoActor.cpp" />
+    <ClCompile Include="Source\Actors\DemoAnimationActor.cpp" />
     <ClCompile Include="Source\Actors\DemoUIActor.cpp" />
     <ClCompile Include="Source\ClientPCH\ClientPCH.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>

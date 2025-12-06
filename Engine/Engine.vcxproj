@@ -80,6 +80,7 @@
     <ClInclude Include="Include\Engine\Core\Component\CameraComponent2D.h" />
     <ClInclude Include="Include\Engine\Core\Component\RendererComponent.h" />
     <ClInclude Include="Include\Engine\Core\Component\SceneComponent.h" />
+    <ClInclude Include="Include\Engine\Core\Component\SpriteAnimatorComponent.h" />
     <ClInclude Include="Include\Engine\Core\Component\TextRendererComponent.h" />
     <ClInclude Include="Include\Engine\Core\Engine.h" />
     <ClInclude Include="Include\Engine\Core\GameFramework\GameMode.h" />
@@ -90,6 +91,7 @@
     <ClInclude Include="Include\Engine\Core\World\UIActor.h" />
     <ClInclude Include="Include\Engine\Core\World\World.h" />
     <ClInclude Include="Include\Engine\Core\Component\SpriteRendererComponent.h" />
+    <ClInclude Include="Include\Engine\Graphics\Animation\SpriteAnimationClip.h" />
     <ClInclude Include="Include\Engine\Graphics\ConstantBuffer\SpriteConstantBuffer.h" />
     <ClInclude Include="Include\Engine\Graphics\D3D11\D3D11Renderer.h" />
     <ClInclude Include="Include\Engine\Graphics\Mesh\Mesh.h" />
@@ -109,6 +111,7 @@
     <ClInclude Include="Include\Engine\Graphics\Command\CommandBuffer.h" />
     <ClInclude Include="Include\Engine\Resource\Texture\TextureLoader.h" />
     <ClInclude Include="Include\Engine\System\InputManager.h" />
+    <ClInclude Include="Source\Engine\Graphics\Animation\SpriteAnimationClip.h" />
     <ClInclude Include="ThirdParty\DirectXTK\Inc\Audio.h" />
     <ClInclude Include="ThirdParty\DirectXTK\Inc\BufferHelpers.h" />
     <ClInclude Include="ThirdParty\DirectXTK\Inc\CommonStates.h" />
@@ -141,6 +144,7 @@
     <ClCompile Include="Source\Engine\Core\Component\CameraComponent2D.cpp" />
     <ClCompile Include="Source\Engine\Core\Component\RendererComponent.cpp" />
     <ClCompile Include="Source\Engine\Core\Component\SceneComponent.cpp" />
+    <ClCompile Include="Source\Engine\Core\Component\SpriteAnimatorComponent.cpp" />
     <ClCompile Include="Source\Engine\Core\Component\TextRendererComponent.cpp" />
     <ClCompile Include="Source\Engine\Core\GameFramework\GameMode.cpp" />
     <ClCompile Include="Source\Engine\Core\GameFramework\GameState.cpp" />
