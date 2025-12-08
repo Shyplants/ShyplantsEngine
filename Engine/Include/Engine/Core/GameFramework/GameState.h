@@ -17,7 +17,7 @@ public:
 	void SetScore(int32 score) { m_score = score; }
 	int32 GetScore() const { return m_score; }
 
-	void AddScore(int delta) { m_score += delta; }
+	void AddScore(int32 delta) { m_score += delta; }
 
 protected:
 	World* GetWorld() const { return m_world; }
