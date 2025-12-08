@@ -38,8 +38,15 @@ public:
 	Level* GetCurrentLevel() const { return m_currentLevel.get(); }
 
 	// GameMode/GameState Management
-	GameMode* GetGameMode() const { return m_gameMode.get(); }
+	template<typename T>
+	T* GetGameMode() const
+	{
+		return dynamic_cast<T*>(m_gameMode.get());
+	}
+
 	GameState* GetGameState() const;
+
+	void SetGameMode(std::unique_ptr<GameMode> gameMode);
 
 	// Camera Management
 	CameraComponent2D* GetMainCamera() const { return m_mainCamera; }

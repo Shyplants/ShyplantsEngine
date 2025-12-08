@@ -74,6 +74,11 @@ GameState* World::GetGameState() const
 	return m_gameMode ? m_gameMode->GetGameState() : nullptr;
 }
 
+void World::SetGameMode(std::unique_ptr<GameMode> gameMode)
+{
+	m_gameMode = std::move(gameMode);
+}
+
 void World::SetMainCamera(CameraComponent2D* camera)
 {
 	if (m_mainCamera == camera)
