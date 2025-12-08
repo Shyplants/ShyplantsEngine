@@ -18,6 +18,8 @@ public:
 public:
 	GameState* GetGameState() const { return m_gameState.get(); }
 
+	World* GetWorld() const { return m_world; }
+
 protected:
 	virtual std::unique_ptr<GameState> CreateGameState();
 
