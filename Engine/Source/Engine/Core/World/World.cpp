@@ -49,16 +49,14 @@ void World::LoadLevel(std::unique_ptr<Level> level)
 
 	m_currentLevel = std::move(level);
 
-	if (m_gameMode)
-		m_gameMode->OnBeginPlay();
-
 	if (m_currentLevel)
 	{
 		m_currentLevel->OnLoad();
 		m_currentLevel->OnBeginPlay();
 	}
-
 	
+	if (m_gameMode)
+		m_gameMode->OnBeginPlay();
 }
 
 void World::UnloadCurrentLevel()
