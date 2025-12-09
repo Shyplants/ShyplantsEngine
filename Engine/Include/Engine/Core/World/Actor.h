@@ -74,6 +74,7 @@ public:
 	SceneComponent* GetRootComponent() const { return m_rootComponent; }
 	void SetRootComponent(SceneComponent* newRoot);
 
+	void AttachToActor(Actor* parentActor);
 
 	// World
 	World* GetWorld() const { return m_world; }

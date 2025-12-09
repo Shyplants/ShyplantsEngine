@@ -68,3 +68,17 @@ void Actor::SetRootComponent(SceneComponent* newRoot)
 	if (oldRoot)
 		oldRoot->AttachTo(newRoot);
 }
+
+void Actor::AttachToActor(Actor* parentActor)
+{
+	if (!parentActor)
+		return;
+
+	SceneComponent* parentRoot = parentActor->GetRootComponent();
+	SceneComponent* curRoot = GetRootComponent();
+
+	if (!parentRoot || !curRoot)
+		return;
+
+	curRoot->AttachTo(parentRoot);
+}
