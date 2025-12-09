@@ -39,8 +39,8 @@ protected:
 
 private:
 	float m_zoom{ 1.0f };
-	float m_nearZ{ 0.0f };
-	float m_farZ{ 1.0f };
+	float m_nearZ{ 1.0f };
+	float m_farZ{ 1000.0f };
 
 	mutable bool m_viewDirty{ true };
 	mutable bool m_projDirty{ true };

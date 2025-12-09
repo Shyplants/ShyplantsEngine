@@ -57,19 +57,19 @@ void SpriteRendererComponent::RenderWorld(D3D11Renderer& renderer, const DirectX
 		break;
 
 	case SpritePivot::TopLeft:
-		pivotPixel = { 0.0f, 0.0f };
-		break;
-
-	case SpritePivot::TopRight:
-		pivotPixel = { spriteW, 0.0f };
-		break;
-
-	case SpritePivot::BottomLeft:
 		pivotPixel = { 0.0f, spriteH };
 		break;
 
-	case SpritePivot::BottomRight:
+	case SpritePivot::TopRight:
 		pivotPixel = { spriteW, spriteH };
+		break;
+
+	case SpritePivot::BottomLeft:
+		pivotPixel = { 0.0f, 0.0f };
+		break;
+
+	case SpritePivot::BottomRight:
+		pivotPixel = { spriteW, 0.0f };
 		break;
 
 	default:
@@ -79,9 +79,6 @@ void SpriteRendererComponent::RenderWorld(D3D11Renderer& renderer, const DirectX
 	// Actor의 World Transform
 	XMMATRIX W = sc->GetWorldMatrix();
 	
-	// Y위치 반전
-	W.r[3].m128_f32[1] *= -1.0f;
-
 	// Pixel Offset 적용
 	XMMATRIX T_offset = XMMatrixTranslation(m_offset.x, m_offset.y, 0.0f);
 
@@ -93,7 +90,7 @@ void SpriteRendererComponent::RenderWorld(D3D11Renderer& renderer, const DirectX
 
 
 	// 최종 WVP 계산
-	XMMATRIX world = T_offset * S * T_pivot * W;
+	XMMATRIX world = S * T_pivot * T_offset * W;
 	XMMATRIX wvp = world * viewProj;
 
 

@@ -17,10 +17,10 @@ bool SpriteMesh::CreateVertexBuffer(ID3D11Device* device)
     SpriteVertex vertices[4];
 
     // local quad from 0.0 ~ +1.0
-    vertices[0] = { XMFLOAT3(0.0f, 1.0f, 0.0f), XMFLOAT4(1,1,1,1), XMFLOAT2(0.0f, 1.0f) }; // bottom-left
-    vertices[1] = { XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT4(1,1,1,1), XMFLOAT2(0.0f, 0.0f) }; // top-left
-    vertices[2] = { XMFLOAT3(1.0f, 0.0f, 0.0f), XMFLOAT4(1,1,1,1), XMFLOAT2(1.0f, 0.0f) }; // top-right
-    vertices[3] = { XMFLOAT3(1.0f, 1.0f, 0.0f), XMFLOAT4(1,1,1,1), XMFLOAT2(1.0f, 1.0f) }; // bottom-right
+    vertices[0] = { XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f), XMFLOAT2(0.0f, 1.0f) }; // bottom-left
+    vertices[1] = { XMFLOAT3(1.0f, 0.0f, 0.0f), XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f), XMFLOAT2(1.0f, 1.0f) }; // bottom-right
+    vertices[2] = { XMFLOAT3(1.0f, 1.0f, 0.0f), XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f), XMFLOAT2(1.0f, 0.0f) }; // top-right
+    vertices[3] = { XMFLOAT3(0.0f, 1.0f, 0.0f), XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f), XMFLOAT2(0.0f, 0.0f) }; // top-left
     
 
     D3D11_BUFFER_DESC vbDesc = {};
@@ -50,8 +50,8 @@ bool SpriteMesh::CreateIndexBuffer(ID3D11Device* device)
     // ¿Œµ¶Ω∫
     uint16 indices[6] = 
     { 
-        0, 1, 2, 
-        0, 2, 3
+        3, 1, 0, 
+        2, 1, 3
     };
     m_indexCount = 6;
 

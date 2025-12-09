@@ -19,15 +19,17 @@ public:
 	void SetVisible(bool visible) { m_visible = visible; }
 	bool IsVisible() const { return m_visible; }
 
-public:
-	// RenderComponent가 어느 SceneComponent에 붙어 있는지 설정
-	void SetAttachComponent(SceneComponent* comp) { m_attachComponent = comp; }
-
 protected:
 	SceneComponent* GetAttachComponent() const { return m_attachComponent; }
 
 	// Renderer 접근 헬퍼
 	D3D11Renderer& GetRenderer() const;
+
+private:
+	friend class Actor;
+
+	// RenderComponent가 어느 SceneComponent에 붙어 있는지 설정
+	void SetAttachComponent(SceneComponent* comp) { m_attachComponent = comp; }
 
 protected:
 	bool m_visible{ true };
