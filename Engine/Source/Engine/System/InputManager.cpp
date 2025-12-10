@@ -33,15 +33,39 @@ InputManager& InputManager::Get()
 
 void InputManager::ProcessMessage(UINT msg, WPARAM wParam, LPARAM lParam)
 {
+	uint32 vk = static_cast<uint32>(wParam);
+
+	if (vk >= 256)
+		return;
+
 	switch (msg)
 	{
+		
+
 	case WM_KEYDOWN:
-		m_curKeys[wParam] = true;
+	case WM_SYSKEYDOWN:
+	{
+		bool wasDown = (lParam & 0x40000000) != 0;
+
+		// auto-repeat ¹æÁö
+		if (!wasDown)
+			m_curKeys[vk] = true;
+		
 		break;
+	}
 
 	case WM_KEYUP:
+	case WM_SYSKEYUP:
+	{
 		m_curKeys[wParam] = false;
 		break;
+	}
+
+	case WM_KILLFOCUS:
+	{
+		m_curKeys.fill(false);
+		break;
+	}
 
 	default:
 		break;
