@@ -114,12 +114,11 @@ bool Engine::TickOnce(uint64 curTick)
 
 	accumulator -= TARGET_DT;
 
+	if (m_world)
+		m_world->Tick(deltaTime);
 
 	// 키 입력 업데이트
 	InputManager::Get().Update();
-	
-	if (m_world)
-		m_world->Tick(deltaTime);
 
 	return true;
 }
