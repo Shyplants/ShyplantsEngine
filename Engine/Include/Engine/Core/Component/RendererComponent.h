@@ -19,6 +19,9 @@ public:
 	void SetVisible(bool visible) { m_visible = visible; }
 	bool IsVisible() const { return m_visible; }
 
+	void SetRenderOffset(const DirectX::XMFLOAT2& offset) { m_renderOffset = offset; }
+	DirectX::XMFLOAT2 GetRenderOffset() const { return m_renderOffset; }
+
 protected:
 	SceneComponent* GetAttachComponent() const { return m_attachComponent; }
 
@@ -32,7 +35,10 @@ private:
 	void SetAttachComponent(SceneComponent* comp) { m_attachComponent = comp; }
 
 protected:
-	bool m_visible{ true };
-
 	SceneComponent* m_attachComponent{ nullptr };
+
+protected:
+	bool m_visible{ true };
+	
+	DirectX::XMFLOAT2 m_renderOffset{ 0.0f, 0.0f };
 };
