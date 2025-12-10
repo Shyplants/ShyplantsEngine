@@ -32,7 +32,6 @@ public:
 	void SetPivot(SpritePivot pivotMode) { m_pivotMode = pivotMode; }
 
 	void SetScale(float sx, float sy) { m_scale = DirectX::XMFLOAT2(sx, sy); }
-	void SetOffset(float ox, float oy) { m_offset = DirectX::XMFLOAT2(ox, oy); }
 	
 	void SetGameLayer(GameLayer layer) { m_gameLayer = layer; }
 	void SetOrderInLayer(uint32 order) { m_orderInLayer = order; }
@@ -43,7 +42,6 @@ private:
 	GraphicsPSO* m_pso{ nullptr };
 
 	DirectX::XMFLOAT2 m_scale{ 1.0f, 1.0f };
-	DirectX::XMFLOAT2 m_offset{ 0.0f, 0.0f };
 	DirectX::XMFLOAT4 m_color{ 1.0f,1.0f,1.0f,1.0f };
 	RECT m_rect{ 0, 0, 0, 0 };
 

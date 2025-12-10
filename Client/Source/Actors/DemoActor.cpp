@@ -22,6 +22,7 @@ void DemoActor::OnSpawned()
 
     m_sprite = AddComponent<SpriteRendererComponent>(this);
     m_sprite->SetTexture(tex);
+    // m_sprite->SetRenderOffset({ 200.0f, 200.0f });
 }
 
 void DemoActor::BeginPlay()

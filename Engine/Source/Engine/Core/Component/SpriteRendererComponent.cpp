@@ -80,7 +80,7 @@ void SpriteRendererComponent::RenderWorld(D3D11Renderer& renderer, const DirectX
 	XMMATRIX W = sc->GetWorldMatrix();
 	
 	// Pixel Offset 적용
-	XMMATRIX T_offset = XMMatrixTranslation(m_offset.x, m_offset.y, 0.0f);
+	XMMATRIX T_offset = XMMatrixTranslation(m_renderOffset.x, m_renderOffset.y, 0.0f);
 
 	// Pivot 보정
 	XMMATRIX T_pivot = XMMatrixTranslation(-pivotPixel.x, -pivotPixel.y, 0);
