@@ -39,8 +39,10 @@ void World::Render(D3D11Renderer& renderer)
 
 void World::DestroyActor(Actor* actor)
 {
-	if (m_currentLevel)
-		m_currentLevel->MarkActorForDestroy(actor);
+	if (!actor || !m_currentLevel)
+		return;
+
+	m_currentLevel->MarkActorForDestroy(actor);	
 }
 
 void World::LoadLevel(std::unique_ptr<Level> level)

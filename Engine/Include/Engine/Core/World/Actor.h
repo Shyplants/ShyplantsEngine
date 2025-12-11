@@ -18,6 +18,7 @@ public:
 	virtual void OnSpawned() {}
 	virtual void BeginPlay() {}
 	virtual void Tick(float deltaTime);
+	virtual void Destroy();
 
 	virtual bool IsUIActor() const { return false; }
 
@@ -82,7 +83,6 @@ public:
 
 	// Destroy
 	bool IsPendingDestroy() const { return m_pendingDestroy; }
-	void MarkForDestroy() { m_pendingDestroy = true; }
 
 protected:
 	SceneComponent* m_rootComponent = nullptr;

@@ -27,6 +27,17 @@ void Actor::Tick(float deltaTime)
 	}
 }
 
+void Actor::Destroy()
+{
+	if (m_pendingDestroy)
+		return;
+
+	m_pendingDestroy = true;
+
+	if (m_world)
+		m_world->DestroyActor(this);
+}
+
 void Actor::SetRootComponent(SceneComponent* newRoot)
 {
 	if (newRoot == nullptr)

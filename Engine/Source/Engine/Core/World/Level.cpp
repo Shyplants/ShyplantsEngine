@@ -37,6 +37,12 @@ void Level::Tick(float deltaTime)
 
 	for (auto& actor : m_actors)
 	{
+		if (actor->IsPendingDestroy())
+		{
+			__debugbreak();
+			continue;
+		}
+
 		actor->Tick(deltaTime);
 	}
 }
@@ -70,6 +76,9 @@ void Level::MarkActorForDestroy(Actor* actor)
 	if (!actor)
 		return;
 
+	if (!actor->IsPendingDestroy())
+		actor->Destroy();
+
 	m_destroyQueue.push_back(actor);
 }
 
@@ -102,7 +111,10 @@ void Level::RenderWorldObjects(D3D11Renderer& renderer)
 	for (auto& actor : m_actors)
 	{
 		if (actor->IsPendingDestroy())
+		{
+			__debugbreak();
 			continue;
+		}
 
 		const auto& comps = actor->GetComponents();
 
@@ -124,7 +136,10 @@ void Level::RenderUI(D3D11Renderer& renderer)
 	for (auto& actor : m_actors)
 	{
 		if (actor->IsPendingDestroy())
+		{
+			__debugbreak();
 			continue;
+		}
 
 		if (!actor->IsUIActor())
 			continue;
