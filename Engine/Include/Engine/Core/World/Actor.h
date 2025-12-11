@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Engine/Core/Component/FAttachmentTransformRules.h"
 #include <vector>
 #include <memory>
 
@@ -20,7 +21,10 @@ public:
 	virtual void Tick(float deltaTime);
 	virtual void Destroy();
 
+	bool IsPendingDestroy() const { return m_pendingDestroy; }
 	virtual bool IsUIActor() const { return false; }
+
+	
 
 	// 컴포넌트 시스템
 	template <typename T, typename... Args>
@@ -28,25 +32,26 @@ public:
 	{
 		static_assert(std::is_base_of_v<ActorComponent, T>, "T must derive from ActorComponent");
 
-		auto comp = std::make_unique<T>(std::forward<Args>(args)...);
+		auto comp = std::make_unique<T>(this, std::forward<Args>(args)...);
 		T* rawPtr = comp.get();
 
-		// SceneComponent일 경우
+		comp->SetWorld(m_world);
+
+		// SceneComponent 파생 컴포넌트
 		if constexpr (std::is_base_of_v<SceneComponent, T>)
 		{
 			SceneComponent* sceneComp = static_cast<SceneComponent*>(rawPtr);
 
-			if (sceneComp != m_rootComponent && m_rootComponent != nullptr)
+			if (m_rootComponent && sceneComp != m_rootComponent)
 			{
-				sceneComp->AttachTo(m_rootComponent);
+				sceneComp->AttachTo(m_rootComponent, FAttachmentTransformRules::KeepRelativeTransform);
 			}
 		}
 
-		// RendererComponent일 경우
+		// RendererComponent 파생 컴포넌트
 		else if constexpr (std::is_base_of_v<RendererComponent, T>)
 		{
 			RendererComponent* renderComp = static_cast<RendererComponent*>(rawPtr);
-
 			if(m_rootComponent)
 				renderComp->SetAttachComponent(m_rootComponent);
 		}
@@ -69,27 +74,33 @@ public:
 		return nullptr;
 	}
 
-	const std::vector<std::unique_ptr<ActorComponent>>& GetComponents() const { return m_components; }
-
 	// RootComponent
 	SceneComponent* GetRootComponent() const { return m_rootComponent; }
 	void SetRootComponent(SceneComponent* newRoot);
 
-	void AttachToActor(Actor* parentActor);
+	// Actor hierarchy
+	Actor* GetParentActor() const { return m_parentActor; }
+	const std::vector<Actor*>& GetChildActors() const { return m_childActors; }
+
+	void AttachToActor(Actor* parent, const FAttachmentTransformRules& rules = FAttachmentTransformRules::KeepWorldTransform);
+	void DetachFromParent(const FDetachmentTransformRules& rules = FDetachmentTransformRules::KeepWorldTransform);
 
 	// World
 	World* GetWorld() const { return m_world; }
-	void SetWorld(World* world) { m_world = world; }
+	void SetWorld(World* world);
 
-	// Destroy
-	bool IsPendingDestroy() const { return m_pendingDestroy; }
+	// Component
+	const std::vector<std::unique_ptr<ActorComponent>>& GetComponents() const { return m_components; }
 
 protected:
 	SceneComponent* m_rootComponent = nullptr;
 
 private:
 	std::vector<std::unique_ptr<ActorComponent>> m_components{};
-	World* m_world = nullptr;
-	bool m_pendingDestroy{ false };
+	std::vector<Actor*> m_childActors;
+
+	Actor* m_parentActor{ nullptr };
+	World* m_world{ nullptr };
 	
+	bool m_pendingDestroy{ false };	
 };

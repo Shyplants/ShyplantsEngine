@@ -20,10 +20,10 @@ DemoAnimationActor::~DemoAnimationActor()
 
 void DemoAnimationActor::OnSpawned()
 {
-	m_renderer = AddComponent<SpriteRendererComponent>(this);
+	m_renderer = AddComponent<SpriteRendererComponent>();
 	m_renderer->SetTexture(ResourceManager::Get().Load<Texture>(L"../Resources/Sword_Idle_without_shadow.png").get());
 
-	m_animator = AddComponent<SpriteAnimatorComponent>(this);
+	m_animator = AddComponent<SpriteAnimatorComponent>();
 
 	SpriteAnimationClip idle;
 	idle.name = L"Idle";

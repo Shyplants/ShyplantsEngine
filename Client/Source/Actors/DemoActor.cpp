@@ -20,9 +20,9 @@ void DemoActor::OnSpawned()
 {
     auto tex = ResourceManager::Get().Load<Texture>(L"../Resources/test.png").get();
 
-    m_sprite = AddComponent<SpriteRendererComponent>(this);
+    m_sprite = AddComponent<SpriteRendererComponent>();
     m_sprite->SetTexture(tex);
-    // m_sprite->SetRenderOffset({ 200.0f, 200.0f });
+    // m_sprite->SetRenderOffset({ 100.0f, -400.0f });
 }
 
 void DemoActor::BeginPlay()

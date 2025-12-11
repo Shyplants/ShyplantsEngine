@@ -6,7 +6,7 @@ UIActor::UIActor()
 {
 	// UIActor는 SceneComponent를 갖지만,
 	// World 변환이 아닌 Screen 좌표 용도로 사용됨.
-	m_rootComponent = AddComponent<SceneComponent>(this);
+	m_rootComponent = AddComponent<SceneComponent>();
 	m_rootComponent->SetLocalPosition({ 0.0f, 0.0f, 0.0f });
 }
 

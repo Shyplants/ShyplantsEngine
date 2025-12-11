@@ -12,59 +12,82 @@ SceneComponent::SceneComponent(Actor* owner)
 SceneComponent::~SceneComponent()
 {
 	Detach();
+
+	for (SceneComponent* child : m_children)
+	{
+		child->Detach(FDetachmentTransformRules::KeepWorldTransform);
+	}
+
+	m_children.clear();
 }
 
 void SceneComponent::SetLocalPosition(const DirectX::XMFLOAT3& pos)
 {
 	m_localPosition = pos;
-	MarkDirty();
+	MarkDirtyRecursive();
 }
 
-void SceneComponent::SetLocalRotationQuat(const DirectX::XMFLOAT4& rot)
+void SceneComponent::SetLocalRotation(const DirectX::XMFLOAT3& rot)
 {
 	m_localRotation = rot;
-	MarkDirty();
+	MarkDirtyRecursive();
 }
 
 void SceneComponent::SetLocalScale(const DirectX::XMFLOAT3& scale)
 {
 	m_localScale = scale;
-	MarkDirty();
+	MarkDirtyRecursive();
 }
 
-XMFLOAT3 SceneComponent::GetWorldPosition() const
+XMFLOAT3 SceneComponent::GetWorldPosition()
 {
-	UpdateWorldTransform();
+	XMMATRIX W = GetWorldMatrix();
 	XMFLOAT3 pos;
-	XMStoreFloat3(&pos, m_cachedWorldMatrix.r[3]);
+	XMStoreFloat3(&pos, W.r[3]);
 
 	return pos;
 }
 
-DirectX::XMFLOAT4 SceneComponent::GetWorldRotationQuat() const
+XMFLOAT3 SceneComponent::GetWorldRotation()
 {
-	UpdateWorldTransform();
-	XMFLOAT4 quat;
-	XMStoreFloat4(&quat, XMQuaternionRotationMatrix(m_cachedWorldMatrix));
+	XMMATRIX W = GetWorldMatrix();
 
-	return quat;
+	// Decompose
+	XMVECTOR scaleV, rotQ, transV;
+	XMMatrixDecompose(&scaleV, &rotQ, &transV, W);
+
+	// Quaternion → Euler (radians)
+	XMFLOAT3 eulerRad;
+	XMStoreFloat3(&eulerRad, XMQuaternionRotationMatrix(W));
+
+	// Convert to degrees
+	return XMFLOAT3(
+		XMConvertToDegrees(eulerRad.x),
+		XMConvertToDegrees(eulerRad.y),
+		XMConvertToDegrees(eulerRad.z)
+	);
 }
 
-XMFLOAT3 SceneComponent::GetWorldScale() const
+XMFLOAT3 SceneComponent::GetWorldScale()
 {
-	UpdateWorldTransform();
-	XMFLOAT3 scale;
-	scale.x = XMVectorGetX(XMVector3Length(m_cachedWorldMatrix.r[0]));
-	scale.y = XMVectorGetX(XMVector3Length(m_cachedWorldMatrix.r[1]));
-	scale.z = XMVectorGetX(XMVector3Length(m_cachedWorldMatrix.r[2]));
+	XMMATRIX W = GetWorldMatrix();
 
+	XMVECTOR scaleV, rotQ, transV;
+	XMMatrixDecompose(&scaleV, &rotQ, &transV, W);
+
+	XMFLOAT3 scale;
+	XMStoreFloat3(&scale, scaleV);
 	return scale;
 }
 
 XMMATRIX SceneComponent::GetLocalMatrix() const
 {
 	XMMATRIX S = XMMatrixScaling(m_localScale.x, m_localScale.y, m_localScale.z);
-	XMMATRIX R = XMMatrixRotationQuaternion(XMLoadFloat4(&m_localRotation));
+	XMMATRIX R = XMMatrixRotationRollPitchYaw(
+		XMConvertToRadians(m_localRotation.x),
+		XMConvertToRadians(m_localRotation.y),
+		XMConvertToRadians(m_localRotation.z)
+	);
 	XMMATRIX T = XMMatrixTranslation(m_localPosition.x, m_localPosition.y, m_localPosition.z);
 	
 	return S * R * T;
@@ -72,65 +95,123 @@ XMMATRIX SceneComponent::GetLocalMatrix() const
 
 XMMATRIX SceneComponent::GetWorldMatrix() const
 {
-	UpdateWorldTransform();
+	if (!m_worldDirty)
+		return m_cachedWorldMatrix;
+
+	if (m_parent)
+		m_cachedWorldMatrix = GetLocalMatrix() * m_parent->GetWorldMatrix();
+	else
+		m_cachedWorldMatrix = GetLocalMatrix();
+
+	m_worldDirty = false;
 	return m_cachedWorldMatrix;
 }
 
-void SceneComponent::MarkDirty()
+void SceneComponent::AttachTo(SceneComponent* parent, const FAttachmentTransformRules& rules)
 {
-	m_dirty = true;
-
-	for (SceneComponent* child : m_children)
-		child->MarkDirty();
-}
-
-void SceneComponent::MarkClean()
-{
-	UpdateWorldTransform();
-}
-
-void SceneComponent::AttachTo(SceneComponent* parent)
-{
-	if (m_parent == parent)
+	if (!parent || parent == this)
 		return;
 
-	Detach();
+	// Attach전 기존 월드 매트릭스 보관
+	XMMATRIX oldWorld = GetWorldMatrix();
 
+	// 기존 부모 제거
+	if (m_parent)
+		m_parent->RemoveChild(this);
+
+	// 새로운 부모 지정
 	m_parent = parent;
+	parent->AddChild(this);
 
-	if (parent)
-		parent->m_children.push_back(this);
+	// Transform rule 적용
+	if (rules.bMaintainWorld)
+	{
+		XMMATRIX parentWorld = parent->GetWorldMatrix();
+		XMMATRIX invParent = XMMatrixInverse(nullptr, parentWorld);
 
-	MarkDirty();
+		// New local = World * Parent^-1
+		XMMATRIX newLocal = oldWorld * invParent;
+
+		XMVECTOR scaleV, rotQ, transV;
+		XMMatrixDecompose(&scaleV, &rotQ, &transV, newLocal);
+
+		XMFLOAT3 scale, pos;
+		XMStoreFloat3(&scale, scaleV);
+		XMStoreFloat3(&pos, transV);
+
+		// Convert quaternion → euler degrees
+		XMFLOAT3 eulerRad;
+		XMStoreFloat3(&eulerRad, XMQuaternionRotationMatrix(newLocal));
+
+		XMFLOAT3 eulerDeg(
+			XMConvertToDegrees(eulerRad.x),
+			XMConvertToDegrees(eulerRad.y),
+			XMConvertToDegrees(eulerRad.z)
+		);
+
+		SetLocalScale(scale);
+		SetLocalPosition(pos);
+		SetLocalRotation(eulerDeg);
+	}
+
+	MarkDirtyRecursive();
 }
 
-void SceneComponent::Detach()
+void SceneComponent::Detach(const FDetachmentTransformRules& rules)
 {
 	if (!m_parent)
 		return;
 
-	auto& siblings = m_parent->m_children;
-	siblings.erase(
-		std::remove(siblings.begin(), siblings.end(), this),
-		siblings.end()
-	);
+	XMMATRIX oldWorld = GetWorldMatrix();
 
+	m_parent->RemoveChild(this);
 	m_parent = nullptr;
-	MarkDirty();
+
+	if (rules.bMaintainWorld)
+	{
+		XMVECTOR scaleV, rotQ, transV;
+		XMMatrixDecompose(&scaleV, &rotQ, &transV, oldWorld);
+
+		XMFLOAT3 scale, pos;
+		XMStoreFloat3(&scale, scaleV);
+		XMStoreFloat3(&pos, transV);
+
+		XMFLOAT3 eulerRad;
+		XMStoreFloat3(&eulerRad, XMQuaternionRotationMatrix(oldWorld));
+
+		XMFLOAT3 eulerDeg(
+			XMConvertToDegrees(eulerRad.x),
+			XMConvertToDegrees(eulerRad.y),
+			XMConvertToDegrees(eulerRad.z)
+		);
+
+		SetLocalScale(scale);
+		SetLocalPosition(pos);
+		SetLocalRotation(eulerDeg);
+	}
+
+	MarkDirtyRecursive();
 }
 
-void SceneComponent::UpdateWorldTransform() const
+void SceneComponent::AddChild(SceneComponent* child)
 {
-	if (!m_dirty)
-		return;
+	if (std::find(m_children.begin(), m_children.end(), child) == m_children.end())
+		m_children.push_back(child);
+}
 
-	XMMATRIX local = GetLocalMatrix();
+void SceneComponent::RemoveChild(SceneComponent* child)
+{
+	m_children.erase(
+		std::remove(m_children.begin(), m_children.end(), child),
+		m_children.end()
+	);
+}
 
-	if (m_parent)
-		m_cachedWorldMatrix = m_parent->GetWorldMatrix() * local;
-	else
-		m_cachedWorldMatrix = local;
+void SceneComponent::MarkDirtyRecursive()
+{
+	m_worldDirty = true;
 
-	m_dirty = false;
+	for (SceneComponent* child : m_children)
+		child->MarkDirtyRecursive();
 }
 

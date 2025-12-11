@@ -15,7 +15,7 @@ DemoUIActor::~DemoUIActor()
 
 void DemoUIActor::OnSpawned()
 {
-	m_text = AddComponent<TextRendererComponent>(this);
+	m_text = AddComponent<TextRendererComponent>();
 	m_text->SetText(L"Shyplants Engine!");
 	m_text->SetScale(1.0f);
 

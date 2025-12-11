@@ -76,8 +76,12 @@
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Include\Engine\Core\Component\CameraComponent.h" />
+    <ClInclude Include="Include\Engine\Core\Component\CameraComponent.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClInclude>
     <ClInclude Include="Include\Engine\Core\Component\CameraComponent2D.h" />
+    <ClInclude Include="Include\Engine\Core\Component\FAttachmentTransformRules.h" />
     <ClInclude Include="Include\Engine\Core\Component\RendererComponent.h" />
     <ClInclude Include="Include\Engine\Core\Component\SceneComponent.h" />
     <ClInclude Include="Include\Engine\Core\Component\SpriteAnimatorComponent.h" />
@@ -140,8 +144,15 @@
     <ClInclude Include="ThirdParty\DirectXTK\Src\SharedResourcePool.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Source\Engine\Core\Component\CameraComponent.cpp" />
+    <ClCompile Include="Source\Engine\Core\Component\CameraComponent.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="Source\Engine\Core\Component\CameraComponent2D.cpp" />
+    <ClCompile Include="Source\Engine\Core\Component\FAttachmentTransformRules.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="Source\Engine\Core\Component\RendererComponent.cpp" />
     <ClCompile Include="Source\Engine\Core\Component\SceneComponent.cpp" />
     <ClCompile Include="Source\Engine\Core\Component\SpriteAnimatorComponent.cpp" />
