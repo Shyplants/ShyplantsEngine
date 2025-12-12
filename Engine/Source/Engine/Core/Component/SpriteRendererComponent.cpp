@@ -52,20 +52,37 @@ void SpriteRendererComponent::RenderWorld(D3D11Renderer& renderer, const DirectX
 
 	switch (m_pivotMode)
 	{
-	case SpritePivot::Center:
-		pivotPixel = { spriteW * 0.5f, spriteH * 0.5f };
-		break;
-
 	case SpritePivot::TopLeft:
 		pivotPixel = { 0.0f, spriteH };
+		break;
+
+	case SpritePivot::TopCenter:
+		pivotPixel = { spriteW * 0.5f, spriteH };
 		break;
 
 	case SpritePivot::TopRight:
 		pivotPixel = { spriteW, spriteH };
 		break;
 
+	case SpritePivot::Center:
+	case SpritePivot::MiddleLeft:
+		pivotPixel = { 0.0f, spriteH * 0.5f };
+		break;
+
+	case SpritePivot::MiddleCenter:
+		pivotPixel = { spriteW * 0.5f, spriteH * 0.5f };
+		break;
+
+	case SpritePivot::MiddleRight:
+		pivotPixel = { spriteW, spriteH * 0.5f };
+		break;
+
 	case SpritePivot::BottomLeft:
 		pivotPixel = { 0.0f, 0.0f };
+		break;
+
+	case SpritePivot::BottomCenter:
+		pivotPixel = { spriteW * 0.5f, 0.0f };
 		break;
 
 	case SpritePivot::BottomRight:
