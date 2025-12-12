@@ -3,6 +3,10 @@
 #include "Common/Types.h"
 #include <algorithm>
 
+constexpr int32 iabs(int32 v) noexcept {
+    return v < 0 ? -v : v;
+}
+
 // -----------------------------------------------------------------------------
 // IVec2 : Integer 2D Vector
 // -----------------------------------------------------------------------------
@@ -95,8 +99,4 @@ constexpr IVec3 Clamp(const IVec3& v, const IVec3& min, const IVec3& max)
         std::clamp(v.y, min.y, max.y),
         std::clamp(v.z, min.z, max.z)
     };
-}
-
-constexpr int32 iabs(int32 v) noexcept {
-    return v < 0 ? -v : v;
 }
