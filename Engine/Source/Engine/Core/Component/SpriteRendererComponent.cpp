@@ -64,11 +64,11 @@ void SpriteRendererComponent::RenderWorld(D3D11Renderer& renderer, const DirectX
 		pivotPixel = { spriteW, spriteH };
 		break;
 
-	case SpritePivot::Center:
 	case SpritePivot::MiddleLeft:
 		pivotPixel = { 0.0f, spriteH * 0.5f };
 		break;
 
+	case SpritePivot::Center:
 	case SpritePivot::MiddleCenter:
 		pivotPixel = { spriteW * 0.5f, spriteH * 0.5f };
 		break;
