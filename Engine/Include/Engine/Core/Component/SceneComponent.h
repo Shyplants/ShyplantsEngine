@@ -32,8 +32,8 @@ public:
 	DirectX::XMMATRIX GetWorldMatrix() const;
 
 	// Attachment
-	void AttachTo(SceneComponent* parent, const FAttachmentTransformRules& rules = FAttachmentTransformRules::KeepWorldTransform);
-	void Detach(const FDetachmentTransformRules& rules = FDetachmentTransformRules::KeepWorldTransform);
+	void AttachTo(SceneComponent* parent, const FAttachmentTransformRules& rules = FAttachmentTransformRules::KeepRelativeTransform);
+	void Detach(const FDetachmentTransformRules& rules = FDetachmentTransformRules::KeepRelativeTransform);
 	
 	SceneComponent* GetParent() const { return m_parent; }
 	const std::vector<SceneComponent*>& GetChildren() const { return m_children; }

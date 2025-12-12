@@ -58,6 +58,7 @@ void Actor::SetRootComponent(SceneComponent* newRoot)
 		return;
 
 	SceneComponent* oldRoot = m_rootComponent;
+	m_rootComponent = newRoot;
 
 	if (oldRoot)
 	{
@@ -67,12 +68,7 @@ void Actor::SetRootComponent(SceneComponent* newRoot)
 			child->Detach(FDetachmentTransformRules::KeepWorldTransform);
 			child->AttachTo(newRoot, FAttachmentTransformRules::KeepWorldTransform);
 		}
-
-		oldRoot->Detach(FDetachmentTransformRules::KeepWorldTransform);
-		oldRoot->AttachTo(newRoot, FAttachmentTransformRules::KeepWorldTransform);
 	}
-
-	m_rootComponent = newRoot;
 
 	if (m_rootComponent->GetParent())
 		m_rootComponent->Detach(FDetachmentTransformRules::KeepWorldTransform);

@@ -2,7 +2,7 @@
 
 struct FAttachmentTransformRules
 {
-    bool bMaintainWorld = true;
+    bool bMaintainWorld = false;
 
     static const FAttachmentTransformRules KeepWorldTransform;
     static const FAttachmentTransformRules KeepRelativeTransform;
@@ -10,7 +10,7 @@ struct FAttachmentTransformRules
 
 struct FDetachmentTransformRules
 {
-    bool bMaintainWorld = true;
+    bool bMaintainWorld = false;
 
     static const FDetachmentTransformRules KeepWorldTransform;
     static const FDetachmentTransformRules KeepRelativeTransform;
