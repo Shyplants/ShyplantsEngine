@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Common/Types.h"
-#include <cmath>
 #include <algorithm>
 
 // -----------------------------------------------------------------------------
@@ -31,7 +30,7 @@ struct IVec2
     constexpr bool operator!=(const IVec2& rhs) const noexcept { return !(*this == rhs); }
 
     // --- Utility ---------------------------------------------------------------
-    constexpr int32 ManhattanLength() const noexcept { return std::abs(x) + std::abs(y); }
+    constexpr int32 ManhattanLength() const noexcept { return iabs(x) + iabs(y); }
 
     static constexpr IVec2 Zero() noexcept { return { 0, 0 }; }
     static constexpr IVec2 One() noexcept { return { 1, 1 }; }
@@ -70,7 +69,7 @@ struct IVec3
     constexpr bool operator!=(const IVec3& rhs) const noexcept { return !(*this == rhs); }
 
     // --- Utility ---------------------------------------------------------------
-    constexpr int32 ManhattanLength() const noexcept { return std::abs(x) + std::abs(y) + std::abs(z); }
+    constexpr int32 ManhattanLength() const noexcept { return iabs(x) + iabs(y) + iabs(z); }
 
     static constexpr IVec3 Zero() noexcept { return { 0, 0, 0 }; }
     static constexpr IVec3 One() noexcept { return { 1, 1, 1 }; }
@@ -96,4 +95,8 @@ constexpr IVec3 Clamp(const IVec3& v, const IVec3& min, const IVec3& max)
         std::clamp(v.y, min.y, max.y),
         std::clamp(v.z, min.z, max.z)
     };
+}
+
+constexpr int32 iabs(int32 v) noexcept {
+    return v < 0 ? -v : v;
 }
