@@ -26,8 +26,8 @@ private:
 	static ResourceManager* Instance;
 
 public:
-	template<class T>
-	std::shared_ptr<T> Load(const std::wstring path)
+	template<class T, typename... Args>
+	std::shared_ptr<T> Load(const std::wstring& path, Args&&... args)
 	{
 		std::lock_guard<std::mutex> lock(m_mutex);
 
@@ -49,9 +49,9 @@ public:
 			resource = std::make_shared<T>();
 		}
 		
-
-		if (!resource->Load(path))
+		if (!resource->Load(path, std::forward<Args>(args)...))
 			return nullptr;
+		
 
 		resource->SetPath(path);
 		m_resources[path] = resource;

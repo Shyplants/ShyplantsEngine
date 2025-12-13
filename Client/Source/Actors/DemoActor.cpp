@@ -18,7 +18,7 @@ DemoActor::~DemoActor()
 
 void DemoActor::OnSpawned()
 {
-    auto tex = ResourceManager::Get().Load<Texture>(L"../Resources/test.png").get();
+    auto tex = ResourceManager::Get().Load<Texture>(L"../Resources/test.png", TextureColorSpace::SRGB).get();
 
     m_sprite = AddComponent<SpriteRendererComponent>();
     m_sprite->SetTexture(tex);

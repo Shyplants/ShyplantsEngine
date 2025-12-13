@@ -1,7 +1,9 @@
 #pragma once
 
 #include "Engine/Resource/Resource.h"
+#include "Engine/Resource/Texture/TextureColorSpace.h"
 #include "Common/Types.h"
+
 #include <string>
 #include <wrl/client.h>
 #include <d3d11.h>
@@ -19,6 +21,7 @@ public:
 
 public:
 	bool Load(const std::wstring& path) override;
+	bool Load(const std::wstring& path, TextureColorSpace colorSpace);
 	void Unload() override;
 
 public:

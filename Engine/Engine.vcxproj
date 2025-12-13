@@ -109,6 +109,7 @@
     <ClInclude Include="Include\Engine\Resource\ResourceManager.h" />
     <ClInclude Include="Include\Engine\Resource\Texture\Texture.h" />
     <ClInclude Include="Include\Engine\Resource\ResourceType.h" />
+    <ClInclude Include="Include\Engine\Resource\Texture\TextureColorSpace.h" />
     <ClInclude Include="Include\Engine\System\TimeManager.h" />
     <ClInclude Include="Source\Engine\Core\EnginePCH.h" />
     <ClInclude Include="Include\Engine\Graphics\Command\DrawCommand.h" />

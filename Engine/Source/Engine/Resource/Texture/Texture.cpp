@@ -16,11 +16,22 @@ Texture::~Texture()
 
 bool Texture::Load(const std::wstring& path)
 {
+	// Texture는 기본적으로 SRGB로 로드
+	return Load(path, TextureColorSpace::SRGB);
+}
+
+bool Texture::Load(const std::wstring& path, TextureColorSpace colorSpace)
+{
 	Unload();
 
 	Microsoft::WRL::ComPtr<ID3D11Resource> resource;
 
-	if (!TextureLoader::LoadFromFile(m_renderer->INL_GetDevice(), m_renderer->INL_GetContext(), path, resource, m_srv))
+	if (!TextureLoader::LoadFromFile(m_renderer->INL_GetDevice(), 
+		m_renderer->INL_GetContext(), 
+		path,
+		colorSpace,
+		resource, 
+		m_srv))
 	{
 		return false;
 	}
