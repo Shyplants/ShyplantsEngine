@@ -101,6 +101,7 @@
     <ClInclude Include="Include\Engine\Core\World\UIActor.h" />
     <ClInclude Include="Include\Engine\Core\World\World.h" />
     <ClInclude Include="Include\Engine\Core\Component\SpriteRendererComponent.h" />
+    <ClInclude Include="Include\Engine\EngineMinimal.h" />
     <ClInclude Include="Include\Engine\Graphics\Animation\SpriteAnimationClip.h" />
     <ClInclude Include="Include\Engine\Graphics\ConstantBuffer\SpriteConstantBuffer.h" />
     <ClInclude Include="Include\Engine\Graphics\D3D11\D3D11Renderer.h" />
