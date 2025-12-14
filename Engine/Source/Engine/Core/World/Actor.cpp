@@ -11,9 +11,7 @@ Actor::Actor()
 	SetRootComponent(m_rootComponent);
 }
 
-Actor::~Actor()
-{
-}
+Actor::~Actor() = default;
 
 void Actor::Tick(float deltaTime)
 {

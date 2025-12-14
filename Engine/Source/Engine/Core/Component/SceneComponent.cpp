@@ -9,17 +9,7 @@ SceneComponent::SceneComponent(Actor* owner)
 {
 }
 
-SceneComponent::~SceneComponent()
-{
-	Detach();
-
-	for (SceneComponent* child : m_children)
-	{
-		child->Detach(FDetachmentTransformRules::KeepWorldTransform);
-	}
-
-	m_children.clear();
-}
+SceneComponent::~SceneComponent() = default;
 
 void SceneComponent::SetLocalPosition(const DirectX::XMFLOAT3& pos)
 {
