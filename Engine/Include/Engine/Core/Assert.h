@@ -14,18 +14,18 @@
 // Fatal error
 #if defined(_DEBUG)
 
-	#define SP_FATAL(Message)						\
-	do {											\
-		SP_LOG(LogCore, Fatal, Message);			\
-		SP_INTERNAL_DEBUGBREAK();					\
+	#define SP_FATAL(Message)								\
+	do {													\
+		SP_LOG(LogCore, ELogLevel::Fatal, Message);			\
+		SP_INTERNAL_DEBUGBREAK();							\
 	} while(0)
 
 #else // Release
 
-	#define SP_FATAL(Message)						\
-	do {											\
-		SP_LOG(LogCore, Fatal, Message);			\
-		std::terminate();							\
+	#define SP_FATAL(Message)								\
+	do {													\
+		SP_LOG(LogCore, ELogLevel::Fatal, Message);			\
+		std::terminate();									\
 	} while(0)
 
 #endif
@@ -34,22 +34,22 @@
 // Assert (Debug only)
 #if defined(_DEBUG)
 
-	#define SP_ASSERT(Expr)											\
-	do {															\
-		if (!(Expr))												\
-		{															\
-			SP_LOG(LogCore, Fatal, "Assertion failed: " #Expr);		\
-			SP_INTERNAL_DEBUGBREAK();								\
-		}															\
+	#define SP_ASSERT(Expr)														\
+	do {																		\
+		if (!(Expr))															\
+		{																		\
+			SP_LOG(LogCore, ELogLevel::Fatal, "Assertion failed: " #Expr);		\
+			SP_INTERNAL_DEBUGBREAK();											\
+		}																		\
 	} while(0)
 	
-	#define SP_ASSERT_MSG(Expr, Message)							\
-	do {															\
-		if (!(Expr))												\
-		{															\
-			SP_LOG(LogCore, Fatal, Message);						\
-			SP_INTERNAL_DEBUGBREAK();								\
-		}															\
+	#define SP_ASSERT_MSG(Expr, Message)										\
+	do {																		\
+		if (!(Expr))															\
+		{																		\
+			SP_LOG(LogCore, ELogLevel::Fatal, Message);							\
+			SP_INTERNAL_DEBUGBREAK();											\
+		}																		\
 	} while(0)
 
 #else // Release
@@ -63,23 +63,23 @@
 // Ensure (Logs error but does not break in Release)
 #if defined(_DEBUG)
 
-	#define SP_ENSURE(Expr)											\
-	do {															\
-		if (!(Expr))												\
-		{															\
-			SP_LOG(LogCore, Error, "Ensure failed: " #Expr);		\
-			SP_INTERNAL_DEBUGBREAK();								\
-		}															\
+	#define SP_ENSURE(Expr)													\
+	do {																	\
+		if (!(Expr))														\
+		{																	\
+			SP_LOG(LogCore, ELogLevel::Error, "Ensure failed: " #Expr);		\
+			SP_INTERNAL_DEBUGBREAK();										\
+		}																	\
 	} while(0)
 
 #else // Release
 
-	#define SP_ENSURE(Expr)											\
-	do {															\
-		if (!(Expr))												\
-		{															\
-			SP_LOG(LogCore, Error, "Ensure failed: " #Expr);		\
-		}															\
+	#define SP_ENSURE(Expr)													\
+	do {																	\
+		if (!(Expr))														\
+		{																	\
+			SP_LOG(LogCore, ELogLevel::Error, "Ensure failed: " #Expr);		\
+		}																	\
 	} while(0)
 
 #endif
