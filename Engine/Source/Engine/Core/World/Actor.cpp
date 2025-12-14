@@ -13,8 +13,6 @@ Actor::Actor()
 
 Actor::~Actor()
 {
-	if (m_rootComponent)
-		m_rootComponent->Detach(FDetachmentTransformRules::KeepWorldTransform);
 }
 
 void Actor::Tick(float deltaTime)
