@@ -5,6 +5,7 @@
 #include "Engine/Resource/ResourceManager.h"
 #include "Engine/System/InputManager.h"
 #include "Engine/System/TimeManager.h"
+#include "Engine/Core/Log/LogSystem.h"
 
 #include "Engine/Core/World/World.h"
 
@@ -40,14 +41,21 @@ Engine::~Engine()
 {
 	m_world.reset();
 
-	m_renderer.reset();
 	ResourceManager::Destroy();
 	InputManager::Destroy();
+	TimeManager::Destroy();
+
+	m_renderer.reset();
+
+	LogSystem::Shutdown();
 }
 
 bool Engine::Init(HWND hWnd)
 {
 	m_hWnd = hWnd;
+
+	// LogSystem 持失
+	LogSystem::Init(L"Saved/Logs/Shyplants.log");
 
 	// Renderer 持失
 	m_renderer = std::make_unique<D3D11Renderer>();

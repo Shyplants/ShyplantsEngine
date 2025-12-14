@@ -33,6 +33,8 @@ void DemoLevel::OnLoad()
 
 void DemoLevel::OnBeginPlay()
 {
+	SP_LOG(LogGame, ELogLevel::Info, "DemoLevel::OnBeginPlay called");
+
 	World* world = GetWorld();
 
 

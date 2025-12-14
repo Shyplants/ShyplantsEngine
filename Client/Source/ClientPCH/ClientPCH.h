@@ -22,6 +22,10 @@
 
 #include "DirectXMath.h"
 
+// Engine
+#include "Engine/Core/Log/LogMacros.h"
+#include "Engine/Core/Log/LogCategories.h"
+
 // Engine includes
 //#include "Engine/Engine.h"
 //#include "Engine/GameObject/GameObject.h"
