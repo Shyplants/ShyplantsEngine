@@ -13,4 +13,4 @@ do {										\
 		__FILE__,							\
 		__LINE__,							\
 		oss.str());							\
-} while(0)									\
+} while(0)
