@@ -1,106 +1,146 @@
 #pragma once
 
-#include "Engine/Core/Component/FAttachmentTransformRules.h"
 #include <vector>
 #include <memory>
+#include <type_traits>
+#include <algorithm>
 
+#include "Engine/Core/Component/FAttachmentTransformRules.h"
+
+// Forward declarations
 class ActorComponent;
 class SceneComponent;
 class RendererComponent;
 class World;
+class Level;
 
+/*
+    Actor
+    -------------------------------------------------
+    - World에 존재하는 게임 오브젝트
+    - Component 소유
+    - RenderQueue에는 직접 접근하지 않음
+*/
 class Actor
 {
 public:
-	Actor();
-	virtual ~Actor();
+    Actor();
+    virtual ~Actor();
 
-	// 라이프 사이클
-	virtual void OnSpawned() {}
-	virtual void BeginPlay() {}
-	virtual void Tick(float deltaTime);
-	virtual void Destroy();
+    Actor(const Actor&) = delete;
+    Actor& operator=(const Actor&) = delete;
 
-	bool IsPendingDestroy() const { return m_pendingDestroy; }
-	virtual bool IsUIActor() const { return false; }
+public:
+    // =====================================================
+    // Lifecycle
+    // =====================================================
+    virtual void OnSpawned() {}
+    virtual void BeginPlay() {}
+    virtual void Tick(float deltaTime);
+    virtual void OnDestroyed() {}
 
-	
+    void Destroy();
+    bool IsPendingDestroy() const { return m_pendingDestroy; }
 
-	// 컴포넌트 시스템
-	template <typename T, typename... Args>
-	T* AddComponent(Args&&... args)
-	{
-		static_assert(std::is_base_of_v<ActorComponent, T>, "T must derive from ActorComponent");
+    virtual bool IsUIActor() const { return false; }
 
-		auto comp = std::make_unique<T>(this, std::forward<Args>(args)...);
-		T* rawPtr = comp.get();
+public:
+    // =====================================================
+    // Component System
+    // =====================================================
+    template <typename T, typename... Args>
+    T* AddComponent(Args&&... args)
+    {
+        static_assert(std::is_base_of_v<ActorComponent, T>,
+            "T must derive from ActorComponent");
 
-		comp->SetWorld(m_world);
+        auto comp = std::make_unique<T>(this, std::forward<Args>(args)...);
+        T* rawPtr = comp.get();
 
-		// SceneComponent 파생 컴포넌트
-		if constexpr (std::is_base_of_v<SceneComponent, T>)
-		{
-			SceneComponent* sceneComp = static_cast<SceneComponent*>(rawPtr);
+        comp->SetWorld(m_world);
 
-			if (m_rootComponent && sceneComp != m_rootComponent)
-			{
-				sceneComp->AttachTo(m_rootComponent, FAttachmentTransformRules::KeepRelativeTransform);
-			}
-		}
+        // SceneComponent attach
+        if constexpr (std::is_base_of_v<SceneComponent, T>)
+        {
+            if (m_rootComponent && rawPtr != m_rootComponent)
+            {
+                static_cast<SceneComponent*>(rawPtr)
+                    ->AttachTo(m_rootComponent,
+                        FAttachmentTransformRules::KeepRelativeTransform);
+            }
+        }
+        // RendererComponent attach
+        else if constexpr (std::is_base_of_v<RendererComponent, T>)
+        {
+            if (m_rootComponent)
+            {
+                static_cast<RendererComponent*>(rawPtr)
+                    ->SetAttachComponent(m_rootComponent);
+            }
+        }
 
-		// RendererComponent 파생 컴포넌트
-		else if constexpr (std::is_base_of_v<RendererComponent, T>)
-		{
-			RendererComponent* renderComp = static_cast<RendererComponent*>(rawPtr);
-			if(m_rootComponent)
-				renderComp->SetAttachComponent(m_rootComponent);
-		}
+        m_components.push_back(std::move(comp));
+        rawPtr->OnRegister();
 
-		m_components.push_back(std::move(comp));
-		rawPtr->OnRegister();
-		
-		return rawPtr;
-	}
+        return rawPtr;
+    }
 
-	template <typename T>
-	T* GetComponent() const
-	{
-		for (auto& comp : m_components)
-		{
-			if (auto casted = dynamic_cast<T*>(comp.get()))
-				return casted;
-		}
+    template <typename T>
+    T* GetComponent() const
+    {
+        for (auto& comp : m_components)
+        {
+            if (auto casted = dynamic_cast<T*>(comp.get()))
+                return casted;
+        }
+        return nullptr;
+    }
 
-		return nullptr;
-	}
+    const std::vector<std::unique_ptr<ActorComponent>>&
+        GetComponents() const { return m_components; }
 
-	// RootComponent
-	SceneComponent* GetRootComponent() const { return m_rootComponent; }
-	void SetRootComponent(SceneComponent* newRoot);
+public:
+    // =====================================================
+    // Root Component
+    // =====================================================
+    SceneComponent* GetRootComponent() const { return m_rootComponent; }
+    void SetRootComponent(SceneComponent* newRoot);
 
-	// Actor hierarchy
-	Actor* GetParentActor() const { return m_parentActor; }
-	const std::vector<Actor*>& GetChildActors() const { return m_childActors; }
+public:
+    // =====================================================
+    // Actor Hierarchy
+    // =====================================================
+    Actor* GetParentActor() const { return m_parentActor; }
+    const std::vector<Actor*>& GetChildActors() const { return m_childActors; }
 
-	void AttachToActor(Actor* parent, const FAttachmentTransformRules& rules = FAttachmentTransformRules::KeepWorldTransform);
-	void DetachFromParent(const FDetachmentTransformRules& rules = FDetachmentTransformRules::KeepWorldTransform);
+    void AttachToActor(
+        Actor* parent,
+        const FAttachmentTransformRules& rules =
+        FAttachmentTransformRules::KeepWorldTransform);
 
-	// World
-	World* GetWorld() const { return m_world; }
-	void SetWorld(World* world);
+    void DetachFromParent(
+        const FDetachmentTransformRules& rules =
+        FDetachmentTransformRules::KeepWorldTransform);
 
-	// Component
-	const std::vector<std::unique_ptr<ActorComponent>>& GetComponents() const { return m_components; }
-
-protected:
-	SceneComponent* m_rootComponent = nullptr;
+public:
+    // =====================================================
+    // World
+    // =====================================================
+    World* GetWorld() const { return m_world; }
 
 private:
-	std::vector<std::unique_ptr<ActorComponent>> m_components{};
-	std::vector<Actor*> m_childActors;
+    friend class World;
+    friend class Level;
+    void SetWorld(World* world);
 
-	Actor* m_parentActor{ nullptr };
-	World* m_world{ nullptr };
-	
-	bool m_pendingDestroy{ false };	
+protected:
+    SceneComponent* m_rootComponent{ nullptr };
+
+    std::vector<std::unique_ptr<ActorComponent>> m_components;
+    std::vector<Actor*> m_childActors;
+
+    Actor* m_parentActor{ nullptr };
+    World* m_world{ nullptr };
+
+    bool m_pendingDestroy{ false };
 };

@@ -1,77 +1,129 @@
 #pragma once
 
-#include <string>
 #include <unordered_map>
 #include <memory>
 #include <mutex>
+#include <string>
+#include <type_traits>
 
 #include "Engine/Resource/Resource.h"
-#include "Engine/Resource/Texture/Texture.h"
-
-#include "Engine/Graphics/D3D11/D3D11Renderer.h"
-
-class D3D11Renderer;
+#include "Engine/Resource/ResourceLoadContext.h"
 
 class ResourceManager
 {
 public:
+    static void Create();
+    static void Destroy();
+    static ResourceManager& Get();
+
+private:
+    ResourceManager() = default;
+    ~ResourceManager();
+
+    ResourceManager(const ResourceManager&) = delete;
+    ResourceManager& operator=(const ResourceManager&) = delete;
+
 public:
-	static void Create();
-	static void Destroy();
-	static ResourceManager& Get();
-
-	bool Init(D3D11Renderer* renderer);
-
-private:
-	static ResourceManager* Instance;
+    // =====================================================
+    // Context
+    // =====================================================
+    void SetLoadContext(const ResourceLoadContext& context);
 
 public:
-	template<class T, typename... Args>
-	std::shared_ptr<T> Load(const std::wstring& path, Args&&... args)
-	{
-		std::lock_guard<std::mutex> lock(m_mutex);
+    // =====================================================
+    // Get (Reuse Only)
+    // =====================================================
+    template<typename T>
+    std::shared_ptr<T> Get(const std::wstring& path)
+    {
+        static_assert(std::is_base_of_v<Resource, T>,
+            "T must derive from Resource");
 
-		auto it = m_resources.find(path);
-		if (it != m_resources.end())
-		{
-			// 이미 로드된 리소스 반환
-			return std::dynamic_pointer_cast<T>(it->second);
-		}
+        std::lock_guard<std::mutex> lock(m_mutex);
 
-		// 리소스 생성
-		std::shared_ptr<T> resource;
-		if constexpr (std::is_same_v<T, Texture>)
-		{
-			resource = std::make_shared<T>(m_renderer);
-		}
-		else
-		{
-			resource = std::make_shared<T>();
-		}
-		
-		if (!resource->Load(path, std::forward<Args>(args)...))
-			return nullptr;
-		
+        auto key = NormalizePath(path);
+        auto it = m_resources.find(key);
 
-		resource->SetPath(path);
-		m_resources[path] = resource;
+        if (it == m_resources.end())
+            return nullptr;
 
-		return resource;
-	}
+        return std::static_pointer_cast<T>(it->second);
+    }
 
-	void Unload(const std::wstring& path);
-	void UnloadAll();
+public:
+    // =====================================================
+    // Load (Simple)
+    // =====================================================
+    template<typename T>
+    std::shared_ptr<T> Load(const std::wstring& path)
+    {
+        static_assert(std::is_base_of_v<Resource, T>,
+            "T must derive from Resource");
+
+        std::lock_guard<std::mutex> lock(m_mutex);
+
+        auto key = NormalizePath(path);
+
+        auto it = m_resources.find(key);
+        if (it != m_resources.end())
+            return std::static_pointer_cast<T>(it->second);
+
+        auto resource = std::make_shared<T>();
+        resource->Initialize(key);
+
+        if (!resource->Load(m_context))
+            return nullptr;
+
+        m_resources.emplace(key, resource);
+        return resource;
+    }
+
+    // =====================================================
+    // Load with Setup (Builder support)
+    // - 최초 1회만 허용
+    // =====================================================
+    template<typename T, typename SetupFn>
+    std::shared_ptr<T> LoadWithSetup(
+        const std::wstring& path,
+        SetupFn&& setupFn)
+    {
+        static_assert(std::is_base_of_v<Resource, T>,
+            "T must derive from Resource");
+
+        std::lock_guard<std::mutex> lock(m_mutex);
+
+        auto key = NormalizePath(path);
+
+        auto it = m_resources.find(key);
+        SP_ASSERT(it == m_resources.end() &&
+            "Resource already loaded with different setup");
+
+        auto resource = std::make_shared<T>();
+        resource->Initialize(key);
+
+        setupFn(*resource);
+
+        if (!resource->Load(m_context))
+            return nullptr;
+
+        m_resources.emplace(key, resource);
+        return resource;
+    }
+
+public:
+    // =====================================================
+    // Unload
+    // =====================================================
+    void Unload(const std::wstring& path);
+    void UnloadAll();
 
 private:
-	ResourceManager() = default;
-	~ResourceManager() = default;
-	ResourceManager(const ResourceManager&) = delete;
-	ResourceManager& operator=(const ResourceManager&) = delete;
+    std::wstring NormalizePath(const std::wstring& path) const;
 
 private:
-	D3D11Renderer* m_renderer{ nullptr };
+    static ResourceManager* s_instance;
 
-	std::unordered_map<std::wstring, std::shared_ptr<Resource>> m_resources;
-	std::mutex m_mutex;
-
+    ResourceLoadContext m_context;
+    std::unordered_map<std::wstring, std::shared_ptr<Resource>> m_resources;
+    std::mutex m_mutex;
 };

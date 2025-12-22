@@ -1,51 +1,72 @@
 #pragma once
 
-#include "Common/Types.h"
 #include <memory>
 
-class D3D11Renderer;
+#include "Common/Types.h"
+#include "Engine/Core/Time/TimeSystem.h"
+
+// Forward declarations
+class Window;
+class GraphicsSubsystem;
 class World;
 
+/*
+    Engine
+    -------------------------------------------------
+    - ShyplantsEngine의 최상위 루트 객체
+    - Subsystem / ResourceManager 생성 및 수명 관리
+    - Main loop (Tick / Render) 담당
+*/
 class Engine
 {
 public:
-	static void Create();
-	static void Destroy();
+    Engine();
+    ~Engine();
 
-	static Engine& Get();
-
-private:
-	Engine();
-	~Engine();
-	Engine(const Engine&) = delete;
-	Engine& operator=(const Engine&) = delete;
+    Engine(const Engine&) = delete;
+    Engine& operator=(const Engine&) = delete;
 
 public:
-	bool Init(HWND hWnd);
-	void Run();
-	bool TickOnce(uint64 curTick);
-	void Render();
+    // =========================================================
+    // Lifecycle
+    // =========================================================
+    bool Initialize(Window& window);
+    void Shutdown();
 
 public:
-	D3D11Renderer* GetRenderer() const { return m_renderer.get(); }
-	World* GetWorld() const { return m_world.get(); }
+    // =========================================================
+    // Main Loop
+    // =========================================================
+    void Tick();
+
+public:
+    // =========================================================
+    // Resize
+    // =========================================================
+    void Resize(uint32 width, uint32 height);
+
+public:
+    // =========================================================
+    // Accessors
+    // =========================================================
+    GraphicsSubsystem& GetGraphics();
+    World& GetWorld();
 
 private:
-	static Engine* Instance;
+    // =========================================================
+    // Subsystems
+    // =========================================================
+    std::unique_ptr<GraphicsSubsystem> m_graphics;
 
 private:
-	HWND m_hWnd{ nullptr };
-
-	uint32 m_fps{ 0 };
-
-	/*uint64 m_prevFrameCheckTick{ 0 };
-	uint64 m_prevUpdateTick{ 0 };
-	uint32 m_frameCount{ 0 };
-	uint32 m_FPS{ 0 };*/
+    // =========================================================
+    // Game world
+    // =========================================================
+    std::unique_ptr<World> m_world;
 
 private:
-	std::unique_ptr<D3D11Renderer> m_renderer{ nullptr };
+    TimeSystem m_time;
 
-	std::unique_ptr<World> m_world{ nullptr };
-
+private:
+    bool m_initialized{ false };
 };

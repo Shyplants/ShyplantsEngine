@@ -2,30 +2,51 @@
 
 #include "Common/Types.h"
 
-class World;
-
+/*
+    GameState
+    -------------------------------------------------
+    - Gameplay 상태 데이터 컨테이너
+    - GameMode가 제어하는 대상
+    - World / Level / Render와 직접 결합하지 않음
+*/
 class GameState
 {
 public:
-	explicit GameState(World* world);
-	virtual ~GameState();
+    explicit GameState(class World* world);
+    virtual ~GameState();
 
-	virtual void OnBeginPlay() {}
-	virtual void Tick(float deltaTime);
+    GameState(const GameState&) = delete;
+    GameState& operator=(const GameState&) = delete;
 
 public:
-	void SetScore(int32 score) { m_score = score; }
-	int32 GetScore() const { return m_score; }
+    // =====================================================
+    // Lifecycle
+    // =====================================================
 
-	void AddScore(int32 delta) { m_score += delta; }
+    // Called once when gameplay session begins
+    virtual void OnBeginPlay();
+
+    // Called every frame during gameplay session
+    virtual void Tick(float deltaTime);
+
+    // Called once when gameplay session ends
+    virtual void OnEndPlay();
+
+public:
+    // =====================================================
+    // Accessors
+    // =====================================================
+    class World* GetWorld() const { return m_world; }
 
 protected:
-	World* GetWorld() const { return m_world; }
+    // =====================================================
+    // Internal helpers (for derived states)
+    // =====================================================
+    bool HasBegunPlay() const { return m_hasBegunPlay; }
+
+protected:
+    class World* m_world{ nullptr };
 
 private:
-	World* m_world{ nullptr };
-
-	int32 m_score{ 0 };
-	float m_elapsedTime{ 0.0f };
-	bool m_isGameOver{ false };
+    bool m_hasBegunPlay{ false };
 };

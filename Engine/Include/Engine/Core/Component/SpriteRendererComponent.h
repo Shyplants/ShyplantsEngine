@@ -1,54 +1,76 @@
 #pragma once
 
 #include "Engine/Core/Component/RendererComponent.h"
-#include "DirectXMath.h"
-#include "Engine/Graphics/Render/GameLayer.h"
+
+#include <DirectXMath.h>
+#include <memory>
+#include <unordered_map>
+
+#include "Common/Math/Rect.h"
 #include "Engine/Graphics/Render/SpritePivot.h"
 
-class Texture;
-class SpriteMesh;
-class GraphicsPSO;
-class D3D11Renderer;
+// Forward declarations
+class RenderQueue;
+class SceneComponent;
+class Material;
+class MaterialInstance;
+class Mesh;
+class TextureResource;
+class ConstantBuffer;
 
-class SpriteRendererComponent : public RendererComponent
+/*
+    SpriteRendererComponent
+    -------------------------------------------------
+    - Sprite 상태의 Source of Truth
+    - Material은 Pipeline 정책 제공자
+    - SubmitWorld는 DrawCommand 생성만 수행
+*/
+class SpriteRendererComponent final : public RendererComponent
 {
 public:
-	SpriteRendererComponent(Actor* owner);
-	~SpriteRendererComponent() override;
-
-	void OnRegister() override;
-	void RenderWorld(D3D11Renderer& renderer, const DirectX::XMMATRIX& viewProj) override;
+    explicit SpriteRendererComponent(Actor* owner);
+    ~SpriteRendererComponent() override;
 
 public:
+    void OnRegister() override;
 
-	// Sprite 설정
-	void SetTexture(Texture* tex);
+public:
+    void SubmitWorld(
+        RenderQueue& queue,
+        const DirectX::XMMATRIX& viewProj) override;
 
-	void SetRect(const RECT& rect) { m_rect = rect; }
-	void SetRectFullTexture();
+public:
+    void SetMaterial(Material* material);
+    void SetMesh(Mesh* mesh);
 
-	void SetAlpha(float alpha) { m_alpha = alpha; }
-	void SetDepth(float depth) { m_depth = depth; }
-	void SetPivot(SpritePivot pivotMode) { m_pivotMode = pivotMode; }
+    void SetTexture(uint32 slot, TextureResource* texture);
 
-	void SetScale(float sx, float sy) { m_scale = DirectX::XMFLOAT2(sx, sy); }
-	
-	void SetGameLayer(GameLayer layer) { m_gameLayer = layer; }
-	void SetOrderInLayer(uint32 order) { m_orderInLayer = order; }
+    void SetColor(const DirectX::XMFLOAT4& color);
+    void SetAlpha(float alpha);
+    void SetScale(const DirectX::XMFLOAT2& scale);
+    void SetSourceRect(const Rect& rect);
+    void SetRenderOffset(const DirectX::XMFLOAT2& offset);
+    void SetPivot(SpritePivot pivot) { m_pivot = pivot; }
 
 private:
-	Texture* m_texture{ nullptr };
-	SpriteMesh* m_mesh{ nullptr };
-	GraphicsPSO* m_pso{ nullptr };
+    void EnsureMaterialInstance();
+    void EnsureConstantBuffer();
+    void ApplyCachedResources();
 
-	DirectX::XMFLOAT2 m_scale{ 1.0f, 1.0f };
-	DirectX::XMFLOAT4 m_color{ 1.0f,1.0f,1.0f,1.0f };
-	RECT m_rect{ 0, 0, 0, 0 };
+private:
+    Material* m_material{ nullptr };
+    Mesh* m_mesh{ nullptr };
 
-	SpritePivot m_pivotMode{ SpritePivot::Center };
-	float m_depth{ 0.0f };
-	float m_alpha{ 1.0f };
+    std::unique_ptr<MaterialInstance> m_materialInstance;
+    std::unique_ptr<ConstantBuffer>   m_spriteCB;
 
-	GameLayer m_gameLayer{ 0 };
-	uint32 m_orderInLayer{ 0 };
+    std::unordered_map<uint32, TextureResource*> m_textures;
+    TextureResource* m_activeTexture{ nullptr };
+
+    DirectX::XMFLOAT2 m_scale{ 1.f, 1.f };
+    DirectX::XMFLOAT4 m_color{ 1.f, 1.f, 1.f, 1.f };
+    Rect              m_sourceRect{};
+    DirectX::XMFLOAT2 m_renderOffset{ 0.f, 0.f };
+
+    SpritePivot m_pivot{ SpritePivot::Center };
 };

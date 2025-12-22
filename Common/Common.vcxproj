@@ -145,6 +145,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Include\Common\Math\Rect.h" />
     <ClInclude Include="Include\Common\Types.h" />
     <ClInclude Include="Include\Common\Math\MathTypes.h" />
   </ItemGroup>

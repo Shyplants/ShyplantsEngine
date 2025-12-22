@@ -1,144 +1,157 @@
-#include "Engine/Core/EnginePCH.h"
+#include "Engine/PCH/EnginePCH.h"
+
 #include "Engine/Core/Component/CameraComponent2D.h"
-#include "Engine/Graphics/D3D11/D3D11Renderer.h"
-#include "Engine/Core/Engine.h"
 #include "Engine/Core/World/Actor.h"
 
 using namespace DirectX;
 
+// =========================================================
+// Constructor
+// =========================================================
+
 CameraComponent2D::CameraComponent2D(Actor* owner)
-	: SceneComponent(owner)
+    : SceneComponent(owner)
 {
+    // ViewSize는 반드시 외부에서 SetViewSize 호출로 주입되어야 함
 }
 
-CameraComponent2D::~CameraComponent2D()
+// =========================================================
+// View Size
+// =========================================================
+
+void CameraComponent2D::SetViewSize(float width, float height)
 {
+    SP_ASSERT(width > 0.0f);
+    SP_ASSERT(height > 0.0f);
+
+    if (m_viewSize.x == width && m_viewSize.y == height)
+        return;
+
+    m_viewSize = { width, height };
+
+    m_projDirty = true;
+    m_viewProjDirty = true;
 }
+
+// =========================================================
+// Zoom
+// =========================================================
 
 void CameraComponent2D::SetZoom(float zoom)
 {
-	m_zoom = std::max(0.01f, zoom);
-	MarkViewDirty();
-	MarkProjDirty();
+    SP_ASSERT(zoom > 0.0f);
+
+    if (fabsf(m_zoom - zoom) < 0.0001f)
+        return;
+
+    m_zoom = zoom;
+
+    m_projDirty = true;
+    m_viewProjDirty = true;
 }
 
-void CameraComponent2D::SetNearZ(float nearZ)
+// =========================================================
+// Near / Far
+// =========================================================
+
+void CameraComponent2D::SetNearFar(float nearZ, float farZ)
 {
-	m_nearZ = nearZ;
-	MarkProjDirty();
+    SP_ASSERT(nearZ < farZ);
+
+    if (m_nearZ == nearZ && m_farZ == farZ)
+        return;
+
+    m_nearZ = nearZ;
+    m_farZ = farZ;
+
+    m_projDirty = true;
+    m_viewProjDirty = true;
 }
 
-void CameraComponent2D::SetFarZ(float farZ)
+// =========================================================
+// Matrices
+// =========================================================
+
+const XMMATRIX& CameraComponent2D::GetViewMatrix() const
 {
-	m_farZ = farZ;
-	MarkProjDirty();
+    if (m_viewDirty)
+        RecalculateView();
+
+    return m_view;
 }
 
-XMMATRIX CameraComponent2D::GetViewMatrix() const
+const XMMATRIX& CameraComponent2D::GetProjectionMatrix() const
 {
-	UpdateViewMatrix();
-	return m_viewMatrix;
+    SP_ASSERT(IsViewSizeValid());
+
+    if (m_projDirty)
+        RecalculateProjection();
+
+    return m_projection;
 }
 
-XMMATRIX CameraComponent2D::GetProjMatrix() const
+const XMMATRIX& CameraComponent2D::GetViewProjectionMatrix() const
 {
-	auto renderer = Engine::Get().GetRenderer();
-	auto w = renderer->INL_GetScreenWidth();
-	auto h = renderer->INL_GetScreenHeight();
+    SP_ASSERT(IsViewSizeValid());
 
-	UpdateProjMatrix(w, h);
-	return m_projMatrix;
+    if (m_viewProjDirty)
+        RecalculateViewProjection();
+
+    return m_viewProjection;
 }
 
-XMMATRIX CameraComponent2D::GetViewProjMatrix() const
-{
-	auto renderer = Engine::Get().GetRenderer();
-	auto w = renderer->INL_GetScreenWidth();
-	auto h = renderer->INL_GetScreenHeight();
+// =========================================================
+// SceneComponent
+// =========================================================
 
-	UpdateViewProjMatrix(w, h);
-	return m_viewProjMatrix;
+void CameraComponent2D::OnTransformDirty()
+{
+    m_viewDirty = true;
+    m_viewProjDirty = true;
 }
 
-XMFLOAT2 CameraComponent2D::ScreenToWorld(const DirectX::XMFLOAT2& screenPos, uint32 screenW, uint32 screenH) const
+// =========================================================
+// Internal calculations
+// =========================================================
+
+void CameraComponent2D::RecalculateView() const
 {
-	XMMATRIX invVP = XMMatrixInverse(nullptr, GetViewProjMatrix());
+    const XMFLOAT3 pos = GetWorldPositionFast();
 
-	float x = (screenPos.x / screenW) * 2.0f - 1.0f;
-	float y = 1.0f - (screenPos.y / screenH) * 2.0f;
+    // 2D Camera: rotation 무시
+    m_view = XMMatrixTranslation(
+        -pos.x,
+        -pos.y,
+        0.0f);
 
-	XMVECTOR posNDC = XMVectorSet(x, y, 0, 1);
-	XMVECTOR worldV = XMVector3TransformCoord(posNDC, invVP);
-
-	XMFLOAT2 out;
-	XMStoreFloat2(&out, worldV);
-
-	return out;
+    m_viewDirty = false;
 }
 
-XMFLOAT2 CameraComponent2D::WorldToScreen(const DirectX::XMFLOAT2& worldPos, uint32 screenW, uint32 screenH) const
+void CameraComponent2D::RecalculateProjection() const
 {
-	XMVECTOR worldV = XMVectorSet(worldPos.x, worldPos.y, 0, 1);
-	XMVECTOR clip = XMVector3TransformCoord(worldV, GetViewProjMatrix());
+    SP_ASSERT(IsViewSizeValid());
+    SP_ASSERT(m_zoom > 0.0f);
 
-	XMFLOAT2 out;
-	out.x = (XMVectorGetX(clip) * 0.5f + 0.5f) * screenW;
-	out.y = (1.0f - (XMVectorGetY(clip) * 0.5f + 0.5f)) * screenH;
+    const float halfW = (m_viewSize.x * 0.5f) / m_zoom;
+    const float halfH = (m_viewSize.y * 0.5f) / m_zoom;
 
-	return out;
+    m_projection = XMMatrixOrthographicOffCenterLH(
+        -halfW, halfW,
+        -halfH, halfH,
+        m_nearZ,
+        m_farZ);
+
+    m_projDirty = false;
 }
 
-void CameraComponent2D::UpdateViewMatrix() const
+void CameraComponent2D::RecalculateViewProjection() const
 {
-	if (!m_viewDirty)
-		return;
+    if (m_viewDirty)
+        RecalculateView();
 
-	XMMATRIX world = GetWorldMatrix();
+    if (m_projDirty)
+        RecalculateProjection();
 
-	XMFLOAT3 pos;
-	XMStoreFloat3(&pos, world.r[3]);
-
-	m_viewMatrix = XMMatrixTranslation(-pos.x, -pos.y, -pos.z);
-	m_viewDirty = false;
-}
-
-void CameraComponent2D::UpdateProjMatrix(uint32 viewportW, uint32 viewportH) const
-{
-	if (!m_projDirty)
-		return;
-
-	float halfW = (viewportW * 0.5f) / m_zoom;
-	float halfH = (viewportH * 0.5f) / m_zoom;
-
-	m_projMatrix = XMMatrixOrthographicOffCenterLH(
-		-halfW, +halfW,
-		-halfH, +halfH,
-		m_nearZ, m_farZ
-	);
-
-	m_projDirty = false;
-}
-
-void CameraComponent2D::UpdateViewProjMatrix(uint32 viewportW, uint32 viewportH) const
-{
-	if (!m_viewProjDirty)
-		return;
-
-	UpdateViewMatrix();
-	UpdateProjMatrix(viewportW, viewportH);
-
-	m_viewProjMatrix = m_viewMatrix * m_projMatrix;
-	m_viewProjDirty = false;
-}
-
-void CameraComponent2D::MarkViewDirty()
-{
-	m_viewDirty = true;
-	m_viewProjDirty = true;
-}
-
-void CameraComponent2D::MarkProjDirty()
-{
-	m_projDirty = true;
-	m_viewProjDirty = true;
+    m_viewProjection = XMMatrixMultiply(m_view, m_projection);
+    m_viewProjDirty = false;
 }

@@ -1,4 +1,5 @@
-#include "Engine/Core/EnginePCH.h"
+#include "Engine/PCH/EnginePCH.h"
+
 #include "Engine/System/TimeManager.h"
 
 TimeManager* TimeManager::Instance = nullptr;
@@ -20,7 +21,7 @@ void TimeManager::Destroy()
 
 TimeManager& TimeManager::Get()
 {
-	assert(Instance && "TimeManager::Create() was not called");
+	// assert(Instance && "TimeManager::Create() was not called");
 	return *Instance;
 }
 

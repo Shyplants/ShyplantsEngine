@@ -1,143 +1,244 @@
-#include "Engine/Core/EnginePCH.h"
+#include "Engine/PCH/EnginePCH.h"
+
 #include "Engine/Core/Engine.h"
 
-#include "Engine/Graphics/D3D11/D3D11Renderer.h"
-#include "Engine/Resource/ResourceManager.h"
-#include "Engine/System/InputManager.h"
-#include "Engine/System/TimeManager.h"
+// -------------------------------------------------
+// Log
+// -------------------------------------------------
 #include "Engine/Core/Log/LogSystem.h"
 
+// -------------------------------------------------
+// Subsystems
+// -------------------------------------------------
+#include "Engine/Graphics/Subsystem/GraphicsSubsystem.h"
+
+// -------------------------------------------------
+// World
+// -------------------------------------------------
 #include "Engine/Core/World/World.h"
 
-Engine* Engine::Instance = nullptr;
+// -------------------------------------------------
+// Resource
+// -------------------------------------------------
+#include "Engine/Resource/ResourceManager.h"
+#include "Engine/Resource/ResourceLoadContext.h"
 
-void Engine::Create()
-{
-	if (!Instance)
-		Instance = new Engine();
-}
+// -------------------------------------------------
+// Platform
+// -------------------------------------------------
+#include "Engine/Platform/Platform.h"
+#include "Engine/Platform/Window/Window.h"
 
-void Engine::Destroy()
-{
-	if (Instance)
-	{
-		delete Instance;
-		Instance = nullptr;
-	}
-}
+// -------------------------------------------------
+// Input
+// -------------------------------------------------
+#include "Engine/Platform/Input/InputSystem.h"
 
-Engine& Engine::Get()
-{
-	assert(Instance && "Engine::Create() was not called");
-	return *Instance;
-}
+// =========================================================
+// Constructor / Destructor
+// =========================================================
 
-Engine::Engine()
-{
-
-}
+Engine::Engine() = default;
 
 Engine::~Engine()
 {
-	m_world.reset();
-
-	ResourceManager::Destroy();
-	InputManager::Destroy();
-	TimeManager::Destroy();
-
-	m_renderer.reset();
-
-	LogSystem::Shutdown();
+    Shutdown();
 }
 
-bool Engine::Init(HWND hWnd)
+// =========================================================
+// Initialize
+// =========================================================
+
+bool Engine::Initialize(Window& window)
 {
-	m_hWnd = hWnd;
+    SP_ASSERT(!m_initialized);
 
-	// LogSystem 积己
-	LogSystem::Init(L"Saved/Logs/Shyplants.log");
+    void* native = window.GetNativeHandle();
 
-	// Renderer 积己
-	m_renderer = std::make_unique<D3D11Renderer>();
-	if (!m_renderer->Init(hWnd))
-	{
-		__debugbreak();
-		return false;
-	}
+    // -------------------------------------------------
+    // LogSystem (Global, first)
+    // -------------------------------------------------
+    LogSystem::Init(L"Logs/ShyplantsEngine.log");
+    LogSystem::SetGlobalLevel(ELogLevel::Trace);
 
-	// ResourceManager 积己
-	ResourceManager::Create();
-	ResourceManager& resourceManager = ResourceManager::Get();
-	if (!resourceManager.Init(m_renderer.get()))
-	{
-		__debugbreak();
-		return false;
-	}
+    SP_LOG(LogCore, ELogLevel::Info,
+        "Engine initialization started");
 
-	// InputManager 积己
-	InputManager::Create();
+    // -------------------------------------------------
+    // InputSystem (Global)
+    // -------------------------------------------------
+    InputSystem::Initialize();
 
-	// TimeManager 积己
-	TimeManager::Create();
+    // -------------------------------------------------
+    // ResourceManager (Global)
+    // -------------------------------------------------
+    ResourceManager::Create();
 
-	// World 积己
-	m_world = std::make_unique<World>();
+    // -------------------------------------------------
+    // GraphicsSubsystem
+    // -------------------------------------------------
+    m_graphics = std::make_unique<GraphicsSubsystem>();
+    if (!m_graphics->Initialize(native, window.GetWidth(), window.GetHeight()))
+    {
+        SP_LOG(LogCore, ELogLevel::Fatal,
+            "Engine: GraphicsSubsystem initialization failed");
+        return false;
+    }
 
-	return true;
+    // -------------------------------------------------
+    // Setup ResourceLoadContext
+    // -------------------------------------------------
+    ResourceLoadContext context{};
+    context.renderDevice = &m_graphics->GetRenderDevice();
+    ResourceManager::Get().SetLoadContext(context);
+
+    // -------------------------------------------------
+    // World
+    // -------------------------------------------------
+    m_world = std::make_unique<World>(
+        &m_graphics->GetRenderSystem());
+
+    SP_ASSERT(m_world != nullptr);
+    m_world->OnViewportResized(window.GetWidth(), window.GetHeight());
+
+#if defined(_DEBUG)
+    SP_LOG(LogCore, ELogLevel::Trace,
+        "Engine initialized successfully");
+#endif
+
+    m_initialized = true;
+    return true;
 }
 
-void Engine::Run()
+// =========================================================
+// Shutdown
+// =========================================================
+
+void Engine::Shutdown()
 {
-	// begin
-	uint64 curTick = GetTickCount64();
+    if (!m_initialized)
+        return;
 
-	TickOnce(curTick);
-	Render();
+    SP_LOG(LogCore, ELogLevel::Info,
+        "Engine shutdown started");
 
-	if (m_fps != TimeManager::Get().GetFPS())
-	{
-		m_fps = TimeManager::Get().GetFPS();
+    // -------------------------------------------------
+    // World
+    // -------------------------------------------------
+    m_world.reset();
 
-		WCHAR wchText[64];
-		DWORD dwTextLen = swprintf_s(wchText, L"FPS: %u", m_fps);
+    // -------------------------------------------------
+    // Graphics
+    // -------------------------------------------------
+    if (m_graphics)
+    {
+        m_graphics->Shutdown();
+        m_graphics.reset();
+    }
 
-		SetWindowText(m_hWnd, wchText);
-	}
+    // -------------------------------------------------
+    // ResourceManager
+    // -------------------------------------------------
+    ResourceManager::Destroy();
+
+    // -------------------------------------------------
+    // InputSystem
+    // -------------------------------------------------
+    InputSystem::Shutdown();
+
+#if defined(_DEBUG)
+    SP_LOG(LogCore, ELogLevel::Trace,
+        "Engine shutdown completed");
+#endif
+
+    // -------------------------------------------------
+    // LogSystem (last)
+    // -------------------------------------------------
+    LogSystem::Shutdown();
+
+    m_initialized = false;
 }
 
-bool Engine::TickOnce(uint64 curTick)
+// =========================================================
+// Tick
+// =========================================================
+
+void Engine::Tick()
 {
-	auto& timeManager = TimeManager::Get();
-	timeManager.Update(curTick);
+    SP_ASSERT(m_initialized);
+    SP_ASSERT(m_graphics != nullptr);
+    SP_ASSERT(m_world != nullptr);
 
-	float deltaTime = timeManager.GetDeltaTime();
+    // -------------------------------------------------
+    // Input frame begin
+    // -------------------------------------------------
+    InputSystem::BeginFrame();
 
-	// 60 FPS 力茄
-	static float accumulator = 0.0f;
-	accumulator += deltaTime;
+    // -------------------------------------------------
+    // Time
+    // -------------------------------------------------
+    double now = Platform::GetTimeSeconds();
+    m_time.Update(now);
+    float deltaTime = m_time.GetDeltaTime();
 
-	const float TARGET_DT = 1.0f / 60.0f;
-	if (accumulator < TARGET_DT)
-		return false;
+    static const float clearColor[4] = { 0.2f, 0.2f, 0.2f, 1.0f };
 
-	accumulator -= TARGET_DT;
+    // -------------------------------------------------
+    // Begin Frame
+    // -------------------------------------------------
+    m_graphics->BeginFrame(clearColor);
 
-	if (m_world)
-		m_world->Tick(deltaTime);
+    // -------------------------------------------------
+    // Update world
+    // -------------------------------------------------
+    m_world->Tick(deltaTime);
+    m_world->SubmitRenderCommands();
 
-	// 虐 涝仿 诀单捞飘
-	InputManager::Get().Update();
+    // -------------------------------------------------
+    // Render
+    // -------------------------------------------------
+    m_graphics->Render();
 
-	return true;
+    // -------------------------------------------------
+    // End Frame
+    // -------------------------------------------------
+    m_graphics->EndFrame();
+
+    // -------------------------------------------------
+    // Input frame end
+    // -------------------------------------------------
+    InputSystem::EndFrame();
 }
 
-void Engine::Render()
+// =========================================================
+// Resize
+// =========================================================
+
+void Engine::Resize(uint32 width, uint32 height)
 {
-	m_renderer->BeginRender();
+    if (!m_initialized || !m_graphics)
+        return;
 
-	if (m_world)
-		m_world->Render(*m_renderer);
+    m_graphics->Resize(width, height);
 
-	m_renderer->EndRender();
-	m_renderer->Present();
+    if (m_world)
+    {
+        m_world->OnViewportResized(width, height);
+    }
+}
+
+// =========================================================
+// Accessors
+// =========================================================
+
+GraphicsSubsystem& Engine::GetGraphics()
+{
+    SP_ASSERT(m_graphics != nullptr);
+    return *m_graphics;
+}
+
+World& Engine::GetWorld()
+{
+    SP_ASSERT(m_world != nullptr);
+    return *m_world;
 }

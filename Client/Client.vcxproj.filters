@@ -18,16 +18,25 @@
     <ClInclude Include="Source\ClientPCH\ClientPCH.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Levels\DemoLevel.h">
+    <ClInclude Include="Source\Game\Levels\DemoLevel.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Actors\DemoActor.h">
+    <ClInclude Include="Source\Game\Actors\DemoActor.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Actors\DemoUIActor.h">
+    <ClInclude Include="Source\Game\Actors\DemoUIActor.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Actors\DemoAnimationActor.h">
+    <ClInclude Include="Source\Game\Actors\DemoAnimationActor.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Game\GameBootstrap.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Platform\Win32\Win32Window.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Application\Win32Application.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>
@@ -38,16 +47,25 @@
     <ClCompile Include="Source\Entry\main.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Levels\DemoLevel.cpp">
+    <ClCompile Include="Source\Game\Levels\DemoLevel.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Actors\DemoActor.cpp">
+    <ClCompile Include="Source\Game\Actors\DemoActor.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Actors\DemoUIActor.cpp">
+    <ClCompile Include="Source\Game\Actors\DemoUIActor.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Actors\DemoAnimationActor.cpp">
+    <ClCompile Include="Source\Game\Actors\DemoAnimationActor.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Game\GameBootstrap.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Platform\Win32\Win32Window.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Application\Win32Application.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>

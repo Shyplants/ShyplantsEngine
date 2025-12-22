@@ -1,66 +1,126 @@
 #pragma once
 
 #include <memory>
+#include <type_traits>
 
+#include "Common/Types.h"
+
+// Forward declarations
 class Level;
 class Actor;
-class D3D11Renderer;
-// class CameraComponent;
+class RenderSystem;
+class RenderQueue;
+
 class CameraComponent2D;
 class GameMode;
 class GameState;
 
+/*
+    World
+    -------------------------------------------------
+    - Gameplay state container
+    - Owns current Level
+    - Manages Actor lifecycle
+    - Manages active camera
+    - Owns render submit scheduling (Submit phase)
+*/
 class World
 {
 public:
-	World();
-	~World();
+    explicit World(RenderSystem* renderSystem);
+    ~World();
 
-	void Tick(float deltaTime);
-	void Render(D3D11Renderer& renderer);
+    World(const World&) = delete;
+    World& operator=(const World&) = delete;
 
-	// Actor Management
-	template<typename T, typename... Args>
-	T* SpawnActor(Args&&... args)
-	{
-		static_assert(std::is_base_of_v<Actor, T>, "T must be derived from Actor");
+public:
+    // =====================================================
+    // Tick (Update Phase)
+    // =====================================================
+    void Tick(float deltaTime);
 
-		auto actor = std::make_unique<T>(std::forward<Args>(args)...);
-		return static_cast<T*>(SpawnActor_Impl(std::move(actor)));
-	}
+public:
+    // =====================================================
+    // Render Submit Phase
+    // =====================================================
+    void SubmitRenderCommands();
 
-	void DestroyActor(Actor* actor);
+public:
+    // =====================================================
+    // Actor Management
+    // =====================================================
+    template<typename T, typename... Args>
+    T* SpawnActor(Args&&... args)
+    {
+        static_assert(std::is_base_of_v<Actor, T>,
+            "T must be derived from Actor");
 
-	// Level Management
-	void LoadLevel(std::unique_ptr<Level> level);
-	void UnloadCurrentLevel();
+        auto actor = std::make_unique<T>(
+            std::forward<Args>(args)...);
 
-	Level* GetCurrentLevel() const { return m_currentLevel.get(); }
+        return static_cast<T*>(
+            SpawnActor_Impl(std::move(actor)));
+    }
 
-	// GameMode/GameState Management
-	template<typename T>
-	T* GetGameMode() const
-	{
-		return dynamic_cast<T*>(m_gameMode.get());
-	}
+    void DestroyActor(Actor* actor);
 
-	GameState* GetGameState() const;
+public:
+    // =====================================================
+    // Level Management
+    // =====================================================
+    void LoadLevel(std::unique_ptr<Level> level);
+    void UnloadCurrentLevel();
 
-	void SetGameMode(std::unique_ptr<GameMode> gameMode);
+    Level* GetCurrentLevel() const { return m_currentLevel.get(); }
 
-	// Camera Management
-	CameraComponent2D* GetMainCamera() const { return m_mainCamera; }
-	void SetMainCamera(CameraComponent2D* camera);
+public:
+    // =====================================================
+    // Game Framework
+    // =====================================================
+    template<typename T>
+    T* GetGameMode() const
+    {
+        return dynamic_cast<T*>(m_gameMode.get());
+    }
+
+    GameState* GetGameState() const;
+    void SetGameMode(std::unique_ptr<GameMode> gameMode);
+
+public:
+    // =====================================================
+    // Camera
+    // =====================================================
+    void SetActiveCamera(CameraComponent2D* camera);
+    CameraComponent2D* GetActiveCamera() const { return m_activeCamera; }
+
+    void OnViewportResized(uint32 width, uint32 height);
+
+    // Called by Level when an actor is being destroyed
+    void NotifyActorDestroyed(Actor* actor);
+
+public:
+    // =====================================================
+    // Rendering (low-level access)
+    // =====================================================
+    RenderQueue& GetRenderQueue() const;
+
+    RenderSystem& GetRenderSystem() const;
 
 private:
-	void CreateGameFramework();
-	
-private:
-	Actor* SpawnActor_Impl(std::unique_ptr<Actor> actor);
+    // =====================================================
+    // Internal
+    // =====================================================
+    void CreateGameFramework();
+    Actor* SpawnActor_Impl(std::unique_ptr<Actor> actor);
 
 private:
-	std::unique_ptr<Level> m_currentLevel{ nullptr };
-	std::unique_ptr<GameMode> m_gameMode;
+    RenderSystem* m_renderSystem{ nullptr };
 
-	CameraComponent2D* m_mainCamera{ nullptr };
+    std::unique_ptr<Level>    m_currentLevel;
+    std::unique_ptr<GameMode> m_gameMode;
+
+    CameraComponent2D* m_activeCamera{ nullptr };
+
+    uint32 m_lastViewportW{ 0 };
+    uint32 m_lastViewportH{ 0 };
 };

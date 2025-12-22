@@ -1,4 +1,4 @@
-#include "Engine/Core/EnginePCH.h"
+#include "Engine/PCH/EnginePCH.h"
 #include "Engine/Core/Component/TextRendererComponent.h"
 #include "Engine/Core/Component/SceneComponent.h"
 

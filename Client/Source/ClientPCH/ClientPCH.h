@@ -25,6 +25,7 @@
 // Engine
 #include "Engine/Core/Log/LogMacros.h"
 #include "Engine/Core/Log/LogCategories.h"
+#include "Engine/Core/Assert.h"
 
 // Engine includes
 //#include "Engine/Engine.h"

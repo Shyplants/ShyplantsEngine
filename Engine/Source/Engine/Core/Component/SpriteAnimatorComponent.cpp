@@ -1,110 +1,126 @@
-#include "Engine/Core/EnginePCH.h"
+#include "Engine/PCH/EnginePCH.h"
+
 #include "Engine/Core/Component/SpriteAnimatorComponent.h"
 #include "Engine/Core/Component/SpriteRendererComponent.h"
-
+#include "Engine/Graphics/Material/MaterialInstance.h"
 #include "Engine/Core/World/Actor.h"
 
+// =========================================================
+// Constructor
+// =========================================================
+
 SpriteAnimatorComponent::SpriteAnimatorComponent(Actor* owner)
-	: ActorComponent(owner)
+    : ActorComponent(owner)
 {
 }
 
-SpriteAnimatorComponent::~SpriteAnimatorComponent()
+// =========================================================
+// Setup
+// =========================================================
+
+void SpriteAnimatorComponent::OnRegister()
 {
+    ActorComponent::OnRegister();
+
+    // SpriteRendererComponent 자동 연결
+    m_spriteRenderer = GetOwner()->GetComponent<SpriteRendererComponent>();
+    if (!m_spriteRenderer)
+    {
+        SP_LOG(LogGame, ELogLevel::Warning,
+            "SpriteAnimatorComponent requires SpriteRendererComponent");
+        return;
+    }
+
+    m_materialInstance = m_spriteRenderer->GetMaterialInstance();
+    if (!m_materialInstance)
+    {
+        SP_LOG(LogGame, ELogLevel::Warning,
+            "SpriteRendererComponent has no MaterialInstance");
+        return;
+    }
 }
 
-void SpriteAnimatorComponent::Tick(float deltaTime)
-{
-	if (!m_isPlaying || m_isPaused)
-		return;
-
-	auto it = m_clips.find(m_currentClip);
-	if (it == m_clips.end())
-		return;
-
-	const auto& clip = it->second;
-
-	m_time += deltaTime;
-
-	if (m_time >= m_frameDuration)
-	{
-		m_time -= m_frameDuration;
-		m_currentFrame++;
-
-		if (m_currentFrame >= static_cast<int32>(clip.frames.size()))
-		{
-			if (clip.loop)
-				m_currentFrame = 0;
-			else
-			{
-				m_currentFrame = clip.frames.size() - 1;
-				m_isPlaying = false;
-			}
-		}
-
-		ApplyFrame();
-	}
-}
+// =========================================================
+// Animation Control
+// =========================================================
 
 void SpriteAnimatorComponent::AddClip(const SpriteAnimationClip& clip)
 {
-	if (!clip.IsValid())
-		return;
-
-	m_clips[clip.name] = clip;
+    SP_ASSERT(!clip.frames.empty());
+    m_clips[clip.name] = clip;
 }
 
-void SpriteAnimatorComponent::Play(const std::wstring& name, bool restart)
+void SpriteAnimatorComponent::Play(const std::wstring& clipName, bool restart)
 {
-	auto it = m_clips.find(name);
-	if (it == m_clips.end())
-		return;
+    auto it = m_clips.find(clipName);
+    if (it == m_clips.end())
+        return;
 
-	if (!restart && m_isPlaying && m_currentClip == name)
-		return;
+    if (m_currentClip == &it->second && !restart)
+        return;
 
-	m_currentClip = name;
-	m_currentFrame = 0;
-	m_time = 0.0f;
+    m_currentClip = &it->second;
+    m_accumulatedTime = 0.0f;
+    m_frameIndex = 0;
 
-	const auto& clip = it->second;
-	assert(clip.fps > 0.0f);
-
-	m_frameDuration = 1.0f / clip.fps;
-
-	m_isPlaying = true;
-	m_isPaused = false;
-
-	if (!m_spriteRenderer)
-		m_spriteRenderer = GetOwner()->GetComponent<SpriteRendererComponent>();
-
-	ApplyFrame();
+    // 첫 프레임 즉시 반영
+    if (m_materialInstance && !m_currentClip->frames.empty())
+    {
+        m_materialInstance->SetSourceRect(
+            m_currentClip->frames[0]);
+    }
 }
 
 void SpriteAnimatorComponent::Stop()
 {
-	m_isPlaying = false;
-	m_isPaused = false;
+    m_currentClip = nullptr;
+    m_accumulatedTime = 0.0f;
+    m_frameIndex = 0;
 }
 
-void SpriteAnimatorComponent::Pause(bool pause)
+// =========================================================
+// Tick
+// =========================================================
+
+void SpriteAnimatorComponent::Tick(float deltaTime)
 {
-	m_isPaused = pause;
+    ActorComponent::Tick(deltaTime);
+
+    if (!m_currentClip || !m_materialInstance)
+        return;
+
+    const float frameTime = 1.0f / m_currentClip->fps;
+    m_accumulatedTime += deltaTime;
+
+    while (m_accumulatedTime >= frameTime)
+    {
+        m_accumulatedTime -= frameTime;
+        AdvanceFrame();
+    }
 }
 
-void SpriteAnimatorComponent::ApplyFrame()
+// =========================================================
+// Internal
+// =========================================================
+
+void SpriteAnimatorComponent::AdvanceFrame()
 {
-	if (!m_spriteRenderer)
-		return;
+    SP_ASSERT(m_currentClip);
 
-	auto it = m_clips.find(m_currentClip);
-	if (it == m_clips.end())
-		return;
+    ++m_frameIndex;
 
-	const auto& clip = it->second;
+    if (m_frameIndex >= m_currentClip->frames.size())
+    {
+        if (m_currentClip->loop)
+        {
+            m_frameIndex = 0;
+        }
+        else
+        {
+            m_frameIndex = static_cast<uint32>(m_currentClip->frames.size() - 1);
+        }
+    }
 
-	if (m_currentFrame < 0 || m_currentFrame >= static_cast<int32>(clip.frames.size()))
-		return;
-
-	m_spriteRenderer->SetRect(clip.frames[m_currentFrame]);
+    m_materialInstance->SetSourceRect(
+        m_currentClip->frames[m_frameIndex]);
 }

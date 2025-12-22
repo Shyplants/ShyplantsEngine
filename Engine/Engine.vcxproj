@@ -19,15 +19,15 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="Shaders\PS_Sprite.hlsl">
+    <FxCompile Include="Shaders\SpritePS.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
-      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">PS_Main</EntryPointName>
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">main</EntryPointName>
     </FxCompile>
-    <FxCompile Include="Shaders\VS_Sprite.hlsl">
+    <FxCompile Include="Shaders\SpriteVS.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
-      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">VS_Main</EntryPointName>
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">main</EntryPointName>
     </FxCompile>
     <FxCompile Include="ThirdParty\DirectXTK\Src\Shaders\AlphaTestEffect.fx">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
@@ -85,8 +85,12 @@
     <ClInclude Include="Include\Engine\Core\Component\FAttachmentTransformRules.h" />
     <ClInclude Include="Include\Engine\Core\Component\RendererComponent.h" />
     <ClInclude Include="Include\Engine\Core\Component\SceneComponent.h" />
-    <ClInclude Include="Include\Engine\Core\Component\SpriteAnimatorComponent.h" />
-    <ClInclude Include="Include\Engine\Core\Component\TextRendererComponent.h" />
+    <ClInclude Include="Include\Engine\Core\Component\SpriteAnimatorComponent.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="Include\Engine\Core\Component\TextRendererComponent.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </ClInclude>
     <ClInclude Include="Include\Engine\Core\Engine.h" />
     <ClInclude Include="Include\Engine\Core\GameFramework\GameMode.h" />
     <ClInclude Include="Include\Engine\Core\GameFramework\GameState.h" />
@@ -95,6 +99,8 @@
     <ClInclude Include="Include\Engine\Core\Log\LogLevel.h" />
     <ClInclude Include="Include\Engine\Core\Log\LogMacros.h" />
     <ClInclude Include="Include\Engine\Core\Log\LogSystem.h" />
+    <ClInclude Include="Include\Engine\Core\Time\TimeSystem.h" />
+    <ClInclude Include="Include\Engine\Core\Utils\StringUtils.h" />
     <ClInclude Include="Include\Engine\Core\World\Actor.h" />
     <ClInclude Include="Include\Engine\Core\Component\ActorComponent.h" />
     <ClInclude Include="Include\Engine\Core\World\Level.h" />
@@ -102,28 +108,69 @@
     <ClInclude Include="Include\Engine\Core\World\World.h" />
     <ClInclude Include="Include\Engine\Core\Component\SpriteRendererComponent.h" />
     <ClInclude Include="Include\Engine\EngineMinimal.h" />
-    <ClInclude Include="Include\Engine\Graphics\Animation\SpriteAnimationClip.h" />
+    <ClInclude Include="Include\Engine\Graphics\Animation\SpriteAnimationClip.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="Include\Engine\Graphics\Buffer\ConstantBuffer.h" />
+    <ClInclude Include="Include\Engine\Graphics\Buffer\ConstantBufferUsage.h" />
+    <ClInclude Include="Include\Engine\Graphics\PSO\BuiltinPipelineIDs.h" />
+    <ClInclude Include="Include\Engine\Graphics\PSO\PipelineID.h" />
+    <ClInclude Include="Include\Engine\Graphics\PSO\PipelineStateLibrary.h" />
+    <ClInclude Include="Include\Engine\Graphics\Render\RenderDefaults.h" />
     <ClInclude Include="Include\Engine\Graphics\ConstantBuffer\SpriteConstantBuffer.h" />
-    <ClInclude Include="Include\Engine\Graphics\D3D11\D3D11Renderer.h" />
+    <ClInclude Include="Include\Engine\Graphics\Material\Material.h" />
+    <ClInclude Include="Include\Engine\Graphics\Material\MaterialInstance.h" />
+    <ClInclude Include="Include\Engine\Graphics\Material\MaterialManager.h" />
+    <ClInclude Include="Include\Engine\Graphics\Mesh\MeshManager.h" />
+    <ClInclude Include="Include\Engine\Graphics\PSO\GraphicsPSODesc.h" />
     <ClInclude Include="Include\Engine\Graphics\Mesh\Mesh.h" />
-    <ClInclude Include="Include\Engine\Graphics\Mesh\SpriteMesh.h" />
     <ClInclude Include="Include\Engine\Graphics\PSO\GraphicsPSO.h" />
-    <ClInclude Include="Include\Engine\Graphics\RenderStates.h" />
-    <ClInclude Include="Include\Engine\Graphics\Render\GameLayer.h" />
+    <ClInclude Include="Include\Engine\Graphics\PSO\GraphicsPSOManager.h" />
+    <ClInclude Include="Include\Engine\Graphics\Render\Renderer.h" />
+    <ClInclude Include="Include\Engine\Graphics\Renderer\RenderDevice.h" />
+    <ClInclude Include="Include\Engine\Graphics\Render\RenderQueue.h" />
+    <ClInclude Include="Include\Engine\Graphics\Render\RenderSystem.h" />
     <ClInclude Include="Include\Engine\Graphics\Render\SpritePivot.h" />
-    <ClInclude Include="Include\Engine\Graphics\Vertex\SpriteVertex.h" />
+    <ClInclude Include="Include\Engine\Graphics\Sampler\SamplerDesc.h" />
+    <ClInclude Include="Include\Engine\Graphics\Sampler\SamplerID.h" />
+    <ClInclude Include="Include\Engine\Graphics\Sampler\SamplerManager.h" />
+    <ClInclude Include="Include\Engine\Graphics\Shader\PixelShader.h" />
+    <ClInclude Include="Include\Engine\Graphics\Shader\ShaderID.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="Include\Engine\Graphics\Shader\ShaderManager.h" />
+    <ClInclude Include="Include\Engine\Graphics\Shader\SpriteShaderSlots.h" />
+    <ClInclude Include="Include\Engine\Graphics\Shader\VertexShader.h" />
+    <ClInclude Include="Include\Engine\Graphics\Subsystem\GraphicsSubsystem.h" />
+    <ClInclude Include="Include\Engine\Graphics\Utils\D3D11RectUtils.h" />
+    <ClInclude Include="Include\Engine\Platform\Input\InputCodes.h" />
+    <ClInclude Include="Include\Engine\Platform\Input\InputSystem.h" />
+    <ClInclude Include="Include\Engine\Platform\Platform.h" />
+    <ClInclude Include="Include\Engine\Platform\Windows\Win32RectUtils.h" />
+    <ClInclude Include="Include\Engine\Platform\Windows\Window.h" />
+    <ClInclude Include="Include\Engine\Platform\Windows\WindowsInput.h" />
+    <ClInclude Include="Include\Engine\Platform\Windows\WindowsPlatform.h" />
+    <ClInclude Include="Include\Engine\Platform\Windows\WindowsWindow.h" />
+    <ClInclude Include="Include\Engine\Platform\Window\Window.h" />
+    <ClInclude Include="Include\Engine\Platform\Window\WindowDesc.h" />
     <ClInclude Include="Include\Engine\Resource\Resource.h" />
+    <ClInclude Include="Include\Engine\Resource\ResourceLoadContext.h" />
     <ClInclude Include="Include\Engine\Resource\ResourceManager.h" />
-    <ClInclude Include="Include\Engine\Resource\Texture\Texture.h" />
+    <ClInclude Include="Include\Engine\Resource\Texture\TextureBuilder.h" />
+    <ClInclude Include="Include\Engine\Resource\Texture\TextureDesc.h" />
+    <ClInclude Include="Include\Engine\Resource\Texture\TextureResource.h" />
     <ClInclude Include="Include\Engine\Resource\ResourceType.h" />
     <ClInclude Include="Include\Engine\Resource\Texture\TextureColorSpace.h" />
     <ClInclude Include="Include\Engine\System\TimeManager.h" />
-    <ClInclude Include="Source\Engine\Core\EnginePCH.h" />
-    <ClInclude Include="Include\Engine\Graphics\Command\DrawCommand.h" />
-    <ClInclude Include="Include\Engine\Graphics\Command\CommandBuffer.h" />
-    <ClInclude Include="Include\Engine\Resource\Texture\TextureLoader.h" />
-    <ClInclude Include="Include\Engine\System\InputManager.h" />
+    <ClInclude Include="Source\Engine\PCH\EnginePCH.h" />
+    <ClInclude Include="Include\Engine\Graphics\Render\DrawCommand.h" />
+    <ClInclude Include="Include\Engine\Graphics\Render\CommandBuffer.h" />
+    <ClInclude Include="Include\Engine\Resource\Texture\TextureLoaderDX11.h" />
+    <ClInclude Include="Include\Engine\System\InputManager.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </ClInclude>
     <ClInclude Include="Source\Engine\Graphics\Animation\SpriteAnimationClip.h" />
+    <ClInclude Include="Source\Engine\PCH\GraphicsPCH.h" />
     <ClInclude Include="ThirdParty\DirectXTK\Inc\Audio.h" />
     <ClInclude Include="ThirdParty\DirectXTK\Inc\BufferHelpers.h" />
     <ClInclude Include="ThirdParty\DirectXTK\Inc\CommonStates.h" />
@@ -152,47 +199,214 @@
     <ClInclude Include="ThirdParty\DirectXTK\Src\SharedResourcePool.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Source\Engine\Core\Time\TimeSystem.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\Graphics\Buffer\ConstantBuffer.cpp">
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Engine/PCH/GraphicsPCH.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)\GraphicsPCH.pch</PrecompiledHeaderOutputFile>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\Graphics\Material\Material.cpp">
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Engine/PCH/GraphicsPCH.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)\GraphicsPCH.pch</PrecompiledHeaderOutputFile>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\Graphics\Material\MaterialInstance.cpp">
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Engine/PCH/GraphicsPCH.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)\GraphicsPCH.pch</PrecompiledHeaderOutputFile>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\Graphics\Material\MaterialManager.cpp">
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Engine/PCH/GraphicsPCH.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)\GraphicsPCH.pch</PrecompiledHeaderOutputFile>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\Graphics\PSO\GraphicsPSODesc.cpp">
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Engine/PCH/GraphicsPCH.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)\GraphicsPCH.pch</PrecompiledHeaderOutputFile>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\Graphics\PSO\PipelineStateLibrary.cpp">
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Engine/PCH/GraphicsPCH.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)\GraphicsPCH.pch</PrecompiledHeaderOutputFile>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\Graphics\Render\RenderDefaults.cpp">
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Engine/PCH/GraphicsPCH.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)\GraphicsPCH.pch</PrecompiledHeaderOutputFile>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\Graphics\Render\Renderer.cpp">
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Engine/PCH/GraphicsPCH.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Engine/PCH/GraphicsPCH.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)\GraphicsPCH.pch</PrecompiledHeaderOutputFile>
+    </ClCompile>
     <ClCompile Include="Source\Engine\Core\Component\CameraComponent.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="Source\Engine\Core\Component\CameraComponent2D.cpp" />
+    <ClCompile Include="Source\Engine\Core\Component\CameraComponent2D.cpp">
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Engine/PCH/EnginePCH.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Engine/PCH/EnginePCH.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)\EnginePCH.pch</PrecompiledHeaderOutputFile>
+    </ClCompile>
     <ClCompile Include="Source\Engine\Core\Component\FAttachmentTransformRules.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="Source\Engine\Core\Component\RendererComponent.cpp" />
-    <ClCompile Include="Source\Engine\Core\Component\SceneComponent.cpp" />
-    <ClCompile Include="Source\Engine\Core\Component\SpriteAnimatorComponent.cpp" />
-    <ClCompile Include="Source\Engine\Core\Component\TextRendererComponent.cpp" />
-    <ClCompile Include="Source\Engine\Core\GameFramework\GameMode.cpp" />
-    <ClCompile Include="Source\Engine\Core\GameFramework\GameState.cpp" />
+    <ClCompile Include="Source\Engine\Core\Component\RendererComponent.cpp">
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Engine/PCH/EnginePCH.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Engine/PCH/EnginePCH.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)\EnginePCH.pch</PrecompiledHeaderOutputFile>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\Core\Component\SceneComponent.cpp">
+      <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)\EnginePCH.pch</PrecompiledHeaderOutputFile>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\Core\Component\SpriteAnimatorComponent.cpp">
+      <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)\EnginePCH.pch</PrecompiledHeaderOutputFile>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\Core\Component\TextRendererComponent.cpp">
+      <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)\EnginePCH.pch</PrecompiledHeaderOutputFile>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\Core\GameFramework\GameMode.cpp">
+      <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)\EnginePCH.pch</PrecompiledHeaderOutputFile>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\Core\GameFramework\GameState.cpp">
+      <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)\EnginePCH.pch</PrecompiledHeaderOutputFile>
+    </ClCompile>
     <ClCompile Include="Source\Engine\Core\Log\LogSystem.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="Source\Engine\Core\World\Actor.cpp" />
-    <ClCompile Include="Source\Engine\Core\Component\ActorComponent.cpp" />
-    <ClCompile Include="Source\Engine\Core\World\Level.cpp" />
-    <ClCompile Include="Source\Engine\Core\World\UIActor.cpp" />
-    <ClCompile Include="Source\Engine\Core\World\World.cpp" />
-    <ClCompile Include="Source\Engine\Graphics\Command\CommandBuffer.cpp" />
-    <ClCompile Include="Source\Engine\Core\Engine.cpp" />
-    <ClCompile Include="Source\Engine\Core\EnginePCH.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
+    <ClCompile Include="Source\Engine\Core\Utils\StringUtils.cpp">
+      <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)\EnginePCH.pch</PrecompiledHeaderOutputFile>
     </ClCompile>
-    <ClCompile Include="Source\Engine\Graphics\Command\DrawCommand.cpp" />
-    <ClCompile Include="Source\Engine\Core\Component\SpriteRendererComponent.cpp" />
-    <ClCompile Include="Source\Engine\Graphics\D3D11\D3D11Renderer.cpp" />
-    <ClCompile Include="Source\Engine\Graphics\Mesh\Mesh.cpp" />
-    <ClCompile Include="Source\Engine\Graphics\Mesh\SpriteMesh.cpp" />
-    <ClCompile Include="Source\Engine\Graphics\PSO\GraphicsPSO.cpp" />
-    <ClCompile Include="Source\Engine\Resource\Texture\TextureLoader.cpp" />
-    <ClCompile Include="Source\Engine\Resource\Resource.cpp" />
-    <ClCompile Include="Source\Engine\Resource\ResourceManager.cpp" />
-    <ClCompile Include="Source\Engine\Resource\Texture\Texture.cpp" />
-    <ClCompile Include="Source\Engine\System\InputManager.cpp" />
-    <ClCompile Include="Source\Engine\System\TimeManager.cpp" />
+    <ClCompile Include="Source\Engine\Core\World\Actor.cpp">
+      <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)\EnginePCH.pch</PrecompiledHeaderOutputFile>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\Core\Component\ActorComponent.cpp">
+      <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)\EnginePCH.pch</PrecompiledHeaderOutputFile>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\Core\World\Level.cpp">
+      <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)\EnginePCH.pch</PrecompiledHeaderOutputFile>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\Core\World\UIActor.cpp">
+      <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)\EnginePCH.pch</PrecompiledHeaderOutputFile>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\Core\World\World.cpp">
+      <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)\EnginePCH.pch</PrecompiledHeaderOutputFile>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\Graphics\Render\CommandBuffer.cpp">
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Engine/PCH/GraphicsPCH.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Engine/PCH/GraphicsPCH.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)\GraphicsPCH.pch</PrecompiledHeaderOutputFile>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\Core\Engine.cpp">
+      <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)\EnginePCH.pch</PrecompiledHeaderOutputFile>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\Graphics\Renderer\RenderDevice.cpp">
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Engine/PCH/GraphicsPCH.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Engine/PCH/GraphicsPCH.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)\GraphicsPCH.pch</PrecompiledHeaderOutputFile>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\Graphics\Mesh\MeshManager.cpp">
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Engine/PCH/GraphicsPCH.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Engine/PCH/GraphicsPCH.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)\GraphicsPCH.pch</PrecompiledHeaderOutputFile>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\Graphics\PSO\GraphicsPSOManager.cpp">
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Engine/PCH/GraphicsPCH.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Engine/PCH/GraphicsPCH.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)\GraphicsPCH.pch</PrecompiledHeaderOutputFile>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\Graphics\Render\RenderQueue.cpp">
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Engine/PCH/GraphicsPCH.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)\GraphicsPCH.pch</PrecompiledHeaderOutputFile>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\Graphics\Render\RenderSystem.cpp">
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Engine/PCH/GraphicsPCH.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)\GraphicsPCH.pch</PrecompiledHeaderOutputFile>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\Graphics\Sampler\SamplerManager.cpp">
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Engine/PCH/GraphicsPCH.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)\GraphicsPCH.pch</PrecompiledHeaderOutputFile>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\Graphics\Shader\PixelShader.cpp">
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Engine/PCH/GraphicsPCH.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)GraphicsPCH.pch</PrecompiledHeaderOutputFile>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\Graphics\Shader\ShaderManager.cpp">
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Engine/PCH/GraphicsPCH.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)GraphicsPCH.pch</PrecompiledHeaderOutputFile>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\Graphics\Shader\VertexShader.cpp">
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Engine/PCH/GraphicsPCH.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)\GraphicsPCH.pch</PrecompiledHeaderOutputFile>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\Graphics\Subsystem\GraphicsSubsystem.cpp">
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Engine/PCH/GraphicsPCH.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)\GraphicsPCH.pch</PrecompiledHeaderOutputFile>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\PCH\EnginePCH.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
+      <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)\EnginePCH.pch</PrecompiledHeaderOutputFile>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\Graphics\Render\DrawCommand.cpp">
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Engine/PCH/GraphicsPCH.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Engine/PCH/GraphicsPCH.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)\GraphicsPCH.pch</PrecompiledHeaderOutputFile>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\Core\Component\SpriteRendererComponent.cpp">
+      <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)\EnginePCH.pch</PrecompiledHeaderOutputFile>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\Graphics\Mesh\Mesh.cpp">
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Engine/PCH/GraphicsPCH.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Engine/PCH/GraphicsPCH.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)\GraphicsPCH.pch</PrecompiledHeaderOutputFile>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\Graphics\PSO\GraphicsPSO.cpp">
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Engine/PCH/GraphicsPCH.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Engine/PCH/GraphicsPCH.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)\GraphicsPCH.pch</PrecompiledHeaderOutputFile>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\PCH\GraphicsPCH.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Engine/PCH/GraphicsPCH.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)\GraphicsPCH.pch</PrecompiledHeaderOutputFile>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\Platform\Input\InputSystem.cpp">
+      <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)\EnginePCH.pch</PrecompiledHeaderOutputFile>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\Platform\Input\WindowsInput.cpp" />
+    <ClCompile Include="Source\Engine\Platform\Windows\WindowsPlatform.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)\EnginePCH.pch</PrecompiledHeaderOutputFile>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\Platform\Windows\WindowsWindow.cpp">
+      <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)\EnginePCH.pch</PrecompiledHeaderOutputFile>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\Resource\Texture\TextureLoaderDX11.cpp">
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Engine/PCH/GraphicsPCH.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Engine/PCH/GraphicsPCH.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)\GraphicsPCH.pch</PrecompiledHeaderOutputFile>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\Resource\Resource.cpp">
+      <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)\EnginePCH.pch</PrecompiledHeaderOutputFile>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\Resource\ResourceManager.cpp">
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Engine/PCH/EnginePCH.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Engine/PCH/EnginePCH.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)\EnginePCH.pch</PrecompiledHeaderOutputFile>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\Resource\Texture\TextureResource.cpp">
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Engine/PCH/GraphicsPCH.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Engine/PCH/GraphicsPCH.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)\GraphicsPCH.pch</PrecompiledHeaderOutputFile>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\System\InputManager.cpp">
+      <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)\EnginePCH.pch</PrecompiledHeaderOutputFile>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\System\TimeManager.cpp">
+      <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)\EnginePCH.pch</PrecompiledHeaderOutputFile>
+    </ClCompile>
     <ClCompile Include="ThirdParty\DirectXTK\Src\DDSTextureLoader.cpp">
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">pch.h</PrecompiledHeaderFile>
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)pch.pch</PrecompiledHeaderOutputFile>
@@ -352,10 +566,10 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_LIB;%(PreprocessorDefinitions);NOMINMAX;WIN32_LEAN_AND_MEAN</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>Use</PrecompiledHeader>
-      <PrecompiledHeaderFile>Engine/Core/EnginePCH.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile>Engine/PCH/EnginePCH.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <PrecompiledHeaderOutputFile>$(IntDir)EnginePCH.pch</PrecompiledHeaderOutputFile>
     </ClCompile>
@@ -371,10 +585,10 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;_LIB;%(PreprocessorDefinitions);NOMINMAX;WIN32_LEAN_AND_MEAN</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>Use</PrecompiledHeader>
-      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile>Engine/PCH/EnginePCH.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>

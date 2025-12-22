@@ -2,43 +2,69 @@
 
 #include "Engine/Core/Component/ActorComponent.h"
 
-class D3D11Renderer;
-class SceneComponent;
+#include <DirectXMath.h>
 
+// Forward declarations
+class SceneComponent;
+class RenderQueue;
+class CameraComponent2D;
+class GraphicsPSO;
+class MaterialInstance;
+class Mesh;
+
+/*
+    RendererComponent
+    -------------------------------------------------
+    - Submit-only rendering component
+    - DrawCommand를 생성하여 RenderQueue에 제출
+    - GPU 실행 책임 없음
+*/
 class RendererComponent : public ActorComponent
 {
 public:
-	explicit RendererComponent(Actor* owner);
-	~RendererComponent() override;
+    explicit RendererComponent(Actor* owner);
+    ~RendererComponent() override = default;
 
-	virtual void RenderWorld(D3D11Renderer& renderer, const DirectX::XMMATRIX& viewProj) {}
-	virtual void RenderUI(D3D11Renderer& renderer) {}
-	virtual bool IsUIRenderer() const { return false; }
+    RendererComponent(const RendererComponent&) = delete;
+    RendererComponent& operator=(const RendererComponent&) = delete;
+
+    void OnRegister() override;
 
 public:
-	void SetVisible(bool visible) { m_visible = visible; }
-	bool IsVisible() const { return m_visible; }
+    // =====================================================
+    // Submit Interface
+    // =====================================================
+    virtual void SubmitWorld(
+        RenderQueue& queue,
+        const DirectX::XMMATRIX& viewProj) = 0;
 
-	void SetRenderOffset(const DirectX::XMFLOAT2& offset) { m_renderOffset = offset; }
-	DirectX::XMFLOAT2 GetRenderOffset() const { return m_renderOffset; }
+    virtual void SubmitUI(
+        RenderQueue& queue) {
+    }
+
+    virtual bool IsUIRenderer() const { return false; }
+
+public:
+    // =====================================================
+    // Visibility
+    // =====================================================
+    void SetVisible(bool visible) { m_visible = visible; }
+    bool IsVisible() const { return m_visible; }
+
+public:
+    // =====================================================
+    // Attachment
+    // =====================================================
+    SceneComponent* GetAttachComponent() const { return m_attachComponent; }
 
 protected:
-	SceneComponent* GetAttachComponent() const { return m_attachComponent; }
-
-	// Renderer 접근 헬퍼
-	D3D11Renderer& GetRenderer() const;
-
-private:
-	friend class Actor;
-
-	// RenderComponent가 어느 SceneComponent에 붙어 있는지 설정
-	void SetAttachComponent(SceneComponent* comp) { m_attachComponent = comp; }
+    friend class Actor;
+    void SetAttachComponent(SceneComponent* comp)
+    {
+        m_attachComponent = comp;
+    }
 
 protected:
-	SceneComponent* m_attachComponent{ nullptr };
-
-protected:
-	bool m_visible{ true };
-	
-	DirectX::XMFLOAT2 m_renderOffset{ 0.0f, 0.0f };
+    SceneComponent* m_attachComponent{ nullptr };
+    bool m_visible{ true };
 };

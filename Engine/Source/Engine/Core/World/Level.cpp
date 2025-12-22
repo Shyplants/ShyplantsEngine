@@ -1,159 +1,179 @@
-#include "Engine/Core/EnginePCH.h"
+#include "Engine/PCH/EnginePCH.h"
+
 #include "Engine/Core/World/Level.h"
 #include "Engine/Core/World/Actor.h"
-#include "Engine/Graphics/D3D11/D3D11Renderer.h"
-// #include "Engine/Core/Component/CameraComponent.h"
-#include "Engine/Core/Component/CameraComponent2D.h"
-#include "Engine/Core/Component/RendererComponent.h"
 #include "Engine/Core/World/World.h"
 
-#include "SpriteBatch.h"
+#include "Engine/Core/Component/RendererComponent.h"
+#include "Engine/Core/Component/CameraComponent2D.h"
 
-Level::Level(World* world)
-	: m_world(world)
+#include "Engine/Graphics/Render/RenderQueue.h"
+
+// =====================================================
+// Lifecycle
+// =====================================================
+
+Level::~Level() = default;
+
+void Level::OnEnter(World& world)
 {
+    m_world = &world;
 }
 
-Level::~Level()
+void Level::OnExit(World& /*world*/)
 {
-	m_actors.clear();
+    m_actors.clear();
+    m_destroyQueue.clear();
+    m_world = nullptr;
+    m_hasBegunPlay = false;
 }
 
 void Level::OnBeginPlay()
 {
-	m_hasBegunPlay = true;
+    m_hasBegunPlay = true;
 
-	for (auto& actor : m_actors)
-	{
-		actor->BeginPlay();
-	}
-
+    for (auto& actor : m_actors)
+    {
+        actor->BeginPlay();
+    }
 }
+
+// =====================================================
+// Tick
+// =====================================================
 
 void Level::Tick(float deltaTime)
 {
-	// 스폰된 Actor 중 제거 대상이 있으면 정리
-	ProcessDestroyedActors();
+    ProcessDestroyedActors();
 
-	for (auto& actor : m_actors)
-	{
-		if (actor->IsPendingDestroy())
-		{
-			__debugbreak();
-			continue;
-		}
-
-		actor->Tick(deltaTime);
-	}
+    for (auto& actor : m_actors)
+    {
+        if (!actor->IsPendingDestroy())
+        {
+            actor->Tick(deltaTime);
+        }
+    }
 }
 
-void Level::Render(D3D11Renderer& renderer)
+// =====================================================
+// Rendering (Submit only)
+// =====================================================
+
+void Level::SubmitRenderCommands(
+    RenderQueue& queue,
+    const CameraComponent2D& camera)
 {
-	// WORLD PASS
-	RenderWorldObjects(renderer);
-
-	// UI PASS (항상 화면 최상위)
-	RenderUI(renderer);
+    SubmitWorldRenderers(queue, camera);
+    SubmitUIRenderers(queue);
 }
+
+// =====================================================
+// Actor Management
+// =====================================================
 
 Actor* Level::SpawnActorInternal(std::unique_ptr<Actor> actor)
 {
-	Actor* rawPtr = actor.get();
+    SP_ASSERT(m_world != nullptr);
+    SP_ASSERT(actor != nullptr);
 
-	rawPtr->SetWorld(m_world);
-	rawPtr->OnSpawned();
-	m_actors.push_back(std::move(actor));
+    Actor* rawPtr = actor.get();
 
-	if (m_hasBegunPlay)
-		rawPtr->BeginPlay();
+    rawPtr->SetWorld(m_world);
+    rawPtr->OnSpawned();
 
-	
-	return rawPtr;
+    m_actors.push_back(std::move(actor));
+
+    if (m_hasBegunPlay)
+    {
+        rawPtr->BeginPlay();
+    }
+
+    return rawPtr;
 }
 
 void Level::MarkActorForDestroy(Actor* actor)
 {
-	if (!actor)
-		return;
+    if (!actor || actor->IsPendingDestroy())
+        return;
 
-	if (!actor->IsPendingDestroy())
-		actor->Destroy();
-
-	m_destroyQueue.push_back(actor);
+    actor->Destroy();
+    m_destroyQueue.push_back(actor);
 }
 
 void Level::ProcessDestroyedActors()
 {
-	if (m_destroyQueue.empty())
-		return;
+    if (m_destroyQueue.empty())
+        return;
 
-	m_actors.erase(
-		std::remove_if(
-			m_actors.begin(), m_actors.end(),
-			[&](std::unique_ptr<Actor>& actor)
-			{
-				return actor->IsPendingDestroy();
-			}),
-		m_actors.end()
-	);
+    m_actors.erase(
+        std::remove_if(
+            m_actors.begin(),
+            m_actors.end(),
+            [](const std::unique_ptr<Actor>& actor)
+            {
+                return actor->IsPendingDestroy();
+            }),
+        m_actors.end()
+    );
 
-	m_destroyQueue.clear();
+    m_destroyQueue.clear();
 }
 
-void Level::RenderWorldObjects(D3D11Renderer& renderer)
+// =====================================================
+// Render submission internals
+// =====================================================
+
+void Level::SubmitWorldRenderers(
+    RenderQueue& queue,
+    const CameraComponent2D& camera)
 {
-	CameraComponent2D* camera = m_world->GetMainCamera();
-	if (!camera)
-		return;
+    const auto& viewProj = camera.GetViewProjectionMatrix();
 
-	auto viewProj = camera->GetViewProjMatrix();
+    for (auto& actor : m_actors)
+    {
+        if (actor->IsPendingDestroy())
+            continue;
 
-	for (auto& actor : m_actors)
-	{
-		if (actor->IsPendingDestroy())
-		{
-			__debugbreak();
-			continue;
-		}
+        for (const auto& comp : actor->GetComponents())
+        {
+            auto* rc =
+                dynamic_cast<RendererComponent*>(comp.get());
 
-		const auto& comps = actor->GetComponents();
+            if (!rc || !rc->IsVisible() || rc->IsUIRenderer())
+                continue;
 
-		for (const auto& comp : comps)
-		{
-			if (auto rc = dynamic_cast<RendererComponent*>(comp.get()))
-			{
-				rc->RenderWorld(renderer, viewProj);
-			}
-		}
-	}
+            rc->SubmitWorld(queue, viewProj);
+        }
+    }
 }
 
-void Level::RenderUI(D3D11Renderer& renderer)
+void Level::SubmitUIRenderers(
+    RenderQueue& queue)
 {
-	auto spriteBatch = renderer.GetSpriteBatch();
-	spriteBatch->Begin(DirectX::SpriteSortMode_Deferred);
+    for (auto& actor : m_actors)
+    {
+        if (actor->IsPendingDestroy() || !actor->IsUIActor())
+            continue;
 
-	for (auto& actor : m_actors)
-	{
-		if (actor->IsPendingDestroy())
-		{
-			__debugbreak();
-			continue;
-		}
+        for (const auto& comp : actor->GetComponents())
+        {
+            auto* rc =
+                dynamic_cast<RendererComponent*>(comp.get());
 
-		if (!actor->IsUIActor())
-			continue;
+            if (!rc || !rc->IsVisible() || !rc->IsUIRenderer())
+                continue;
 
-		const auto& comps = actor->GetComponents();
+            rc->SubmitUI(queue);
+        }
+    }
+}
 
-		for (const auto& comp : comps)
-		{
-			if (auto rc = dynamic_cast<RendererComponent*>(comp.get()))
-			{
-				rc->RenderUI(renderer);
-			}
-		}
-	}
+// =====================================================
+// Accessor
+// =====================================================
 
-	spriteBatch->End();
+World& Level::GetWorld() const
+{
+    SP_ASSERT(m_world != nullptr);
+    return *m_world;
 }

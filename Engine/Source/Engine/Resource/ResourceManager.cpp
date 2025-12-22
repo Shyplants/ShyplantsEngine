@@ -1,59 +1,78 @@
-#include "Engine/Core/EnginePCH.h"
+#include "Engine/PCH/EnginePCH.h"
 #include "Engine/Resource/ResourceManager.h"
 
-ResourceManager* ResourceManager::Instance = nullptr;
+#include <filesystem>
 
+ResourceManager* ResourceManager::s_instance = nullptr;
+
+// =====================================================
+// Lifetime
+// =====================================================
 
 void ResourceManager::Create()
 {
-	if (!Instance)
-	{
-		Instance = new ResourceManager;
-	}
+    SP_ASSERT(s_instance == nullptr);
+    s_instance = new ResourceManager();
 }
 
 void ResourceManager::Destroy()
 {
-	if (Instance)
-	{
-		delete Instance;
-		Instance = nullptr;
-	}
+    delete s_instance;
+    s_instance = nullptr;
 }
 
 ResourceManager& ResourceManager::Get()
 {
-	assert(Instance && "ResourceManager::Create() was not called");
-	return *Instance;
+    SP_ASSERT(s_instance != nullptr);
+    return *s_instance;
 }
 
-bool ResourceManager::Init(D3D11Renderer* renderer)
+ResourceManager::~ResourceManager()
 {
-	m_renderer = renderer;
-
-	return true;
+    UnloadAll();
 }
+
+// =====================================================
+// Context
+// =====================================================
+
+void ResourceManager::SetLoadContext(const ResourceLoadContext& context)
+{
+    m_context = context;
+}
+
+// =====================================================
+// Unload
+// =====================================================
 
 void ResourceManager::Unload(const std::wstring& path)
 {
-	std::lock_guard<std::mutex> lock(m_mutex);
+    std::lock_guard<std::mutex> lock(m_mutex);
 
-	auto it = m_resources.find(path);
-	if (it != m_resources.end())
-	{
-		it->second->Unload();
-		m_resources.erase(it);
-	}
+    auto key = NormalizePath(path);
+    auto it = m_resources.find(key);
+    if (it == m_resources.end())
+        return;
+
+    it->second->Unload();
+    m_resources.erase(it);
 }
 
 void ResourceManager::UnloadAll()
 {
-	std::lock_guard<std::mutex> lock(m_mutex);
+    std::lock_guard<std::mutex> lock(m_mutex);
 
-	for (auto& pair : m_resources)
-	{
-		pair.second->Unload();
-	}
+    for (auto& [_, res] : m_resources)
+        res->Unload();
 
-	m_resources.clear();
+    m_resources.clear();
+}
+
+// =====================================================
+// Path normalize
+// =====================================================
+
+std::wstring ResourceManager::NormalizePath(const std::wstring& path) const
+{
+    return std::filesystem::weakly_canonical(path).wstring();
 }

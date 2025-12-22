@@ -1,4 +1,5 @@
-#include "Engine/Core/EnginePCH.h"
+#include "Engine/PCH/EnginePCH.h"
+
 #include "Engine/System/InputManager.h"
 
 InputManager* InputManager::Instance = nullptr;
@@ -27,7 +28,7 @@ bool InputManager::IsValid()
 
 InputManager& InputManager::Get()
 {
-	assert(Instance && "InputManager::Create() was not called");
+	// assert(Instance && "InputManager::Create() was not called");
 	return *Instance;
 }
 

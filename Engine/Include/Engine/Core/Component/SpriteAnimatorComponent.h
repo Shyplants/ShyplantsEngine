@@ -3,45 +3,54 @@
 #include "Engine/Core/Component/ActorComponent.h"
 #include "Engine/Graphics/Animation/SpriteAnimationClip.h"
 #include "Common/Types.h"
-#include <unordered_map>
 
+#include <unordered_map>
+#include <string>
+#include <vector>
 
 class SpriteRendererComponent;
+class MaterialInstance;
 
-class SpriteAnimatorComponent : public ActorComponent
+class SpriteAnimatorComponent final : public ActorComponent
 {
 public:
-	explicit SpriteAnimatorComponent(Actor* owner);
-	~SpriteAnimatorComponent() override;
-
-	void Tick(float deltaTime) override;
+    explicit SpriteAnimatorComponent(Actor* owner);
+    ~SpriteAnimatorComponent() override = default;
 
 public:
-	void AddClip(const SpriteAnimationClip& clip);
+    // =========================================================
+    // Animation Control
+    // =========================================================
+    void AddClip(const SpriteAnimationClip& clip);
+    void Play(const std::wstring& clipName, bool restart = true);
+    void Stop();
 
-	void Play(const std::wstring& name, bool restart = false);
-	void Stop();
-	void Pause(bool pause);
+    bool IsPlaying() const { return m_currentClip != nullptr; }
 
-	bool IsPlaying() const { return m_isPlaying; }
-	bool IsPaused() const { return m_isPaused; }
-
-	const std::wstring& GetCurrentClipName() const { return m_currentClip; }
+public:
+    // =========================================================
+    // ActorComponent Interface
+    // =========================================================
+    void OnRegister() override;
+    void Tick(float deltaTime) override;
 
 private:
-	void ApplyFrame();
+    void AdvanceFrame();
 
 private:
-	SpriteRendererComponent* m_spriteRenderer{ nullptr };
+    // =========================================================
+    // Cached References
+    // =========================================================
+    SpriteRendererComponent* m_spriteRenderer{ nullptr };
+    MaterialInstance* m_materialInstance{ nullptr };
 
-	std::unordered_map<std::wstring, SpriteAnimationClip> m_clips;
+private:
+    // =========================================================
+    // Animation State
+    // =========================================================
+    std::unordered_map<std::wstring, SpriteAnimationClip> m_clips;
+    const SpriteAnimationClip* m_currentClip{ nullptr };
 
-	std::wstring m_currentClip = L"";
-	int32 m_currentFrame{ 0 };
-
-	float m_time{ 0.0f };
-	float m_frameDuration{ 0.1f };
-
-	bool m_isPlaying{ false };
-	bool m_isPaused{ false };
+    float  m_accumulatedTime{ 0.0f };
+    uint32 m_frameIndex{ 0 };
 };
