@@ -1,20 +1,15 @@
 #include "Engine/PCH/EnginePCH.h"
 
 #include "Engine/Core/GameFramework/PlayerController.h"
+#include "Engine/Core/GameFramework/Pawn.h"
 #include "Engine/Core/World/World.h"
-#include "Engine/Core/World/Actor.h"
-
-#include "Engine/Platform/Input/InputSystem.h"
 
 PlayerController::PlayerController(World& world)
     : m_world(world)
 {
 }
 
-PlayerController::~PlayerController()
-{
-    OnEndPlay();
-}
+PlayerController::~PlayerController() = default;
 
 void PlayerController::OnBeginPlay()
 {
@@ -30,19 +25,26 @@ void PlayerController::OnEndPlay()
     UnPossess();
 }
 
-void PlayerController::Possess(Actor* actor)
+void PlayerController::Possess(Pawn* pawn)
 {
-    SP_ASSERT(actor != nullptr);
-    m_pawn = actor;
+    SP_ASSERT(pawn != nullptr);
+
+    UnPossess();
+
+    m_pawn = pawn;
+    pawn->PossessedBy(this);
 }
 
 void PlayerController::UnPossess()
 {
-    m_pawn = nullptr;
+    if (m_pawn)
+    {
+        m_pawn->UnPossessed();
+        m_pawn = nullptr;
+    }
 }
 
 void PlayerController::ProcessInput(float /*deltaTime*/)
 {
-    // 기본 구현은 비워둠
-    // 파생 클래스에서 오버라이드
+    // 파생 Controller에서 구현
 }

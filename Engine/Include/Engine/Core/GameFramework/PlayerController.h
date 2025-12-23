@@ -5,13 +5,13 @@
 // Forward declarations
 class World;
 class Actor;
+class Pawn;
 
 /*
     PlayerController
     -------------------------------------------------
     - Player input → gameplay logic bridge
-    - Owns NO actors
-    - Controls (possesses) one Actor
+    - Pawn을 Possess 하여 조종
 */
 class PlayerController
 {
@@ -34,19 +34,19 @@ public:
     // =====================================================
     // Possession
     // =====================================================
-    void Possess(Actor* actor);
+    void Possess(Pawn* pawn);
     void UnPossess();
 
-    Actor* GetPawn() const { return m_pawn; }
+    Pawn* GetPawn() const { return m_pawn; }
     World& GetWorld() const { return m_world; }
 
 protected:
     // =====================================================
-    // Input hooks
+    // Input
     // =====================================================
     virtual void ProcessInput(float deltaTime);
 
 protected:
     World& m_world;
-    Actor* m_pawn{ nullptr };
+    Pawn* m_pawn{ nullptr };
 };

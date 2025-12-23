@@ -361,6 +361,9 @@
     <ClInclude Include="Include\Engine\Core\GameFramework\PlayerController.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
+    <ClInclude Include="Include\Engine\Core\GameFramework\Pawn.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Engine\Core\Engine.cpp">
@@ -547,6 +550,9 @@
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="Source\Engine\Core\GameFramework\PlayerController.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\Core\GameFramework\Pawn.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>

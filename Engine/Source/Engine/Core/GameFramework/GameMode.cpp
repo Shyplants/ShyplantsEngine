@@ -3,6 +3,7 @@
 #include "Engine/Core/GameFramework/GameMode.h"
 #include "Engine/Core/GameFramework/GameState.h"
 #include "Engine/Core/GameFramework/PlayerController.h"
+#include "Engine/Core/GameFramework/Pawn.h"
 #include "Engine/Core/World/World.h"
 
 // =====================================================
@@ -16,13 +17,7 @@ GameMode::GameMode(World& world)
     m_playerController = CreatePlayerController();
 }
 
-GameMode::~GameMode()
-{
-    if (m_hasBegunPlay)
-    {
-        OnEndPlay();
-    }
-}
+GameMode::~GameMode() = default;
 
 // =====================================================
 // Lifecycle
@@ -43,6 +38,16 @@ void GameMode::OnBeginPlay()
     if (m_playerController)
     {
         m_playerController->OnBeginPlay();
+    }
+
+    // -----------------------------
+    // Spawn & Possess Pawn
+    // -----------------------------
+    m_pawn = SpawnDefaultPawn();
+
+    if (m_playerController && m_pawn)
+    {
+        m_playerController->Possess(m_pawn);
     }
 }
 
@@ -77,6 +82,7 @@ void GameMode::OnEndPlay()
         m_gameState->OnEndPlay();
     }
 
+    m_pawn = nullptr;
     m_hasBegunPlay = false;
 }
 
@@ -92,4 +98,10 @@ std::unique_ptr<GameState> GameMode::CreateGameState()
 std::unique_ptr<PlayerController> GameMode::CreatePlayerController()
 {
     return std::make_unique<PlayerController>(m_world);
+}
+
+Pawn* GameMode::SpawnDefaultPawn()
+{
+    // 기본 Pawn 하나 생성
+    return m_world.SpawnActor<Pawn>();
 }

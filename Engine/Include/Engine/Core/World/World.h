@@ -20,9 +20,7 @@ class GameState;
     -------------------------------------------------
     - Gameplay state container
     - Owns current Level
-    - Manages Actor lifecycle
-    - Manages active camera
-    - Owns render submit scheduling (Submit phase)
+    - Manages high-level game lifecycle
 */
 class World
 {
@@ -35,9 +33,12 @@ public:
 
 public:
     // =====================================================
-    // Tick (Update Phase)
+    // Lifecycle
     // =====================================================
     void Tick(float deltaTime);
+    void Shutdown();
+
+    bool IsShuttingDown() const { return m_isShuttingDown; }
 
 public:
     // =====================================================
@@ -55,6 +56,9 @@ public:
         static_assert(std::is_base_of_v<Actor, T>,
             "T must be derived from Actor");
 
+        if (m_isShuttingDown || !m_currentLevel)
+            return nullptr;
+
         auto actor = std::make_unique<T>(
             std::forward<Args>(args)...);
 
@@ -69,7 +73,8 @@ public:
     // Level Management
     // =====================================================
     void LoadLevel(std::unique_ptr<Level> level);
-    void UnloadCurrentLevel();
+    void UnloadCurrentLevel();          // Gameplay-level unload
+    void ShutdownCurrentLevel();
 
     Level* GetCurrentLevel() const { return m_currentLevel.get(); }
 
@@ -95,7 +100,6 @@ public:
 
     void OnViewportResized(uint32 width, uint32 height);
 
-    // Called by Level when an actor is being destroyed
     void NotifyActorDestroyed(Actor* actor);
 
 public:
@@ -103,7 +107,6 @@ public:
     // Rendering (low-level access)
     // =====================================================
     RenderQueue& GetRenderQueue() const;
-
     RenderSystem& GetRenderSystem() const;
 
 private:
@@ -123,4 +126,6 @@ private:
 
     uint32 m_lastViewportW{ 0 };
     uint32 m_lastViewportH{ 0 };
+
+    bool m_isShuttingDown{ false };
 };

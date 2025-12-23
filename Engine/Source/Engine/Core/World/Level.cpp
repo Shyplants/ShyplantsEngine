@@ -27,12 +27,33 @@ void Level::OnEnter(World& world)
 
 void Level::OnExit(World& /*world*/)
 {
+    m_world = nullptr;
+    m_hasBegunPlay = false;
+}
+
+// =====================================================
+// Shutdown
+// =====================================================
+
+void Level::Shutdown()
+{
+    if (m_isShuttingDown)
+        return;
+
+    m_isShuttingDown = true;
+
+    DestroyAllActors();
+
     m_actors.clear();
     m_destroyQueue.clear();
 
     m_world = nullptr;
     m_hasBegunPlay = false;
 }
+
+// =====================================================
+// BeginPlay / Tick
+// =====================================================
 
 void Level::OnBeginPlay()
 {
@@ -47,13 +68,9 @@ void Level::OnBeginPlay()
     }
 }
 
-// =====================================================
-// Tick
-// =====================================================
-
 void Level::Tick(float deltaTime)
 {
-    if (!m_hasBegunPlay || !m_world)
+    if (!m_hasBegunPlay || !m_world || m_isShuttingDown)
         return;
 
     ProcessDestroyedActors();
@@ -68,14 +85,14 @@ void Level::Tick(float deltaTime)
 }
 
 // =====================================================
-// Rendering (Submit only)
+// Rendering
 // =====================================================
 
 void Level::SubmitRenderCommands(
     RenderQueue& queue,
     const CameraComponent2D& camera)
 {
-    if (!m_world || !m_hasBegunPlay)
+    if (!m_world || !m_hasBegunPlay || m_isShuttingDown)
         return;
 
     SubmitWorldRenderers(queue, camera);
@@ -88,6 +105,9 @@ void Level::SubmitRenderCommands(
 
 Actor* Level::SpawnActorInternal(std::unique_ptr<Actor> actor)
 {
+    if (m_isShuttingDown)
+        return nullptr;
+
     SP_ASSERT(m_world != nullptr);
     SP_ASSERT(actor != nullptr);
 
@@ -108,7 +128,7 @@ Actor* Level::SpawnActorInternal(std::unique_ptr<Actor> actor)
 
 void Level::MarkActorForDestroy(Actor* actor)
 {
-    if (!actor || actor->IsPendingDestroy())
+    if (!actor || actor->IsPendingDestroy() || m_isShuttingDown)
         return;
 
     actor->Destroy();
@@ -133,8 +153,21 @@ void Level::ProcessDestroyedActors()
     m_destroyQueue.clear();
 }
 
+void Level::DestroyAllActors()
+{
+    for (auto& actor : m_actors)
+    {
+        if (actor && !actor->IsPendingDestroy())
+        {
+            actor->Destroy();
+        }
+    }
+
+    m_actors.clear();
+}
+
 // =====================================================
-// Render submission internals
+// Render internals
 // =====================================================
 
 void Level::SubmitWorldRenderers(

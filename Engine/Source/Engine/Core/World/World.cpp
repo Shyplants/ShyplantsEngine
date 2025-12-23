@@ -25,15 +25,50 @@ World::World(RenderSystem* renderSystem)
 
 World::~World()
 {
-    UnloadCurrentLevel();
+    // Shutdown은 반드시 명시적으로 호출되어야 한다
 }
 
 // =====================================================
-// Tick (Update Phase)
+// Shutdown
+// =====================================================
+
+void World::Shutdown()
+{
+    if (m_isShuttingDown)
+        return;
+
+    m_isShuttingDown = true;
+
+    // -------------------------------------------------
+    // 1. Gameplay 종료
+    // -------------------------------------------------
+    if (m_gameMode)
+    {
+        m_gameMode->OnEndPlay();
+    }
+
+    // -------------------------------------------------
+    // 2. Level Shutdown (Actor Destroy)
+    // -------------------------------------------------
+    ShutdownCurrentLevel();
+
+    // -------------------------------------------------
+    // 3. GameFramework 정리
+    // -------------------------------------------------
+    m_gameMode.reset();
+
+    m_activeCamera = nullptr;
+}
+
+// =====================================================
+// Tick
 // =====================================================
 
 void World::Tick(float deltaTime)
 {
+    if (m_isShuttingDown)
+        return;
+
     if (m_gameMode)
         m_gameMode->Tick(deltaTime);
 
@@ -42,12 +77,12 @@ void World::Tick(float deltaTime)
 }
 
 // =====================================================
-// Submit (Render Phase - Collection Only)
+// Render Submit
 // =====================================================
 
 void World::SubmitRenderCommands()
 {
-    if (!m_currentLevel || !m_activeCamera)
+    if (m_isShuttingDown || !m_currentLevel || !m_activeCamera)
         return;
 
     RenderQueue& queue = m_renderSystem->GetRenderQueue();
@@ -63,7 +98,7 @@ void World::SubmitRenderCommands()
 
 void World::DestroyActor(Actor* actor)
 {
-    if (!actor || !m_currentLevel)
+    if (!actor || !m_currentLevel || m_isShuttingDown)
         return;
 
     NotifyActorDestroyed(actor);
@@ -72,11 +107,9 @@ void World::DestroyActor(Actor* actor)
 
 Actor* World::SpawnActor_Impl(std::unique_ptr<Actor> actor)
 {
-    if (!m_currentLevel)
-        return nullptr;
-
-    return m_currentLevel->SpawnActorInternal(
-        std::move(actor));
+    return m_currentLevel
+        ? m_currentLevel->SpawnActorInternal(std::move(actor))
+        : nullptr;
 }
 
 // =====================================================
@@ -109,6 +142,15 @@ void World::UnloadCurrentLevel()
     m_activeCamera = nullptr;
 }
 
+void World::ShutdownCurrentLevel()
+{
+    if (!m_currentLevel)
+        return;
+
+    m_currentLevel->Shutdown();
+    m_currentLevel.reset();
+}
+
 // =====================================================
 // Game Framework
 // =====================================================
@@ -134,7 +176,7 @@ void World::SetGameMode(std::unique_ptr<GameMode> gameMode)
 
 void World::SetActiveCamera(CameraComponent2D* camera)
 {
-    if (camera == nullptr)
+    if (!camera)
     {
         m_activeCamera = nullptr;
         return;
@@ -144,12 +186,9 @@ void World::SetActiveCamera(CameraComponent2D* camera)
     SP_ASSERT(owner != nullptr);
     SP_ASSERT(owner->GetWorld() == this);
 
-    if (m_activeCamera == camera)
-        return;
-
     m_activeCamera = camera;
 
-    if (m_lastViewportW > 0 && m_lastViewportH > 0)
+    if (m_lastViewportW && m_lastViewportH)
     {
         m_activeCamera->SetViewSize(
             static_cast<float>(m_lastViewportW),
@@ -172,17 +211,14 @@ void World::OnViewportResized(uint32 width, uint32 height)
 
 void World::NotifyActorDestroyed(Actor* actor)
 {
-    if (!actor || !m_activeCamera)
-        return;
-
-    if (m_activeCamera->GetOwner() == actor)
+    if (m_activeCamera && m_activeCamera->GetOwner() == actor)
     {
         m_activeCamera = nullptr;
     }
 }
 
 // =====================================================
-// Rendering (low-level access)
+// Rendering access
 // =====================================================
 
 RenderQueue& World::GetRenderQueue() const

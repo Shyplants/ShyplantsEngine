@@ -15,16 +15,14 @@ class CameraComponent2D;
 /*
     Level
     -------------------------------------------------
-    - Gameplay space / scene
-    - Owned by World
     - Owns Actors
-    - Submits render commands only (no rendering execution)
+    - Actor lifecycle container
 */
 class Level
 {
 public:
     Level() = default;
-    virtual ~Level();
+    virtual ~Level(); // 메모리 해제 전용
 
     Level(const Level&) = delete;
     Level& operator=(const Level&) = delete;
@@ -39,6 +37,8 @@ public:
     virtual void OnBeginPlay();
     virtual void Tick(float deltaTime);
 
+    void Shutdown();
+
 public:
     // =====================================================
     // Rendering (Submit phase only)
@@ -49,19 +49,17 @@ public:
 
 public:
     // =====================================================
-    // Actor Management (World internal)
+    // Actor Management
     // =====================================================
     Actor* SpawnActorInternal(std::unique_ptr<Actor> actor);
     void   MarkActorForDestroy(Actor* actor);
-
-    const std::vector<std::unique_ptr<Actor>>&
-        GetActors() const { return m_actors; }
 
 protected:
     World& GetWorld() const;
 
 private:
     void ProcessDestroyedActors();
+    void DestroyAllActors();
 
     void SubmitWorldRenderers(
         RenderQueue& queue,
@@ -77,4 +75,5 @@ private:
     std::vector<Actor*> m_destroyQueue;
 
     bool m_hasBegunPlay{ false };
+    bool m_isShuttingDown{ false };
 };
