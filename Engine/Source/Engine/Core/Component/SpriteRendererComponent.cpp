@@ -128,11 +128,6 @@ void SpriteRendererComponent::SetSourceRect(const Rect& rect)
     m_sourceRect = rect;
 }
 
-void SpriteRendererComponent::SetRenderOffset(const XMFLOAT2& offset)
-{
-    m_renderOffset = offset;
-}
-
 // =====================================================
 // Submit (PURE SUBMIT)
 // =====================================================

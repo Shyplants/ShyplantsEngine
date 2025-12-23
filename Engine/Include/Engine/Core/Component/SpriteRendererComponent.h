@@ -49,7 +49,6 @@ public:
     void SetAlpha(float alpha);
     void SetScale(const DirectX::XMFLOAT2& scale);
     void SetSourceRect(const Rect& rect);
-    void SetRenderOffset(const DirectX::XMFLOAT2& offset);
     void SetPivot(SpritePivot pivot) { m_pivot = pivot; }
 
 private:
@@ -70,7 +69,6 @@ private:
     DirectX::XMFLOAT2 m_scale{ 1.f, 1.f };
     DirectX::XMFLOAT4 m_color{ 1.f, 1.f, 1.f, 1.f };
     Rect              m_sourceRect{};
-    DirectX::XMFLOAT2 m_renderOffset{ 0.f, 0.f };
 
     SpritePivot m_pivot{ SpritePivot::Center };
 };

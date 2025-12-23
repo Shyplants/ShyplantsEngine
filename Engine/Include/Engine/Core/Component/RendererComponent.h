@@ -57,6 +57,13 @@ public:
     // =====================================================
     SceneComponent* GetAttachComponent() const { return m_attachComponent; }
 
+public:
+    // =====================================================
+    // RenderOffset
+    // =====================================================
+    void SetRenderOffset(const DirectX::XMFLOAT2& offset) { m_renderOffset = offset; }
+    DirectX::XMFLOAT2 GetRenderOffset() const { return m_renderOffset; }
+
 protected:
     friend class Actor;
     void SetAttachComponent(SceneComponent* comp)
@@ -67,4 +74,6 @@ protected:
 protected:
     SceneComponent* m_attachComponent{ nullptr };
     bool m_visible{ true };
+
+    DirectX::XMFLOAT2 m_renderOffset{ 0.0f, 0.0f };
 };
