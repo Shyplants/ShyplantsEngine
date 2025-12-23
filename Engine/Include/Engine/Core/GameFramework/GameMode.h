@@ -15,7 +15,7 @@ class GameState;
 class GameMode
 {
 public:
-    explicit GameMode(World* world);
+    explicit GameMode(World& world);
     virtual ~GameMode();
 
     GameMode(const GameMode&) = delete;
@@ -44,7 +44,7 @@ public:
     // Accessors
     // =====================================================
     GameState* GetGameState() const { return m_gameState.get(); }
-    World* GetWorld() const { return m_world; }
+    World& GetWorld() const { return m_world; }
 
 protected:
     // =====================================================
@@ -53,7 +53,7 @@ protected:
     virtual std::unique_ptr<GameState> CreateGameState();
 
 protected:
-    World* m_world{ nullptr };
+    World& m_world;
     std::unique_ptr<GameState> m_gameState{ nullptr };
 
 private:

@@ -203,5 +203,5 @@ RenderSystem& World::GetRenderSystem() const
 
 void World::CreateGameFramework()
 {
-    m_gameMode = std::make_unique<GameMode>(this);
+    m_gameMode = std::make_unique<GameMode>(*this);
 }

@@ -7,10 +7,9 @@
 // Constructor
 // =====================================================
 
-GameState::GameState(World* world)
+GameState::GameState(World& world)
     : m_world(world)
 {
-    SP_ASSERT(m_world != nullptr);
 }
 
 GameState::~GameState() = default;

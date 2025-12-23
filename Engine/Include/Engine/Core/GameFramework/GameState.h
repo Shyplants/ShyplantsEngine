@@ -2,6 +2,8 @@
 
 #include "Common/Types.h"
 
+class World;
+
 /*
     GameState
     -------------------------------------------------
@@ -12,7 +14,7 @@
 class GameState
 {
 public:
-    explicit GameState(class World* world);
+    explicit GameState(World& world);
     virtual ~GameState();
 
     GameState(const GameState&) = delete;
@@ -36,7 +38,7 @@ public:
     // =====================================================
     // Accessors
     // =====================================================
-    class World* GetWorld() const { return m_world; }
+    World& GetWorld() const { return m_world; }
 
 protected:
     // =====================================================
@@ -45,7 +47,7 @@ protected:
     bool HasBegunPlay() const { return m_hasBegunPlay; }
 
 protected:
-    class World* m_world{ nullptr };
+    World& m_world;
 
 private:
     bool m_hasBegunPlay{ false };

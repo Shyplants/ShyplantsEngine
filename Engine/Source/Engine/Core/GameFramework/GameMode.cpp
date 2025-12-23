@@ -8,11 +8,9 @@
 // Constructor / Destructor
 // =====================================================
 
-GameMode::GameMode(World* world)
+GameMode::GameMode(World& world)
     : m_world(world)
 {
-    SP_ASSERT(m_world != nullptr);
-
     m_gameState = CreateGameState();
 }
 
