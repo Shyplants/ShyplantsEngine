@@ -10,13 +10,18 @@
 #include "Engine/Graphics/Render/RenderQueue.h"
 
 // =====================================================
-// Lifecycle
+// Destructor
 // =====================================================
 
 Level::~Level() = default;
 
+// =====================================================
+// Lifecycle
+// =====================================================
+
 void Level::OnEnter(World& world)
 {
+    SP_ASSERT(m_world == nullptr);
     m_world = &world;
 }
 
@@ -24,12 +29,16 @@ void Level::OnExit(World& /*world*/)
 {
     m_actors.clear();
     m_destroyQueue.clear();
+
     m_world = nullptr;
     m_hasBegunPlay = false;
 }
 
 void Level::OnBeginPlay()
 {
+    if (m_hasBegunPlay)
+        return;
+
     m_hasBegunPlay = true;
 
     for (auto& actor : m_actors)
@@ -44,6 +53,9 @@ void Level::OnBeginPlay()
 
 void Level::Tick(float deltaTime)
 {
+    if (!m_hasBegunPlay || !m_world)
+        return;
+
     ProcessDestroyedActors();
 
     for (auto& actor : m_actors)
@@ -63,6 +75,9 @@ void Level::SubmitRenderCommands(
     RenderQueue& queue,
     const CameraComponent2D& camera)
 {
+    if (!m_world || !m_hasBegunPlay)
+        return;
+
     SubmitWorldRenderers(queue, camera);
     SubmitUIRenderers(queue);
 }
@@ -113,8 +128,7 @@ void Level::ProcessDestroyedActors()
             {
                 return actor->IsPendingDestroy();
             }),
-        m_actors.end()
-    );
+        m_actors.end());
 
     m_destroyQueue.clear();
 }
@@ -136,9 +150,7 @@ void Level::SubmitWorldRenderers(
 
         for (const auto& comp : actor->GetComponents())
         {
-            auto* rc =
-                dynamic_cast<RendererComponent*>(comp.get());
-
+            auto* rc = dynamic_cast<RendererComponent*>(comp.get());
             if (!rc || !rc->IsVisible() || rc->IsUIRenderer())
                 continue;
 
@@ -147,8 +159,7 @@ void Level::SubmitWorldRenderers(
     }
 }
 
-void Level::SubmitUIRenderers(
-    RenderQueue& queue)
+void Level::SubmitUIRenderers(RenderQueue& queue)
 {
     for (auto& actor : m_actors)
     {
@@ -157,9 +168,7 @@ void Level::SubmitUIRenderers(
 
         for (const auto& comp : actor->GetComponents())
         {
-            auto* rc =
-                dynamic_cast<RendererComponent*>(comp.get());
-
+            auto* rc = dynamic_cast<RendererComponent*>(comp.get());
             if (!rc || !rc->IsVisible() || !rc->IsUIRenderer())
                 continue;
 

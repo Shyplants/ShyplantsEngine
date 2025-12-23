@@ -16,9 +16,9 @@ class CameraComponent2D;
     Level
     -------------------------------------------------
     - Gameplay space / scene
+    - Owned by World
     - Owns Actors
-    - Collects DrawCommands and submits to RenderQueue
-    - Does NOT execute rendering
+    - Submits render commands only (no rendering execution)
 */
 class Level
 {
@@ -49,7 +49,7 @@ public:
 
 public:
     // =====================================================
-    // Actor Management
+    // Actor Management (World internal)
     // =====================================================
     Actor* SpawnActorInternal(std::unique_ptr<Actor> actor);
     void   MarkActorForDestroy(Actor* actor);
