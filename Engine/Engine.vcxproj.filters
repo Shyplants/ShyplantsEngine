@@ -358,6 +358,9 @@
     <ClInclude Include="Include\Engine\Platform\Windows\WindowsInput.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
+    <ClInclude Include="Include\Engine\Core\GameFramework\PlayerController.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Engine\Core\Engine.cpp">
@@ -541,6 +544,9 @@
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="Source\Engine\Platform\Input\InputSystem.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\Core\GameFramework\PlayerController.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>

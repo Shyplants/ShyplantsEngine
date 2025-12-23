@@ -2,14 +2,16 @@
 
 #include <memory>
 
+// Forward declarations
 class World;
 class GameState;
+class PlayerController;
 
 /*
     GameMode
     -------------------------------------------------
     - World 단위의 게임 규칙 컨트롤러
-    - GameState를 생성/소유
+    - GameState / PlayerController 생성 및 수명 관리
     - Gameplay Session의 시작과 종료를 관리
 */
 class GameMode
@@ -25,18 +27,8 @@ public:
     // =====================================================
     // Lifecycle
     // =====================================================
-
-    // Called once when gameplay session begins
     virtual void OnBeginPlay();
-
-    // Called every frame during gameplay session
     virtual void Tick(float deltaTime);
-
-    // Called once when gameplay session ends
-    // NOTE:
-    // - Must NOT destroy actors
-    // - Must NOT access RenderSystem
-    // - Only clean up GameMode-owned logic/state
     virtual void OnEndPlay();
 
 public:
@@ -44,17 +36,21 @@ public:
     // Accessors
     // =====================================================
     GameState* GetGameState() const { return m_gameState.get(); }
+    PlayerController* GetPlayerController() const { return m_playerController.get(); }
     World& GetWorld() const { return m_world; }
 
 protected:
     // =====================================================
-    // Factory
+    // Factories (override point)
     // =====================================================
     virtual std::unique_ptr<GameState> CreateGameState();
+    virtual std::unique_ptr<PlayerController> CreatePlayerController();
 
 protected:
     World& m_world;
-    std::unique_ptr<GameState> m_gameState{ nullptr };
+
+    std::unique_ptr<GameState>        m_gameState;
+    std::unique_ptr<PlayerController> m_playerController;
 
 private:
     bool m_hasBegunPlay{ false };

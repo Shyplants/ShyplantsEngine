@@ -94,6 +94,7 @@
     <ClInclude Include="Include\Engine\Core\Engine.h" />
     <ClInclude Include="Include\Engine\Core\GameFramework\GameMode.h" />
     <ClInclude Include="Include\Engine\Core\GameFramework\GameState.h" />
+    <ClInclude Include="Include\Engine\Core\GameFramework\PlayerController.h" />
     <ClInclude Include="Include\Engine\Core\Log\LogCategories.h" />
     <ClInclude Include="Include\Engine\Core\Log\LogCategory.h" />
     <ClInclude Include="Include\Engine\Core\Log\LogLevel.h" />
@@ -199,6 +200,9 @@
     <ClInclude Include="ThirdParty\DirectXTK\Src\SharedResourcePool.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Source\Engine\Core\GameFramework\PlayerController.cpp">
+      <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)\EnginePCH.pch</PrecompiledHeaderOutputFile>
+    </ClCompile>
     <ClCompile Include="Source\Engine\Core\Time\TimeSystem.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>

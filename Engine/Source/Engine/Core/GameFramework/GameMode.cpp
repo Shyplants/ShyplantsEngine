@@ -2,6 +2,7 @@
 
 #include "Engine/Core/GameFramework/GameMode.h"
 #include "Engine/Core/GameFramework/GameState.h"
+#include "Engine/Core/GameFramework/PlayerController.h"
 #include "Engine/Core/World/World.h"
 
 // =====================================================
@@ -12,11 +13,11 @@ GameMode::GameMode(World& world)
     : m_world(world)
 {
     m_gameState = CreateGameState();
+    m_playerController = CreatePlayerController();
 }
 
 GameMode::~GameMode()
 {
-    // Safety: ensure EndPlay is called if needed
     if (m_hasBegunPlay)
     {
         OnEndPlay();
@@ -38,12 +39,22 @@ void GameMode::OnBeginPlay()
     {
         m_gameState->OnBeginPlay();
     }
+
+    if (m_playerController)
+    {
+        m_playerController->OnBeginPlay();
+    }
 }
 
 void GameMode::Tick(float deltaTime)
 {
     if (!m_hasBegunPlay)
         return;
+
+    if (m_playerController)
+    {
+        m_playerController->Tick(deltaTime);
+    }
 
     if (m_gameState)
     {
@@ -55,6 +66,11 @@ void GameMode::OnEndPlay()
 {
     if (!m_hasBegunPlay)
         return;
+
+    if (m_playerController)
+    {
+        m_playerController->OnEndPlay();
+    }
 
     if (m_gameState)
     {
@@ -71,4 +87,9 @@ void GameMode::OnEndPlay()
 std::unique_ptr<GameState> GameMode::CreateGameState()
 {
     return std::make_unique<GameState>(m_world);
+}
+
+std::unique_ptr<PlayerController> GameMode::CreatePlayerController()
+{
+    return std::make_unique<PlayerController>(m_world);
 }
