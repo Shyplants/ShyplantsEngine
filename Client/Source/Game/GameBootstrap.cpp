@@ -20,7 +20,7 @@ namespace Game
     {
         auto& world = engine.GetWorld();
 
-        world.LoadLevel(std::make_unique<DemoLevel>());
+        world.LoadGameplayLevel(std::make_unique<DemoLevel>());
 
 #if defined(_DEBUG)
         SP_LOG(LogCore, ELogLevel::Trace,

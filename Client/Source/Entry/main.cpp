@@ -39,7 +39,7 @@ void LoadInitialLevel(Engine& engine)
 {
     auto& world = engine.GetWorld();
 
-    world.LoadLevel(std::make_unique<DemoLevel>());
+    world.LoadGameplayLevel(std::make_unique<DemoLevel>());
 }
 
 int WINAPI wWinMain(

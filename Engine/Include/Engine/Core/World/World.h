@@ -7,6 +7,8 @@
 
 // Forward declarations
 class Level;
+class PersistentLevel;
+class GameplayLevel;
 class Actor;
 class RenderSystem;
 class RenderQueue;
@@ -19,7 +21,7 @@ class GameState;
     World
     -------------------------------------------------
     - Gameplay state container
-    - Owns current Level
+    - Owns PersistentLevel + GameplayLevel
     - Manages high-level game lifecycle
 */
 class World
@@ -56,7 +58,7 @@ public:
         static_assert(std::is_base_of_v<Actor, T>,
             "T must be derived from Actor");
 
-        if (m_isShuttingDown || !m_currentLevel)
+        if (m_isShuttingDown)
             return nullptr;
 
         auto actor = std::make_unique<T>(
@@ -72,11 +74,11 @@ public:
     // =====================================================
     // Level Management
     // =====================================================
-    void LoadLevel(std::unique_ptr<Level> level);
-    void UnloadCurrentLevel();          // Gameplay-level unload
-    void ShutdownCurrentLevel();
+    void LoadGameplayLevel(std::unique_ptr<GameplayLevel> level);
+    void ShutdownGameplayLevel();
 
-    Level* GetCurrentLevel() const { return m_currentLevel.get(); }
+    PersistentLevel* GetPersistentLevel() const { return m_persistentLevel.get(); }
+    GameplayLevel* GetGameplayLevel()   const { return m_gameplayLevel.get(); }
 
 public:
     // =====================================================
@@ -119,7 +121,9 @@ private:
 private:
     RenderSystem* m_renderSystem{ nullptr };
 
-    std::unique_ptr<Level>    m_currentLevel;
+    std::unique_ptr<PersistentLevel> m_persistentLevel;
+    std::unique_ptr<GameplayLevel>   m_gameplayLevel;
+
     std::unique_ptr<GameMode> m_gameMode;
 
     CameraComponent2D* m_activeCamera{ nullptr };

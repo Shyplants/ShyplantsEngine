@@ -17,13 +17,14 @@ public:
     Pawn();
     virtual ~Pawn() override;
 
-    Pawn(const Pawn&) = delete;
-    Pawn& operator=(const Pawn&) = delete;
+    // -------------------------------------------------
+    // Level Ownership
+    // -------------------------------------------------
+    bool IsPersistentActor() const override { return true; }
 
-public:
-    // =====================================================
+    // -------------------------------------------------
     // Possession
-    // =====================================================
+    // -------------------------------------------------
     virtual void PossessedBy(PlayerController* controller);
     virtual void UnPossessed();
 
@@ -31,9 +32,6 @@ public:
     bool IsPossessed() const { return m_controller != nullptr; }
 
 protected:
-    // =====================================================
-    // Hooks
-    // =====================================================
     virtual void OnPossessed();
     virtual void OnUnPossessed();
 

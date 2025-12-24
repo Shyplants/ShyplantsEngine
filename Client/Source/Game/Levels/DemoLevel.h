@@ -1,9 +1,9 @@
 #pragma once
 
-#include "Engine/Core/World/Level.h"
+#include "Engine/Core/World/GameplayLevel.h"
 
 class World;
-class DemoLevel : public Level
+class DemoLevel final: public GameplayLevel
 {
 public:
 	DemoLevel();

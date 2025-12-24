@@ -105,7 +105,10 @@
     <ClInclude Include="Include\Engine\Core\Utils\StringUtils.h" />
     <ClInclude Include="Include\Engine\Core\World\Actor.h" />
     <ClInclude Include="Include\Engine\Core\Component\ActorComponent.h" />
+    <ClInclude Include="Include\Engine\Core\World\GameplayLevel.h" />
     <ClInclude Include="Include\Engine\Core\World\Level.h" />
+    <ClInclude Include="Include\Engine\Core\World\LevelTypes.h" />
+    <ClInclude Include="Include\Engine\Core\World\PersistentLevel.h" />
     <ClInclude Include="Include\Engine\Core\World\UIActor.h" />
     <ClInclude Include="Include\Engine\Core\World\World.h" />
     <ClInclude Include="Include\Engine\Core\Component\SpriteRendererComponent.h" />

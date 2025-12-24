@@ -5,6 +5,7 @@
 #include <algorithm>
 
 #include "Common/Types.h"
+#include "Engine/Core/World/LevelTypes.h"
 
 // Forward declarations
 class Actor;
@@ -17,15 +18,22 @@ class CameraComponent2D;
     -------------------------------------------------
     - Owns Actors
     - Actor lifecycle container
+    - Persistent / Gameplay Level의 공통 베이스
 */
 class Level
 {
 public:
     Level() = default;
-    virtual ~Level(); // 메모리 해제 전용
+    virtual ~Level();
 
     Level(const Level&) = delete;
     Level& operator=(const Level&) = delete;
+
+public:
+    // =====================================================
+    // Level Identity
+    // =====================================================
+    virtual ELevelType GetLevelType() const = 0;
 
 public:
     // =====================================================

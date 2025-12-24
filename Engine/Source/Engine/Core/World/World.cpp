@@ -2,6 +2,8 @@
 
 #include "Engine/Core/World/World.h"
 #include "Engine/Core/World/Level.h"
+#include "Engine/Core/World/PersistentLevel.h"
+#include "Engine/Core/World/GameplayLevel.h"
 #include "Engine/Core/World/Actor.h"
 
 #include "Engine/Core/Component/CameraComponent2D.h"
@@ -20,6 +22,12 @@ World::World(RenderSystem* renderSystem)
     : m_renderSystem(renderSystem)
 {
     SP_ASSERT(m_renderSystem != nullptr);
+
+    // PersistentLevel은 World 생명주기 동안 유지
+    m_persistentLevel = std::make_unique<PersistentLevel>();
+    m_persistentLevel->OnEnter(*this);
+    m_persistentLevel->OnBeginPlay();
+
     CreateGameFramework();
 }
 
@@ -48,15 +56,23 @@ void World::Shutdown()
     }
 
     // -------------------------------------------------
-    // 2. Level Shutdown (Actor Destroy)
+    // 2. GameplayLevel 종료
     // -------------------------------------------------
-    ShutdownCurrentLevel();
+    ShutdownGameplayLevel();
 
     // -------------------------------------------------
-    // 3. GameFramework 정리
+    // 3. PersistentLevel 종료
+    // -------------------------------------------------
+    if (m_persistentLevel)
+    {
+        m_persistentLevel->Shutdown();
+        m_persistentLevel.reset();
+    }
+
+    // -------------------------------------------------
+    // 4. GameFramework 정리
     // -------------------------------------------------
     m_gameMode.reset();
-
     m_activeCamera = nullptr;
 }
 
@@ -72,8 +88,11 @@ void World::Tick(float deltaTime)
     if (m_gameMode)
         m_gameMode->Tick(deltaTime);
 
-    if (m_currentLevel)
-        m_currentLevel->Tick(deltaTime);
+    if (m_persistentLevel)
+        m_persistentLevel->Tick(deltaTime);
+
+    if (m_gameplayLevel)
+        m_gameplayLevel->Tick(deltaTime);
 }
 
 // =====================================================
@@ -82,14 +101,20 @@ void World::Tick(float deltaTime)
 
 void World::SubmitRenderCommands()
 {
-    if (m_isShuttingDown || !m_currentLevel || !m_activeCamera)
+    if (m_isShuttingDown || !m_activeCamera)
         return;
 
     RenderQueue& queue = m_renderSystem->GetRenderQueue();
 
-    m_currentLevel->SubmitRenderCommands(
-        queue,
-        *m_activeCamera);
+    if (m_gameplayLevel)
+    {
+        m_gameplayLevel->SubmitRenderCommands(queue, *m_activeCamera);
+    }
+
+    if (m_persistentLevel)
+    {
+        m_persistentLevel->SubmitRenderCommands(queue, *m_activeCamera);
+    }
 }
 
 // =====================================================
@@ -98,57 +123,58 @@ void World::SubmitRenderCommands()
 
 void World::DestroyActor(Actor* actor)
 {
-    if (!actor || !m_currentLevel || m_isShuttingDown)
+    if (!actor || m_isShuttingDown)
         return;
 
     NotifyActorDestroyed(actor);
-    m_currentLevel->MarkActorForDestroy(actor);
+
+    Level* ownerLevel =
+        actor->IsPersistentActor()
+        ? static_cast<Level*>(m_persistentLevel.get())
+        : static_cast<Level*>(m_gameplayLevel.get());
+
+    if (ownerLevel)
+    {
+        ownerLevel->MarkActorForDestroy(actor);
+    }
 }
 
 Actor* World::SpawnActor_Impl(std::unique_ptr<Actor> actor)
 {
-    return m_currentLevel
-        ? m_currentLevel->SpawnActorInternal(std::move(actor))
-        : nullptr;
+    SP_ASSERT(actor != nullptr);
+
+    Level* targetLevel =
+        actor->IsPersistentActor()
+        ? static_cast<Level*>(m_persistentLevel.get())
+        : static_cast<Level*>(m_gameplayLevel.get());
+
+    SP_ASSERT(targetLevel != nullptr);
+
+    return targetLevel->SpawnActorInternal(std::move(actor));
 }
 
 // =====================================================
 // Level Management
 // =====================================================
 
-void World::LoadLevel(std::unique_ptr<Level> level)
+void World::LoadGameplayLevel(std::unique_ptr<GameplayLevel> level)
 {
     SP_ASSERT(level != nullptr);
 
-    UnloadCurrentLevel();
+    ShutdownGameplayLevel();
 
-    m_currentLevel = std::move(level);
-    m_currentLevel->OnEnter(*this);
-
-    if (m_gameMode)
-        m_gameMode->OnBeginPlay();
-
-    m_currentLevel->OnBeginPlay();
+    m_gameplayLevel = std::move(level);
+    m_gameplayLevel->OnEnter(*this);
+    m_gameplayLevel->OnBeginPlay();
 }
 
-void World::UnloadCurrentLevel()
+void World::ShutdownGameplayLevel()
 {
-    if (!m_currentLevel)
+    if (!m_gameplayLevel)
         return;
 
-    m_currentLevel->OnExit(*this);
-    m_currentLevel.reset();
-
-    m_activeCamera = nullptr;
-}
-
-void World::ShutdownCurrentLevel()
-{
-    if (!m_currentLevel)
-        return;
-
-    m_currentLevel->Shutdown();
-    m_currentLevel.reset();
+    m_gameplayLevel->Shutdown();
+    m_gameplayLevel.reset();
 }
 
 // =====================================================

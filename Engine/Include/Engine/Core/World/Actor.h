@@ -19,7 +19,7 @@ class Level;
     -------------------------------------------------
     - World에 존재하는 게임 오브젝트
     - Component 소유
-    - RenderQueue에는 직접 접근하지 않음
+    - Level에 의해 수명 관리됨
 */
 class Actor
 {
@@ -42,6 +42,14 @@ public:
     void Destroy();
     bool IsPendingDestroy() const { return m_pendingDestroy; }
 
+public:
+    // =====================================================
+    // Level Ownership Policy
+    // =====================================================
+    // 기본 Actor는 GameplayLevel에 소속
+    virtual bool IsPersistentActor() const { return false; }
+
+    // UIActor 판별 (렌더링 경로용)
     virtual bool IsUIActor() const { return false; }
 
 public:
