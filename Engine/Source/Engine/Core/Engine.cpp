@@ -42,7 +42,7 @@
 // -------------------------------------------------
 // Input
 // -------------------------------------------------
-#include "Engine/Platform/Input/InputSystem.h"
+#include "Engine/Core/Input/InputSystem.h"
 
 // =========================================================
 // Constructor / Destructor

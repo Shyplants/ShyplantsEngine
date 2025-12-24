@@ -1,7 +1,7 @@
 #include "Engine/PCH/EnginePCH.h"
 
 #include "Engine/Platform/Windows/WindowsInput.h"
-#include "Engine/Platform/Input/InputSystem.h"
+#include "Engine/Platform/Input/KeyboardDevice.h"
 
 // -------------------------------------------------
 // Key translation
@@ -129,7 +129,7 @@ void WindowsInput::HandleMessage(
         {
             KeyCode key = TranslateKey(wParam);
             if (key != KeyCode::Unknown)
-                InputSystem::SetKeyDown(key, true);
+                KeyboardDevice::SetKeyDown(static_cast<uint32>(key), true);
         }
         break;
     }
@@ -139,24 +139,24 @@ void WindowsInput::HandleMessage(
     {
         KeyCode key = TranslateKey(wParam);
         if (key != KeyCode::Unknown)
-            InputSystem::SetKeyDown(key, false);
+            KeyboardDevice::SetKeyDown(static_cast<uint32>(key), false);
         break;
     }
 
     case WM_LBUTTONDOWN:
-        InputSystem::SetKeyDown(KeyCode::MouseLeft, true);
+        KeyboardDevice::SetKeyDown(static_cast<uint32>(KeyCode::MouseLeft), true);
         break;
 
     case WM_LBUTTONUP:
-        InputSystem::SetKeyDown(KeyCode::MouseLeft, false);
+        KeyboardDevice::SetKeyDown(static_cast<uint32>(KeyCode::MouseLeft), false);
         break;
 
     case WM_RBUTTONDOWN:
-        InputSystem::SetKeyDown(KeyCode::MouseRight, true);
+        KeyboardDevice::SetKeyDown(static_cast<uint32>(KeyCode::MouseRight), true);
         break;
 
     case WM_RBUTTONUP:
-        InputSystem::SetKeyDown(KeyCode::MouseRight, false);
+        KeyboardDevice::SetKeyDown(static_cast<uint32>(KeyCode::MouseRight), false);
         break;
     }
 }

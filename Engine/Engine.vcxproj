@@ -152,7 +152,8 @@
     <ClInclude Include="Include\Engine\Graphics\Subsystem\GraphicsSubsystem.h" />
     <ClInclude Include="Include\Engine\Graphics\Utils\D3D11RectUtils.h" />
     <ClInclude Include="Include\Engine\Platform\Input\InputCodes.h" />
-    <ClInclude Include="Include\Engine\Platform\Input\InputSystem.h" />
+    <ClInclude Include="Include\Engine\Core\Input\InputSystem.h" />
+    <ClInclude Include="Include\Engine\Platform\Input\KeyboardDevice.h" />
     <ClInclude Include="Include\Engine\Platform\Platform.h" />
     <ClInclude Include="Include\Engine\Platform\Windows\Win32RectUtils.h" />
     <ClInclude Include="Include\Engine\Platform\Windows\Window.h" />
@@ -170,6 +171,8 @@
     <ClInclude Include="Include\Engine\Resource\ResourceType.h" />
     <ClInclude Include="Include\Engine\Resource\Texture\TextureColorSpace.h" />
     <ClInclude Include="Include\Engine\System\TimeManager.h" />
+    <ClInclude Include="Include\Engine\Core\Input\InputAction.h" />
+    <ClInclude Include="Include\Engine\Core\Input\InputActionBinding.h" />
     <ClInclude Include="Source\Engine\PCH\EnginePCH.h" />
     <ClInclude Include="Include\Engine\Graphics\Render\DrawCommand.h" />
     <ClInclude Include="Include\Engine\Graphics\Render\CommandBuffer.h" />
@@ -394,8 +397,12 @@
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Engine/PCH/GraphicsPCH.h</PrecompiledHeaderFile>
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)\GraphicsPCH.pch</PrecompiledHeaderOutputFile>
     </ClCompile>
-    <ClCompile Include="Source\Engine\Platform\Input\InputSystem.cpp">
+    <ClCompile Include="Source\Engine\Core\Input\InputSystem.cpp">
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)\EnginePCH.pch</PrecompiledHeaderOutputFile>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\Platform\Input\KeyboardDevice_Win32.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="Source\Engine\Platform\Input\WindowsInput.cpp" />
     <ClCompile Include="Source\Engine\Platform\Windows\WindowsPlatform.cpp">

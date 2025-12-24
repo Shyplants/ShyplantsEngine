@@ -331,7 +331,7 @@
     <ClInclude Include="Include\Engine\Platform\Platform.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="Include\Engine\Platform\Input\InputSystem.h">
+    <ClInclude Include="Include\Engine\Core\Input\InputSystem.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="Include\Engine\Platform\Windows\Window.h">
@@ -380,6 +380,15 @@
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="Include\Engine\Core\GameFramework\PlayerState.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Engine\Core\Input\InputAction.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Engine\Core\Input\InputActionBinding.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Engine\Platform\Input\KeyboardDevice.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>
@@ -561,7 +570,7 @@
     <ClCompile Include="Source\Engine\Platform\Input\WindowsInput.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Engine\Platform\Input\InputSystem.cpp">
+    <ClCompile Include="Source\Engine\Core\Input\InputSystem.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="Source\Engine\Core\GameFramework\PlayerController.cpp">
@@ -580,6 +589,9 @@
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="Source\Engine\Core\GameFramework\PlayerState.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\Platform\Input\KeyboardDevice_Win32.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>
