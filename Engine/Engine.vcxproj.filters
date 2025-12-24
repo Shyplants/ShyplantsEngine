@@ -181,9 +181,6 @@
     <ClInclude Include="Include\Engine\Core\World\UIActor.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="Include\Engine\Core\GameFramework\GameMode.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
     <ClInclude Include="Include\Engine\Core\GameFramework\GameState.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
@@ -373,6 +370,18 @@
     <ClInclude Include="Include\Engine\Core\World\GameplayLevel.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
+    <ClInclude Include="Include\Engine\Core\World\CameraActor.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Engine\Core\GameFramework\GameModeBase.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Engine\Core\GameFramework\SinglePlayerGameMode.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Engine\Core\GameFramework\PlayerState.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Engine\Core\Engine.cpp">
@@ -460,9 +469,6 @@
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="Source\Engine\Core\World\UIActor.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Engine\Core\GameFramework\GameMode.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="Source\Engine\Core\GameFramework\GameState.cpp">
@@ -562,6 +568,18 @@
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="Source\Engine\Core\GameFramework\Pawn.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\Core\World\CameraActor.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\Core\GameFramework\GameModeBase.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\Core\GameFramework\SinglePlayerGameMode.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\Core\GameFramework\PlayerState.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>

@@ -92,10 +92,12 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="Include\Engine\Core\Engine.h" />
-    <ClInclude Include="Include\Engine\Core\GameFramework\GameMode.h" />
+    <ClInclude Include="Include\Engine\Core\GameFramework\GameModeBase.h" />
     <ClInclude Include="Include\Engine\Core\GameFramework\GameState.h" />
     <ClInclude Include="Include\Engine\Core\GameFramework\Pawn.h" />
     <ClInclude Include="Include\Engine\Core\GameFramework\PlayerController.h" />
+    <ClInclude Include="Include\Engine\Core\GameFramework\PlayerState.h" />
+    <ClInclude Include="Include\Engine\Core\GameFramework\SinglePlayerGameMode.h" />
     <ClInclude Include="Include\Engine\Core\Log\LogCategories.h" />
     <ClInclude Include="Include\Engine\Core\Log\LogCategory.h" />
     <ClInclude Include="Include\Engine\Core\Log\LogLevel.h" />
@@ -105,6 +107,7 @@
     <ClInclude Include="Include\Engine\Core\Utils\StringUtils.h" />
     <ClInclude Include="Include\Engine\Core\World\Actor.h" />
     <ClInclude Include="Include\Engine\Core\Component\ActorComponent.h" />
+    <ClInclude Include="Include\Engine\Core\World\CameraActor.h" />
     <ClInclude Include="Include\Engine\Core\World\GameplayLevel.h" />
     <ClInclude Include="Include\Engine\Core\World\Level.h" />
     <ClInclude Include="Include\Engine\Core\World\LevelTypes.h" />
@@ -204,14 +207,26 @@
     <ClInclude Include="ThirdParty\DirectXTK\Src\SharedResourcePool.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Source\Engine\Core\GameFramework\GameModeBase.cpp">
+      <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)\EnginePCH.pch</PrecompiledHeaderOutputFile>
+    </ClCompile>
     <ClCompile Include="Source\Engine\Core\GameFramework\Pawn.cpp">
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)\EnginePCH.pch</PrecompiledHeaderOutputFile>
     </ClCompile>
     <ClCompile Include="Source\Engine\Core\GameFramework\PlayerController.cpp">
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)\EnginePCH.pch</PrecompiledHeaderOutputFile>
     </ClCompile>
+    <ClCompile Include="Source\Engine\Core\GameFramework\PlayerState.cpp">
+      <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)\EnginePCH.pch</PrecompiledHeaderOutputFile>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\Core\GameFramework\SinglePlayerGameMode.cpp">
+      <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)\EnginePCH.pch</PrecompiledHeaderOutputFile>
+    </ClCompile>
     <ClCompile Include="Source\Engine\Core\Time\TimeSystem.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\Core\World\CameraActor.cpp">
+      <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)\EnginePCH.pch</PrecompiledHeaderOutputFile>
     </ClCompile>
     <ClCompile Include="Source\Engine\Graphics\Buffer\ConstantBuffer.cpp">
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Engine/PCH/GraphicsPCH.h</PrecompiledHeaderFile>
@@ -274,9 +289,6 @@
     <ClCompile Include="Source\Engine\Core\Component\TextRendererComponent.cpp">
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)\EnginePCH.pch</PrecompiledHeaderOutputFile>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="Source\Engine\Core\GameFramework\GameMode.cpp">
-      <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)\EnginePCH.pch</PrecompiledHeaderOutputFile>
     </ClCompile>
     <ClCompile Include="Source\Engine\Core\GameFramework\GameState.cpp">
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)\EnginePCH.pch</PrecompiledHeaderOutputFile>

@@ -39,12 +39,18 @@
     <ClInclude Include="Source\Application\Win32Application.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Game\GameModes\DemoGameMode.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Client\ClientInit.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\ClientPCH\ClientPCH.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Entry\main.cpp">
+    <ClCompile Include="Source\Client\ClientApp.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="Source\Game\Levels\DemoLevel.cpp">
@@ -66,6 +72,12 @@
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="Source\Application\Win32Application.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Game\GameModes\DemoGameMode.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Client\ClientInit.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>

@@ -18,6 +18,16 @@
 #include "Engine/Core/World/World.h"
 
 // -------------------------------------------------
+// Level
+// -------------------------------------------------
+#include "Engine/Core/World/GameplayLevel.h"
+
+// -------------------------------------------------
+// Game Framework
+// -------------------------------------------------
+#include "Engine/Core/GameFramework/GameModeBase.h"
+
+// -------------------------------------------------
 // Resource
 // -------------------------------------------------
 #include "Engine/Resource/ResourceManager.h"
@@ -51,12 +61,13 @@ Engine::~Engine()
 
 bool Engine::Initialize(Window& window)
 {
-    SP_ASSERT(!m_initialized);
+    if (m_initialized)
+        return true;
 
     void* native = window.GetNativeHandle();
 
     // -------------------------------------------------
-    // LogSystem (Global, first)
+    // LogSystem (first)
     // -------------------------------------------------
     LogSystem::Init(L"Logs/ShyplantsEngine.log");
     LogSystem::SetGlobalLevel(ELogLevel::Trace);
@@ -65,12 +76,12 @@ bool Engine::Initialize(Window& window)
         "Engine initialization started");
 
     // -------------------------------------------------
-    // InputSystem (Global)
+    // InputSystem
     // -------------------------------------------------
     InputSystem::Initialize();
 
     // -------------------------------------------------
-    // ResourceManager (Global)
+    // ResourceManager
     // -------------------------------------------------
     ResourceManager::Create();
 
@@ -78,15 +89,18 @@ bool Engine::Initialize(Window& window)
     // GraphicsSubsystem
     // -------------------------------------------------
     m_graphics = std::make_unique<GraphicsSubsystem>();
-    if (!m_graphics->Initialize(native, window.GetWidth(), window.GetHeight()))
+    if (!m_graphics->Initialize(
+        native,
+        window.GetWidth(),
+        window.GetHeight()))
     {
         SP_LOG(LogCore, ELogLevel::Fatal,
-            "Engine: GraphicsSubsystem initialization failed");
+            "GraphicsSubsystem initialization failed");
         return false;
     }
 
     // -------------------------------------------------
-    // Setup ResourceLoadContext
+    // ResourceLoadContext
     // -------------------------------------------------
     ResourceLoadContext context{};
     context.renderDevice = &m_graphics->GetRenderDevice();
@@ -98,15 +112,17 @@ bool Engine::Initialize(Window& window)
     m_world = std::make_unique<World>(
         &m_graphics->GetRenderSystem());
 
-    SP_ASSERT(m_world != nullptr);
-    m_world->OnViewportResized(window.GetWidth(), window.GetHeight());
+    m_world->OnViewportResized(
+        window.GetWidth(),
+        window.GetHeight());
+
+    m_initialized = true;
 
 #if defined(_DEBUG)
     SP_LOG(LogCore, ELogLevel::Trace,
         "Engine initialized successfully");
 #endif
 
-    m_initialized = true;
     return true;
 }
 
@@ -125,7 +141,11 @@ void Engine::Shutdown()
     // -------------------------------------------------
     // World
     // -------------------------------------------------
-    m_world->Shutdown();
+    if (m_world)
+    {
+        m_world->Shutdown();
+        m_world.reset();
+    }
 
     // -------------------------------------------------
     // Graphics
@@ -166,11 +186,11 @@ void Engine::Shutdown()
 void Engine::Tick()
 {
     SP_ASSERT(m_initialized);
-    SP_ASSERT(m_graphics != nullptr);
-    SP_ASSERT(m_world != nullptr);
+    SP_ASSERT(m_graphics);
+    SP_ASSERT(m_world);
 
     // -------------------------------------------------
-    // Input frame begin
+    // Input begin
     // -------------------------------------------------
     InputSystem::BeginFrame();
 
@@ -184,12 +204,12 @@ void Engine::Tick()
     static const float clearColor[4] = { 0.2f, 0.2f, 0.2f, 1.0f };
 
     // -------------------------------------------------
-    // Begin Frame
+    // Frame begin
     // -------------------------------------------------
     m_graphics->BeginFrame(clearColor);
 
     // -------------------------------------------------
-    // Update world
+    // World update
     // -------------------------------------------------
     m_world->Tick(deltaTime);
     m_world->SubmitRenderCommands();
@@ -200,12 +220,12 @@ void Engine::Tick()
     m_graphics->Render();
 
     // -------------------------------------------------
-    // End Frame
+    // Frame end
     // -------------------------------------------------
     m_graphics->EndFrame();
 
     // -------------------------------------------------
-    // Input frame end
+    // Input end
     // -------------------------------------------------
     InputSystem::EndFrame();
 }
@@ -228,17 +248,37 @@ void Engine::Resize(uint32 width, uint32 height)
 }
 
 // =========================================================
+// Game Setup (Facade)
+// =========================================================
+
+void Engine::SetGameMode(std::unique_ptr<GameModeBase> gameMode)
+{
+    SP_ASSERT(m_initialized);
+    SP_ASSERT(m_world);
+
+    m_world->SetGameMode(std::move(gameMode));
+}
+
+void Engine::LoadGameplayLevel(std::unique_ptr<GameplayLevel> level)
+{
+    SP_ASSERT(m_initialized);
+    SP_ASSERT(m_world);
+
+    m_world->LoadGameplayLevel(std::move(level));
+}
+
+// =========================================================
 // Accessors
 // =========================================================
 
 GraphicsSubsystem& Engine::GetGraphics()
 {
-    SP_ASSERT(m_graphics != nullptr);
+    SP_ASSERT(m_graphics);
     return *m_graphics;
 }
 
 World& Engine::GetWorld()
 {
-    SP_ASSERT(m_world != nullptr);
+    SP_ASSERT(m_world);
     return *m_world;
 }

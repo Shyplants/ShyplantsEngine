@@ -1,29 +1,29 @@
 #include "Engine/PCH/EnginePCH.h"
 
-#include "Engine/Core/GameFramework/GameMode.h"
+#include "Engine/Core/GameFramework/GameModeBase.h"
 #include "Engine/Core/GameFramework/GameState.h"
 #include "Engine/Core/GameFramework/PlayerController.h"
-#include "Engine/Core/GameFramework/Pawn.h"
+#include "Engine/Core/GameFramework/PlayerState.h"
 #include "Engine/Core/World/World.h"
 
 // =====================================================
 // Constructor / Destructor
 // =====================================================
 
-GameMode::GameMode(World& world)
+GameModeBase::GameModeBase(World& world)
     : m_world(world)
 {
     m_gameState = CreateGameState();
     m_playerController = CreatePlayerController();
 }
 
-GameMode::~GameMode() = default;
+GameModeBase::~GameModeBase() = default;
 
 // =====================================================
 // Lifecycle
 // =====================================================
 
-void GameMode::OnBeginPlay()
+void GameModeBase::OnBeginPlay()
 {
     if (m_hasBegunPlay)
         return;
@@ -31,58 +31,35 @@ void GameMode::OnBeginPlay()
     m_hasBegunPlay = true;
 
     if (m_gameState)
-    {
         m_gameState->OnBeginPlay();
-    }
 
     if (m_playerController)
-    {
         m_playerController->OnBeginPlay();
-    }
-
-    // -----------------------------
-    // Spawn & Possess Pawn
-    // -----------------------------
-    m_pawn = SpawnDefaultPawn();
-
-    if (m_playerController && m_pawn)
-    {
-        m_playerController->Possess(m_pawn);
-    }
 }
 
-void GameMode::Tick(float deltaTime)
+void GameModeBase::Tick(float deltaTime)
 {
     if (!m_hasBegunPlay)
         return;
 
     if (m_playerController)
-    {
         m_playerController->Tick(deltaTime);
-    }
 
     if (m_gameState)
-    {
         m_gameState->Tick(deltaTime);
-    }
 }
 
-void GameMode::OnEndPlay()
+void GameModeBase::OnEndPlay()
 {
     if (!m_hasBegunPlay)
         return;
 
     if (m_playerController)
-    {
         m_playerController->OnEndPlay();
-    }
 
     if (m_gameState)
-    {
         m_gameState->OnEndPlay();
-    }
 
-    m_pawn = nullptr;
     m_hasBegunPlay = false;
 }
 
@@ -90,18 +67,18 @@ void GameMode::OnEndPlay()
 // Factory
 // =====================================================
 
-std::unique_ptr<GameState> GameMode::CreateGameState()
+std::unique_ptr<GameState> GameModeBase::CreateGameState()
 {
     return std::make_unique<GameState>(m_world);
 }
 
-std::unique_ptr<PlayerController> GameMode::CreatePlayerController()
+std::unique_ptr<PlayerController> GameModeBase::CreatePlayerController()
 {
     return std::make_unique<PlayerController>(m_world);
 }
 
-Pawn* GameMode::SpawnDefaultPawn()
+std::unique_ptr<PlayerState> GameModeBase::CreatePlayerState()
 {
-    // 기본 Pawn 하나 생성
-    return m_world.SpawnActor<Pawn>();
+    // TODO
+    return std::unique_ptr<PlayerState>();
 }

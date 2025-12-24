@@ -6,22 +6,23 @@
 class World;
 class GameState;
 class PlayerController;
-class Pawn;
+class PlayerState;
 
 /*
-    GameMode
+    GameModeBase
     -------------------------------------------------
-    - World 단위의 게임 규칙 컨트롤러
-    - PlayerController / Pawn / GameState 수명 관리
+    - 엔진 기본 게임 모드 (중립)
+    - 멀티플레이/싱글플레이 모두 대응 가능
+    - Pawn, Player 수에 대한 가정 없음
 */
-class GameMode
+class GameModeBase
 {
 public:
-    explicit GameMode(World& world);
-    virtual ~GameMode();
+    explicit GameModeBase(World& world);
+    virtual ~GameModeBase();
 
-    GameMode(const GameMode&) = delete;
-    GameMode& operator=(const GameMode&) = delete;
+    GameModeBase(const GameModeBase&) = delete;
+    GameModeBase& operator=(const GameModeBase&) = delete;
 
 public:
     // =====================================================
@@ -37,24 +38,21 @@ public:
     // =====================================================
     GameState* GetGameState() const { return m_gameState.get(); }
     PlayerController* GetPlayerController() const { return m_playerController.get(); }
-    Pawn* GetPawn() const { return m_pawn; }
     World& GetWorld() const { return m_world; }
 
 protected:
     // =====================================================
-    // Factories (override point)
+    // Factory hooks
     // =====================================================
-    virtual std::unique_ptr<GameState>        CreateGameState();
+    virtual std::unique_ptr<GameState> CreateGameState();
     virtual std::unique_ptr<PlayerController> CreatePlayerController();
-    virtual Pawn* SpawnDefaultPawn();
+    virtual std::unique_ptr<PlayerState> CreatePlayerState();
 
 protected:
     World& m_world;
 
     std::unique_ptr<GameState>        m_gameState;
     std::unique_ptr<PlayerController> m_playerController;
-
-    Pawn* m_pawn{ nullptr };
 
 private:
     bool m_hasBegunPlay{ false };

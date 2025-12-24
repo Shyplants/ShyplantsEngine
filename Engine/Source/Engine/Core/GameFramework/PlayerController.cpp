@@ -3,6 +3,7 @@
 #include "Engine/Core/GameFramework/PlayerController.h"
 #include "Engine/Core/GameFramework/Pawn.h"
 #include "Engine/Core/World/World.h"
+#include "Engine/Core/World/CameraActor.h"
 
 // =====================================================
 // Constructor / Destructor
@@ -22,11 +23,12 @@ PlayerController::~PlayerController() = default;
 void PlayerController::OnBeginPlay()
 {
     // 기본 구현 비워둠
+    // CameraActor 연결은 GameMode에서 수행
 }
 
 void PlayerController::Tick(float deltaTime)
 {
-    // Pawn이 없거나, 파괴 예정이면 입력 처리 금지
+    // Pawn이 없거나 파괴 예정이면 입력 처리 금지
     if (!m_pawn || m_pawn->IsPendingDestroy())
         return;
 
@@ -36,10 +38,11 @@ void PlayerController::Tick(float deltaTime)
 void PlayerController::OnEndPlay()
 {
     UnPossess();
+    m_camera = nullptr;
 }
 
 // =====================================================
-// Possession
+// Possession (Pawn)
 // =====================================================
 
 void PlayerController::Possess(Pawn* pawn)
@@ -47,7 +50,6 @@ void PlayerController::Possess(Pawn* pawn)
     if (!CanPossess(pawn))
         return;
 
-    // 기존 Pawn 해제
     UnPossess();
 
     m_pawn = pawn;
@@ -59,9 +61,17 @@ void PlayerController::UnPossess()
     if (!m_pawn)
         return;
 
-    // Pawn 쪽에서 Controller를 정리
     m_pawn->UnPossessed();
     m_pawn = nullptr;
+}
+
+// =====================================================
+// Camera binding
+// =====================================================
+
+void PlayerController::SetCamera(CameraActor* camera)
+{
+    m_camera = camera;
 }
 
 // =====================================================
@@ -71,6 +81,9 @@ void PlayerController::UnPossess()
 void PlayerController::ProcessInput(float /*deltaTime*/)
 {
     // 파생 Controller에서 구현
+    // 예:
+    //  - Pawn 이동 입력
+    //  - CameraActor 회전 / 줌 입력
 }
 
 // =====================================================

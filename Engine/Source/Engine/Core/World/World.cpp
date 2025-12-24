@@ -1,14 +1,14 @@
 #include "Engine/PCH/EnginePCH.h"
 
 #include "Engine/Core/World/World.h"
+#include "Engine/Core/World/Actor.h"
 #include "Engine/Core/World/Level.h"
 #include "Engine/Core/World/PersistentLevel.h"
 #include "Engine/Core/World/GameplayLevel.h"
-#include "Engine/Core/World/Actor.h"
 
 #include "Engine/Core/Component/CameraComponent2D.h"
 
-#include "Engine/Core/GameFramework/GameMode.h"
+#include "Engine/Core/GameFramework/GameModeBase.h"
 #include "Engine/Core/GameFramework/GameState.h"
 
 #include "Engine/Graphics/Render/RenderSystem.h"
@@ -23,17 +23,15 @@ World::World(RenderSystem* renderSystem)
 {
     SP_ASSERT(m_renderSystem != nullptr);
 
-    // PersistentLevel은 World 생명주기 동안 유지
+    // PersistentLevel은 World 수명 동안 유지
     m_persistentLevel = std::make_unique<PersistentLevel>();
     m_persistentLevel->OnEnter(*this);
     m_persistentLevel->OnBeginPlay();
-
-    CreateGameFramework();
 }
 
 World::~World()
 {
-    // Shutdown은 반드시 명시적으로 호출되어야 한다
+    // Shutdown은 외부에서 명시적으로 호출되어야 함
 }
 
 // =====================================================
@@ -47,32 +45,23 @@ void World::Shutdown()
 
     m_isShuttingDown = true;
 
-    // -------------------------------------------------
-    // 1. Gameplay 종료
-    // -------------------------------------------------
+    // 1. GameMode 종료
     if (m_gameMode)
     {
         m_gameMode->OnEndPlay();
+        m_gameMode.reset();
     }
 
-    // -------------------------------------------------
     // 2. GameplayLevel 종료
-    // -------------------------------------------------
     ShutdownGameplayLevel();
 
-    // -------------------------------------------------
     // 3. PersistentLevel 종료
-    // -------------------------------------------------
     if (m_persistentLevel)
     {
         m_persistentLevel->Shutdown();
         m_persistentLevel.reset();
     }
 
-    // -------------------------------------------------
-    // 4. GameFramework 정리
-    // -------------------------------------------------
-    m_gameMode.reset();
     m_activeCamera = nullptr;
 }
 
@@ -107,14 +96,10 @@ void World::SubmitRenderCommands()
     RenderQueue& queue = m_renderSystem->GetRenderQueue();
 
     if (m_gameplayLevel)
-    {
         m_gameplayLevel->SubmitRenderCommands(queue, *m_activeCamera);
-    }
 
     if (m_persistentLevel)
-    {
         m_persistentLevel->SubmitRenderCommands(queue, *m_activeCamera);
-    }
 }
 
 // =====================================================
@@ -139,7 +124,7 @@ void World::DestroyActor(Actor* actor)
     }
 }
 
-Actor* World::SpawnActor_Impl(std::unique_ptr<Actor> actor)
+Actor* World::SpawnActor_Internal(std::unique_ptr<Actor> actor)
 {
     SP_ASSERT(actor != nullptr);
 
@@ -148,7 +133,8 @@ Actor* World::SpawnActor_Impl(std::unique_ptr<Actor> actor)
         ? static_cast<Level*>(m_persistentLevel.get())
         : static_cast<Level*>(m_gameplayLevel.get());
 
-    SP_ASSERT(targetLevel != nullptr);
+    if (!targetLevel)
+        return nullptr;
 
     return targetLevel->SpawnActorInternal(std::move(actor));
 }
@@ -181,19 +167,21 @@ void World::ShutdownGameplayLevel()
 // Game Framework
 // =====================================================
 
+void World::SetGameMode(std::unique_ptr<GameModeBase> gameMode)
+{
+    SP_ASSERT(!m_isShuttingDown);
+
+    m_gameMode = std::move(gameMode);
+
+    if (m_gameMode)
+    {
+        m_gameMode->OnBeginPlay();
+    }
+}
+
 GameState* World::GetGameState() const
 {
     return m_gameMode ? m_gameMode->GetGameState() : nullptr;
-}
-
-void World::SetGameMode(std::unique_ptr<GameMode> gameMode)
-{
-    if (m_gameMode)
-    {
-        m_gameMode->OnEndPlay();
-    }
-
-    m_gameMode = std::move(gameMode);
 }
 
 // =====================================================
@@ -244,7 +232,7 @@ void World::NotifyActorDestroyed(Actor* actor)
 }
 
 // =====================================================
-// Rendering access
+// Rendering Access
 // =====================================================
 
 RenderQueue& World::GetRenderQueue() const
@@ -257,13 +245,4 @@ RenderSystem& World::GetRenderSystem() const
 {
     SP_ASSERT(m_renderSystem != nullptr);
     return *m_renderSystem;
-}
-
-// =====================================================
-// Internal
-// =====================================================
-
-void World::CreateGameFramework()
-{
-    m_gameMode = std::make_unique<GameMode>(*this);
 }

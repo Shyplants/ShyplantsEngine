@@ -9,13 +9,16 @@
 class Window;
 class GraphicsSubsystem;
 class World;
+class GameModeBase;
+class GameplayLevel;
 
 /*
     Engine
     -------------------------------------------------
     - ShyplantsEngine의 최상위 루트 객체
-    - Subsystem / ResourceManager 생성 및 수명 관리
-    - Main loop (Tick / Render) 담당
+    - Subsystem / World 수명 관리
+    - Main loop (Tick / Render)
+    - Client 친화적 파사드 제공
 */
 class Engine
 {
@@ -47,6 +50,13 @@ public:
 
 public:
     // =========================================================
+    // Game Setup (Facade)
+    // =========================================================
+    void SetGameMode(std::unique_ptr<GameModeBase> gameMode);
+    void LoadGameplayLevel(std::unique_ptr<GameplayLevel> level);
+
+public:
+    // =========================================================
     // Accessors
     // =========================================================
     GraphicsSubsystem& GetGraphics();
@@ -60,13 +70,11 @@ private:
 
 private:
     // =========================================================
-    // Game world
+    // Game World
     // =========================================================
     std::unique_ptr<World> m_world;
 
 private:
     TimeSystem m_time;
-
-private:
     bool m_initialized{ false };
 };

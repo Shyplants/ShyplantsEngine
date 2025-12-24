@@ -6,23 +6,25 @@
 #include "Common/Types.h"
 
 // Forward declarations
+class Actor;
 class Level;
 class PersistentLevel;
 class GameplayLevel;
-class Actor;
+
 class RenderSystem;
 class RenderQueue;
 
 class CameraComponent2D;
-class GameMode;
+class GameModeBase;
 class GameState;
 
 /*
     World
     -------------------------------------------------
-    - Gameplay state container
-    - Owns PersistentLevel + GameplayLevel
-    - Manages high-level game lifecycle
+    - 엔진의 최상위 Gameplay 컨테이너
+    - PersistentLevel + GameplayLevel 소유
+    - GameModeBase 생명주기 관리
+    - 정책 없는 오케스트레이터
 */
 class World
 {
@@ -44,7 +46,7 @@ public:
 
 public:
     // =====================================================
-    // Render Submit Phase
+    // Render Submit
     // =====================================================
     void SubmitRenderCommands();
 
@@ -65,7 +67,7 @@ public:
             std::forward<Args>(args)...);
 
         return static_cast<T*>(
-            SpawnActor_Impl(std::move(actor)));
+            SpawnActor_Internal(std::move(actor)));
     }
 
     void DestroyActor(Actor* actor);
@@ -84,6 +86,8 @@ public:
     // =====================================================
     // Game Framework
     // =====================================================
+    void SetGameMode(std::unique_ptr<GameModeBase> gameMode);
+
     template<typename T>
     T* GetGameMode() const
     {
@@ -91,7 +95,6 @@ public:
     }
 
     GameState* GetGameState() const;
-    void SetGameMode(std::unique_ptr<GameMode> gameMode);
 
 public:
     // =====================================================
@@ -101,12 +104,11 @@ public:
     CameraComponent2D* GetActiveCamera() const { return m_activeCamera; }
 
     void OnViewportResized(uint32 width, uint32 height);
-
     void NotifyActorDestroyed(Actor* actor);
 
 public:
     // =====================================================
-    // Rendering (low-level access)
+    // Rendering Access
     // =====================================================
     RenderQueue& GetRenderQueue() const;
     RenderSystem& GetRenderSystem() const;
@@ -115,8 +117,7 @@ private:
     // =====================================================
     // Internal
     // =====================================================
-    void CreateGameFramework();
-    Actor* SpawnActor_Impl(std::unique_ptr<Actor> actor);
+    Actor* SpawnActor_Internal(std::unique_ptr<Actor> actor);
 
 private:
     RenderSystem* m_renderSystem{ nullptr };
@@ -124,7 +125,7 @@ private:
     std::unique_ptr<PersistentLevel> m_persistentLevel;
     std::unique_ptr<GameplayLevel>   m_gameplayLevel;
 
-    std::unique_ptr<GameMode> m_gameMode;
+    std::unique_ptr<GameModeBase> m_gameMode;
 
     CameraComponent2D* m_activeCamera{ nullptr };
 

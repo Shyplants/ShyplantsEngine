@@ -7,8 +7,7 @@
 
 #include "Engine/Core/Engine.h"
 #include "Engine/Core/World/World.h"
-// #include "Engine/Core/Component/CameraComponent.h"
-#include "Engine/Core/Component/CameraComponent2D.h"
+#include "Engine/Core/Component/SceneComponent.h"
 
 
 DemoLevel::DemoLevel() = default;
@@ -18,14 +17,6 @@ DemoLevel::~DemoLevel() = default;
 void DemoLevel::OnEnter(World& world)
 {
 	Level::OnEnter(world);
-
-	Actor* camActor = world.SpawnActor<Actor>();
-	auto cam = camActor->AddComponent<CameraComponent2D>();
-
-	camActor->GetRootComponent()->SetLocalPosition({ 0.0, 0.0f, -10.0f });
-	
-	cam->SetZoom(1.0f);
-	world.SetActiveCamera(cam);
 }
 
 void DemoLevel::OnBeginPlay()
