@@ -12,18 +12,19 @@ class Actor;
 class World;
 class RenderQueue;
 class CameraComponent2D;
+class RendererComponent;
 
 /*
     Level
     -------------------------------------------------
     - Owns Actors
     - Actor lifecycle container
-    - Persistent / Gameplay Level의 공통 베이스
+    - Persistent / Gameplay Level 공통 베이스
 */
 class Level
 {
 public:
-    Level() = default;
+    Level();
     virtual ~Level();
 
     Level(const Level&) = delete;
@@ -31,7 +32,7 @@ public:
 
 public:
     // =====================================================
-    // Level Identity
+    // Identity
     // =====================================================
     virtual ELevelType GetLevelType() const = 0;
 
@@ -45,11 +46,12 @@ public:
     virtual void OnBeginPlay();
     virtual void Tick(float deltaTime);
 
-    void Shutdown();
+    // World 종료 시 호출
+    virtual void Shutdown();
 
 public:
     // =====================================================
-    // Rendering (Submit phase only)
+    // Rendering (Submit-only)
     // =====================================================
     void SubmitRenderCommands(
         RenderQueue& queue,
@@ -66,6 +68,9 @@ protected:
     World& GetWorld() const;
 
 private:
+    // =====================================================
+    // Internals
+    // =====================================================
     void ProcessDestroyedActors();
     void DestroyAllActors();
 
@@ -73,8 +78,7 @@ private:
         RenderQueue& queue,
         const CameraComponent2D& camera);
 
-    void SubmitUIRenderers(
-        RenderQueue& queue);
+    void SubmitUIRenderers(RenderQueue& queue);
 
 private:
     World* m_world{ nullptr };

@@ -397,6 +397,9 @@
     <ClInclude Include="Include\Engine\Graphics\Render\RenderSortKey.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
+    <ClInclude Include="Include\Engine\Core\World\LevelResourceSet.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Engine\Core\Engine.cpp">
@@ -598,6 +601,12 @@
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="Source\Engine\Platform\Input\KeyboardDevice_Win32.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\Core\World\GameplayLevel.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\Core\World\LevelResourceSet.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>

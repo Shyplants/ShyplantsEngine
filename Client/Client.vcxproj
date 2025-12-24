@@ -162,6 +162,7 @@
     <ClInclude Include="Source\ClientPCH\ClientPCH.h" />
     <ClInclude Include="Source\Game\GameModes\DemoGameMode.h" />
     <ClInclude Include="Source\Game\Levels\DemoLevel.h" />
+    <ClInclude Include="Source\Game\Levels\DemoLevelResources.h" />
     <ClInclude Include="Source\Platform\Win32\Win32Window.h" />
   </ItemGroup>
   <ItemGroup>
@@ -193,6 +194,7 @@
     </ClCompile>
     <ClCompile Include="Source\Game\GameModes\DemoGameMode.cpp" />
     <ClCompile Include="Source\Game\Levels\DemoLevel.cpp" />
+    <ClCompile Include="Source\Game\Levels\DemoLevelResources.cpp" />
     <ClCompile Include="Source\Platform\Win32\Win32Window.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>

@@ -9,9 +9,7 @@
 
 #include "Engine/Graphics/Render/RenderQueue.h"
 
-// =====================================================
-// Destructor
-// =====================================================
+Level::Level() = default;
 
 Level::~Level() = default;
 
@@ -27,12 +25,13 @@ void Level::OnEnter(World& world)
 
 void Level::OnExit(World& /*world*/)
 {
-    m_world = nullptr;
+    // GameplayLevel 교체 시 호출
     m_hasBegunPlay = false;
+    m_world = nullptr;
 }
 
 // =====================================================
-// Shutdown
+// Shutdown (World 종료)
 // =====================================================
 
 void Level::Shutdown()
@@ -47,8 +46,8 @@ void Level::Shutdown()
     m_actors.clear();
     m_destroyQueue.clear();
 
-    m_world = nullptr;
     m_hasBegunPlay = false;
+    m_world = nullptr;
 }
 
 // =====================================================
@@ -184,7 +183,10 @@ void Level::SubmitWorldRenderers(
         for (const auto& comp : actor->GetComponents())
         {
             auto* rc = dynamic_cast<RendererComponent*>(comp.get());
-            if (!rc || !rc->IsVisible() || rc->IsUIRenderer())
+            if (!rc || !rc->IsVisible())
+                continue;
+
+            if (rc->IsUIRenderer())
                 continue;
 
             rc->SubmitWorld(queue, viewProj);
@@ -196,13 +198,16 @@ void Level::SubmitUIRenderers(RenderQueue& queue)
 {
     for (auto& actor : m_actors)
     {
-        if (actor->IsPendingDestroy() || !actor->IsUIActor())
+        if (actor->IsPendingDestroy())
             continue;
 
         for (const auto& comp : actor->GetComponents())
         {
             auto* rc = dynamic_cast<RendererComponent*>(comp.get());
-            if (!rc || !rc->IsVisible() || !rc->IsUIRenderer())
+            if (!rc || !rc->IsVisible())
+                continue;
+
+            if (!rc->IsUIRenderer())
                 continue;
 
             rc->SubmitUI(queue);

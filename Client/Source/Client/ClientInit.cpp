@@ -11,17 +11,17 @@ namespace ClientInit
     void SetupGame(Engine& engine)
     {
         // -----------------------------------------
-        // GameMode 선택
-        // -----------------------------------------
-        engine.SetGameMode(
-            std::make_unique<DemoGameMode>(engine.GetWorld())
-        );
-
-        // -----------------------------------------
         // GameplayLevel 로드
         // -----------------------------------------
         engine.LoadGameplayLevel(
             std::make_unique<DemoLevel>()
+        );
+
+        // -----------------------------------------
+        // GameMode 선택
+        // -----------------------------------------
+        engine.SetGameMode(
+            std::make_unique<DemoGameMode>(engine.GetWorld())
         );
     }
 }
