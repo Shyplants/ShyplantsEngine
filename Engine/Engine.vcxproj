@@ -124,6 +124,7 @@
     <ClInclude Include="Include\Engine\Graphics\PSO\BuiltinPipelineIDs.h" />
     <ClInclude Include="Include\Engine\Graphics\PSO\PipelineID.h" />
     <ClInclude Include="Include\Engine\Graphics\PSO\PipelineStateLibrary.h" />
+    <ClInclude Include="Include\Engine\Graphics\Render\RenderCategory.h" />
     <ClInclude Include="Include\Engine\Graphics\Render\RenderDefaults.h" />
     <ClInclude Include="Include\Engine\Graphics\ConstantBuffer\SpriteConstantBuffer.h" />
     <ClInclude Include="Include\Engine\Graphics\Material\Material.h" />
@@ -137,6 +138,7 @@
     <ClInclude Include="Include\Engine\Graphics\Render\Renderer.h" />
     <ClInclude Include="Include\Engine\Graphics\Renderer\RenderDevice.h" />
     <ClInclude Include="Include\Engine\Graphics\Render\RenderQueue.h" />
+    <ClInclude Include="Include\Engine\Graphics\Render\RenderSortKey.h" />
     <ClInclude Include="Include\Engine\Graphics\Render\RenderSystem.h" />
     <ClInclude Include="Include\Engine\Graphics\Render\SpritePivot.h" />
     <ClInclude Include="Include\Engine\Graphics\Sampler\SamplerDesc.h" />

@@ -28,9 +28,10 @@ void DemoLevel::OnBeginPlay()
 	auto& world = GetWorld();
 
 	auto* demoActor = world.SpawnActor<DemoActor>();
-	demoActor->GetRootComponent()->SetLocalPosition({ -300.0f, 0.0f, 1.0f });
+	demoActor->GetRootComponent()->SetLocalPosition({ -300.0f, 0.0f, 20.0f });
 
 	auto* demoActor2 = world.SpawnActor<DemoActor>();
+	demoActor2->GetRootComponent()->SetLocalPosition({ 0.0f, 0.0f, 11.0f });
 
 	// auto demoUIActor = world->SpawnActor<DemoUIActor>();
 

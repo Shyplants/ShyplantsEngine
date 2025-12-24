@@ -19,6 +19,7 @@
 #include "Engine/Graphics/ConstantBuffer/SpriteConstantBuffer.h"
 #include "Engine/Graphics/Sampler/SamplerID.h"
 #include "Engine/Graphics/Shader/SpriteShaderSlots.h"
+#include "Engine/Graphics/Render/RenderSortKey.h"
 
 using namespace DirectX;
 
@@ -31,6 +32,10 @@ using namespace SpriteShaderSlots;
 SpriteRendererComponent::SpriteRendererComponent(Actor* owner)
     : RendererComponent(owner)
 {
+    SP_ASSERT(owner != nullptr);
+    
+    SetRenderCategory(owner->IsUIActor() ? ERenderCategory::UI : ERenderCategory::World);
+    SetRenderOrder(0);
 }
 
 SpriteRendererComponent::~SpriteRendererComponent() = default;
@@ -242,6 +247,8 @@ void SpriteRendererComponent::SubmitWorld(
     cmd.IndexCount = m_mesh->GetIndexCount();
     cmd.StartIndex = 0;
     cmd.BaseVertex = 0;
+
+    cmd.SortKey = MakeSortKey(GetRenderCategory(), GetRenderOrder(), scene->GetWorldPosition().z);
 
     queue.Submit(cmd);
 }

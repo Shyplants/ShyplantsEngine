@@ -26,6 +26,9 @@ struct DrawCommand
     uint32 StartIndex{ 0 };
     int32  BaseVertex{ 0 };
 
+    // Render sorting
+    uint32 SortKey{ 0 };
+
     bool IsValid() const
     {
         return Pipeline != InvalidPipelineID &&
