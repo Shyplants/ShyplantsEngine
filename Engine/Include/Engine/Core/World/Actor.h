@@ -46,10 +46,7 @@ public:
     // =====================================================
     // Level Ownership Policy
     // =====================================================
-    // 기본 Actor는 GameplayLevel에 소속
     virtual bool IsPersistentActor() const { return false; }
-
-    // UIActor 판별 (렌더링 경로용)
     virtual bool IsUIActor() const { return false; }
 
 public:
@@ -77,7 +74,7 @@ public:
                         FAttachmentTransformRules::KeepRelativeTransform);
             }
         }
-        // RendererComponent attach
+        // RendererComponent attach (default: root)
         else if constexpr (std::is_base_of_v<RendererComponent, T>)
         {
             if (m_rootComponent)
@@ -113,6 +110,14 @@ public:
     // =====================================================
     SceneComponent* GetRootComponent() const { return m_rootComponent; }
     void SetRootComponent(SceneComponent* newRoot);
+
+public:
+    // =====================================================
+    // Renderer Attachment
+    // =====================================================
+    void AttachRendererTo(
+        RendererComponent* renderer,
+        SceneComponent* scene);
 
 public:
     // =====================================================

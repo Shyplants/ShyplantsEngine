@@ -105,6 +105,23 @@ void Actor::SetRootComponent(SceneComponent* newRoot)
 }
 
 // =====================================================
+// Renderer Attachment (NEW API)
+// =====================================================
+
+void Actor::AttachRendererTo(
+    RendererComponent* renderer,
+    SceneComponent* scene)
+{
+    SP_ASSERT(renderer);
+    SP_ASSERT(scene);
+
+    SP_ASSERT(renderer->GetOwner() == this);
+    SP_ASSERT(scene->GetOwner() == this);
+
+    renderer->SetAttachComponent(scene);
+}
+
+// =====================================================
 // Actor Hierarchy
 // =====================================================
 
