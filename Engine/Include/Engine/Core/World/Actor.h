@@ -19,7 +19,7 @@ class Level;
     -------------------------------------------------
     - World에 존재하는 게임 오브젝트
     - Component 소유
-    - Level에 의해 수명 관리됨
+    - Component 간 Attach 정책은 Actor가 중재
 */
 class Actor
 {
@@ -64,17 +64,18 @@ public:
 
         comp->SetWorld(m_world);
 
-        // SceneComponent attach
+        // SceneComponent → root attach
         if constexpr (std::is_base_of_v<SceneComponent, T>)
         {
             if (m_rootComponent && rawPtr != m_rootComponent)
             {
                 static_cast<SceneComponent*>(rawPtr)
-                    ->AttachTo(m_rootComponent,
+                    ->AttachTo(
+                        m_rootComponent,
                         FAttachmentTransformRules::KeepRelativeTransform);
             }
         }
-        // RendererComponent attach (default: root)
+        // RendererComponent → default root binding
         else if constexpr (std::is_base_of_v<RendererComponent, T>)
         {
             if (m_rootComponent)
@@ -113,7 +114,7 @@ public:
 
 public:
     // =====================================================
-    // Renderer Attachment
+    // Renderer Attachment (PUBLIC / SAFE)
     // =====================================================
     void AttachRendererTo(
         RendererComponent* renderer,
@@ -145,6 +146,13 @@ private:
     friend class World;
     friend class Level;
     void SetWorld(World* world);
+
+    // =====================================================
+    // Renderer Attachment (INTERNAL / UNSAFE)
+    // =====================================================
+    void AttachRendererToUnsafe(
+        RendererComponent* renderer,
+        SceneComponent* scene);
 
 protected:
     SceneComponent* m_rootComponent{ nullptr };

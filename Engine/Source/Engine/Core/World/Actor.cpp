@@ -88,36 +88,38 @@ void Actor::SetRootComponent(SceneComponent* newRoot)
     SceneComponent* oldRoot = m_rootComponent;
     m_rootComponent = newRoot;
 
+    // Scene hierarchy migration
     if (oldRoot)
     {
         auto children = oldRoot->GetChildren();
         for (SceneComponent* child : children)
         {
-            child->Detach(FDetachmentTransformRules::KeepWorldTransform);
-            child->AttachTo(newRoot, FAttachmentTransformRules::KeepWorldTransform);
+            child->DetachUnsafe(FDetachmentTransformRules::KeepWorldTransform);
+            child->AttachToUnsafe(newRoot, FAttachmentTransformRules::KeepWorldTransform);
         }
     }
 
     if (m_rootComponent->GetParent())
     {
-        m_rootComponent->Detach(FDetachmentTransformRules::KeepWorldTransform);
+        m_rootComponent->DetachUnsafe(FDetachmentTransformRules::KeepWorldTransform);
     }
 
-    // Renderer rebind (조건부로)
+    // Renderer rebind (ONLY if previously bound to old root)
     for (auto& comp : m_components)
     {
-        if (auto* renderer = dynamic_cast<RendererComponent*>(comp.get()))
+        if (auto* renderer =
+            dynamic_cast<RendererComponent*>(comp.get()))
         {
             if (renderer->GetAttachComponent() == oldRoot)
             {
-                AttachRendererTo(renderer, newRoot);
+                AttachRendererToUnsafe(renderer, newRoot);
             }
         }
     }
 }
 
 // =====================================================
-// Renderer Attachment (NEW API)
+// Renderer Attachment (PUBLIC / SAFE)
 // =====================================================
 
 void Actor::AttachRendererTo(
@@ -129,6 +131,20 @@ void Actor::AttachRendererTo(
 
     SP_ASSERT(renderer->GetOwner() == this);
     SP_ASSERT(scene->GetOwner() == this);
+
+    AttachRendererToUnsafe(renderer, scene);
+}
+
+// =====================================================
+// Renderer Attachment (INTERNAL / UNSAFE)
+// =====================================================
+
+void Actor::AttachRendererToUnsafe(
+    RendererComponent* renderer,
+    SceneComponent* scene)
+{
+    SP_ASSERT(renderer);
+    SP_ASSERT(scene);
 
     renderer->SetAttachComponent(scene);
 }
@@ -154,7 +170,7 @@ void Actor::AttachToActor(
 
     if (m_rootComponent && parent->m_rootComponent)
     {
-        m_rootComponent->AttachTo(parent->m_rootComponent, rules);
+        m_rootComponent->AttachToUnsafe(parent->m_rootComponent, rules);
     }
 }
 
@@ -171,7 +187,7 @@ void Actor::DetachFromParent(
 
     if (m_rootComponent)
     {
-        m_rootComponent->Detach(rules);
+        m_rootComponent->DetachUnsafe(rules);
     }
 
     m_parentActor = nullptr;
