@@ -53,6 +53,5 @@ void SinglePlayerGameMode::OnEndPlay()
 
 Pawn* SinglePlayerGameMode::SpawnDefaultPawn()
 {
-    // 기본 구현: 단순 Pawn 1개
     return GetWorld().SpawnActor<Pawn>();
 }

@@ -8,8 +8,8 @@ class Pawn;
 /*
     SinglePlayerGameMode
     -------------------------------------------------
-    - 싱글플레이 전용 게임 모드
-    - PlayerController 1개 + Pawn 1개를 전제
+    - 싱글플레이 전용 GameMode
+    - PlayerController 1 + Pawn 1 전제
 */
 class SinglePlayerGameMode : public GameModeBase
 {
@@ -34,5 +34,5 @@ protected:
     virtual Pawn* SpawnDefaultPawn();
 
 protected:
-    Pawn* m_pawn{ nullptr };
+    Pawn* m_pawn{ nullptr }; // non-owning
 };

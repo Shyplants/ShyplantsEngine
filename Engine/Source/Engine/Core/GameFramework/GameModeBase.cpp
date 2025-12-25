@@ -13,11 +13,27 @@
 GameModeBase::GameModeBase(World& world)
     : m_world(world)
 {
-    m_gameState = CreateGameState();
-    m_playerController = CreatePlayerController();
 }
 
 GameModeBase::~GameModeBase() = default;
+
+// =====================================================
+// Initialization
+// =====================================================
+
+void GameModeBase::Initialize()
+{
+    if (m_initialized)
+        return;
+
+    m_initialized = true;
+
+    if (!m_gameState)
+        m_gameState = CreateGameState();
+
+    if (!m_playerController)
+        m_playerController = CreatePlayerController();
+}
 
 // =====================================================
 // Lifecycle
@@ -27,6 +43,8 @@ void GameModeBase::OnBeginPlay()
 {
     if (m_hasBegunPlay)
         return;
+
+    SP_ASSERT(m_initialized && "GameModeBase::Initialize() must be called before OnBeginPlay");
 
     m_hasBegunPlay = true;
 
@@ -64,7 +82,7 @@ void GameModeBase::OnEndPlay()
 }
 
 // =====================================================
-// Factory
+// Factory (default implementations)
 // =====================================================
 
 std::unique_ptr<GameState> GameModeBase::CreateGameState()
@@ -79,6 +97,5 @@ std::unique_ptr<PlayerController> GameModeBase::CreatePlayerController()
 
 std::unique_ptr<PlayerState> GameModeBase::CreatePlayerState()
 {
-    // TODO
-    return std::unique_ptr<PlayerState>();
+    return nullptr;
 }

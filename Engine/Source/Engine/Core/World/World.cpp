@@ -171,10 +171,17 @@ void World::SetGameMode(std::unique_ptr<GameModeBase> gameMode)
 {
     SP_ASSERT(!m_isShuttingDown);
 
+    if (m_gameMode)
+    {
+        m_gameMode->OnEndPlay();
+        m_gameMode.reset();
+    }
+
     m_gameMode = std::move(gameMode);
 
     if (m_gameMode)
     {
+        m_gameMode->Initialize();
         m_gameMode->OnBeginPlay();
     }
 }

@@ -12,8 +12,8 @@ class PlayerState;
     GameModeBase
     -------------------------------------------------
     - 엔진 기본 게임 모드 (중립)
-    - 멀티플레이/싱글플레이 모두 대응 가능
-    - Pawn, Player 수에 대한 가정 없음
+    - 멀티/싱글 플레이 공통 베이스
+    - 생성자에서는 가상 함수 호출 금지
 */
 class GameModeBase
 {
@@ -23,6 +23,12 @@ public:
 
     GameModeBase(const GameModeBase&) = delete;
     GameModeBase& operator=(const GameModeBase&) = delete;
+
+public:
+    // =====================================================
+    // Initialization
+    // =====================================================
+    void Initialize();   // GameMode 세팅 완료 후 호출
 
 public:
     // =====================================================
@@ -42,7 +48,7 @@ public:
 
 protected:
     // =====================================================
-    // Factory hooks
+    // Factory hooks (derived GameMode override)
     // =====================================================
     virtual std::unique_ptr<GameState> CreateGameState();
     virtual std::unique_ptr<PlayerController> CreatePlayerController();
@@ -55,5 +61,6 @@ protected:
     std::unique_ptr<PlayerController> m_playerController;
 
 private:
+    bool m_initialized{ false };
     bool m_hasBegunPlay{ false };
 };
