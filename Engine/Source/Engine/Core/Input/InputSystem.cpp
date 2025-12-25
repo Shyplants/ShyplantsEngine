@@ -1,74 +1,104 @@
+#include "Engine/PCH/EnginePCH.h"
+
 #include "Engine/Core/Input/InputSystem.h"
+#include "Engine/Core/Input/PlayerInput.h"
 #include "Engine/Platform/Input/KeyboardDevice.h"
 
-std::unordered_map<InputActionID, InputSystem::ActionState> InputSystem::s_actionStates;
+std::unordered_map<uint32, InputSystem::KeyState> InputSystem::s_keyStates;
 std::vector<InputActionBinding> InputSystem::s_bindings;
+
+// =====================================================
+// Lifecycle
+// =====================================================
 
 void InputSystem::Initialize()
 {
-    s_actionStates.clear();
+    s_keyStates.clear();
     s_bindings.clear();
 }
 
 void InputSystem::Shutdown()
 {
-    s_actionStates.clear();
+    s_keyStates.clear();
     s_bindings.clear();
 }
 
 void InputSystem::BeginFrame()
 {
-    // 이전 상태 저장
-    for (auto& [id, state] : s_actionStates)
+    // 이전 프레임 상태 보존
+    for (auto& [_, state] : s_keyStates)
     {
         state.previous = state.current;
-        state.current = false;
     }
 
-    // 바인딩된 키 검사
-    for (const auto& binding : s_bindings)
+    // 현재 키 상태 갱신
+    for (auto& binding : s_bindings)
     {
-        if (IsKeyDown(binding.key))
-        {
-            s_actionStates[binding.action].current = true;
-        }
+        s_keyStates[binding.key].current = IsKeyDown(binding.key);
     }
 }
 
 void InputSystem::EndFrame()
 {
-    // TODO
+    // 현재는 처리 없음
 }
+
+// =====================================================
+// Action Binding
+// =====================================================
 
 void InputSystem::BindAction(InputActionID action, uint32 key)
 {
-    for (auto& b : s_bindings)
+    for (const auto& b : s_bindings)
     {
         if (b.action == action && b.key == key)
             return;
     }
 
     s_bindings.push_back({ action, key });
-    s_actionStates[action];
+    s_keyStates[key]; // ensure exists
 }
 
-bool InputSystem::IsActionPressed(InputActionID action)
+// =====================================================
+// Dispatch
+// =====================================================
+
+void InputSystem::Dispatch(PlayerInput& playerInput)
 {
-    auto& s = s_actionStates[action];
-    return s.current && !s.previous;
+    playerInput.BeginFrame();
+
+    for (const auto& binding : s_bindings)
+    {
+        auto it = s_keyStates.find(binding.key);
+        if (it == s_keyStates.end())
+            continue;
+
+        const KeyState& ks = it->second;
+
+        if (ks.current && !ks.previous)
+        {
+            playerInput.ApplyAction(
+                binding.action,
+                EInputActionState::Pressed);
+        }
+        else if (ks.current && ks.previous)
+        {
+            playerInput.ApplyAction(
+                binding.action,
+                EInputActionState::Held);
+        }
+        else if (!ks.current && ks.previous)
+        {
+            playerInput.ApplyAction(
+                binding.action,
+                EInputActionState::Released);
+        }
+    }
 }
 
-bool InputSystem::IsActionHeld(InputActionID action)
-{
-    auto& s = s_actionStates[action];
-    return s.current;
-}
-
-bool InputSystem::IsActionReleased(InputActionID action)
-{
-    auto& s = s_actionStates[action];
-    return !s.current && s.previous;
-}
+// =====================================================
+// Internal
+// =====================================================
 
 bool InputSystem::IsKeyDown(uint32 key)
 {

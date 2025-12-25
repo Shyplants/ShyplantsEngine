@@ -400,6 +400,9 @@
     <ClInclude Include="Include\Engine\Core\World\LevelResourceSet.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
+    <ClInclude Include="Include\Engine\Core\Input\PlayerInput.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Engine\Core\Engine.cpp">
@@ -607,6 +610,9 @@
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="Source\Engine\Core\World\LevelResourceSet.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\Core\Input\PlayerInput.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>

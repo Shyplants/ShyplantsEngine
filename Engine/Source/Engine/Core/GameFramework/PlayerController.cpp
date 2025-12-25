@@ -5,6 +5,8 @@
 #include "Engine/Core/World/World.h"
 #include "Engine/Core/World/CameraActor.h"
 
+#include "Engine/Core/Input/InputSystem.h"
+
 // =====================================================
 // Constructor / Destructor
 // =====================================================
@@ -23,14 +25,19 @@ PlayerController::~PlayerController() = default;
 void PlayerController::OnBeginPlay()
 {
     // 기본 구현 비워둠
-    // CameraActor 연결은 GameMode에서 수행
+    // GameMode 또는 파생 Controller에서 초기 바인딩 수행
 }
 
 void PlayerController::Tick(float deltaTime)
 {
-    // Pawn이 없거나 파괴 예정이면 입력 처리 금지
+    // Pawn이 없거나 파괴 중이면 입력 처리 안 함
     if (!m_pawn || m_pawn->IsPendingDestroy())
         return;
+
+    // ---------------------------------
+    // Input Dispatch (핵심)
+    // ---------------------------------
+    InputSystem::Dispatch(m_playerInput);
 
     ProcessInput(deltaTime);
 }
@@ -42,7 +49,7 @@ void PlayerController::OnEndPlay()
 }
 
 // =====================================================
-// Possession (Pawn)
+// Possession
 // =====================================================
 
 void PlayerController::Possess(Pawn* pawn)
@@ -66,7 +73,7 @@ void PlayerController::UnPossess()
 }
 
 // =====================================================
-// Camera binding
+// Camera
 // =====================================================
 
 void PlayerController::SetCamera(CameraActor* camera)
@@ -75,15 +82,16 @@ void PlayerController::SetCamera(CameraActor* camera)
 }
 
 // =====================================================
-// Input
+// Input (override point)
 // =====================================================
 
 void PlayerController::ProcessInput(float /*deltaTime*/)
 {
-    // 파생 Controller에서 구현
+    // 파생 클래스에서 구현
+    //
     // 예:
-    //  - Pawn 이동 입력
-    //  - CameraActor 회전 / 줌 입력
+    // if (m_playerInput.ConsumePressed(InputAction_RotateCW))
+    //     m_pawn->RotateCW();
 }
 
 // =====================================================
@@ -95,19 +103,15 @@ bool PlayerController::CanPossess(Pawn* pawn) const
     if (!pawn)
         return false;
 
-    // World 종료 중이면 조종 금지
     if (m_world.IsShuttingDown())
         return false;
 
-    // 이미 파괴 중인 Pawn은 조종 금지
     if (pawn->IsPendingDestroy())
         return false;
 
-    // 다른 World의 Pawn 조종 금지
     if (pawn->GetWorld() != &m_world)
         return false;
 
-    // 엔진 규칙: PlayerController는 Persistent Pawn만 조종
     if (!pawn->IsPersistentActor())
         return false;
 

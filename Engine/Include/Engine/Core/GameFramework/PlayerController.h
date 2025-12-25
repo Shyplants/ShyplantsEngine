@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Common/Types.h"
+#include "Engine/Core/Input/PlayerInput.h"
 
 // Forward declarations
 class World;
@@ -11,10 +12,9 @@ class PlayerState;
 /*
     PlayerController
     -------------------------------------------------
-    - Player input → gameplay logic bridge
-    - Persistent Pawn을 Possess 하여 조종
-    - CameraActor와 약한 연결을 가짐 (소유하지 않음)
-    - Level 교체와 무관한 World 소속 객체
+    - PlayerInput을 소유
+    - InputSystem → PlayerInput → Pawn/Camera로 전달
+    - 멀티플레이/리플레이 대응 가능한 구조
 */
 class PlayerController
 {
@@ -35,7 +35,7 @@ public:
 
 public:
     // =====================================================
-    // Possession (Pawn)
+    // Possession
     // =====================================================
     void Possess(Pawn* pawn);
     void UnPossess();
@@ -45,7 +45,7 @@ public:
 
 public:
     // =====================================================
-    // Camera binding
+    // Camera
     // =====================================================
     void SetCamera(CameraActor* camera);
     CameraActor* GetCamera() const { return m_camera; }
@@ -59,10 +59,10 @@ protected:
     // =====================================================
     virtual void ProcessInput(float deltaTime);
 
+protected:
+    PlayerInput& GetPlayerInput() { return m_playerInput; }
+
 private:
-    // =====================================================
-    // Internal
-    // =====================================================
     bool CanPossess(Pawn* pawn) const;
 
 protected:
@@ -70,6 +70,7 @@ protected:
 
 private:
     World& m_world;
+    PlayerInput  m_playerInput;
 
     Pawn* m_pawn{ nullptr };     // non-owning
     CameraActor* m_camera{ nullptr };   // non-owning
