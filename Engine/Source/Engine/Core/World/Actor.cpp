@@ -102,6 +102,18 @@ void Actor::SetRootComponent(SceneComponent* newRoot)
     {
         m_rootComponent->Detach(FDetachmentTransformRules::KeepWorldTransform);
     }
+
+    // Renderer rebind (조건부로)
+    for (auto& comp : m_components)
+    {
+        if (auto* renderer = dynamic_cast<RendererComponent*>(comp.get()))
+        {
+            if (renderer->GetAttachComponent() == oldRoot)
+            {
+                AttachRendererTo(renderer, newRoot);
+            }
+        }
+    }
 }
 
 // =====================================================
