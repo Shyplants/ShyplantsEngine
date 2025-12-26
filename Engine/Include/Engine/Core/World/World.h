@@ -93,7 +93,7 @@ public:
     template<typename T>
     T* GetGameModeAs() const
     {
-        return static_cast<T*>(GetGameMode);
+        return static_cast<T*>(GetGameMode());
     }
 
     GameState* GetGameState() const;
