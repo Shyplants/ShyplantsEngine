@@ -257,6 +257,9 @@ void Engine::SetGameMode(std::unique_ptr<GameModeBase> gameMode)
     SP_ASSERT(m_world);
 
     m_world->SetGameMode(std::move(gameMode));
+
+    // Level + GameMode가 모두 준비된 시점
+    m_world->StartGameplay();
 }
 
 void Engine::LoadGameplayLevel(std::unique_ptr<GameplayLevel> level)

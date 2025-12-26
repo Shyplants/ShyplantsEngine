@@ -81,6 +81,10 @@ void GameModeBase::OnEndPlay()
     m_hasBegunPlay = false;
 }
 
+void GameModeBase::OnGamePlayStart()
+{
+}
+
 // =====================================================
 // Factory (default implementations)
 // =====================================================

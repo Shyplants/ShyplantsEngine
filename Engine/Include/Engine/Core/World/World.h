@@ -42,6 +42,9 @@ public:
     void Tick(float deltaTime);
     void Shutdown();
 
+    // Level + GameMode 준비 완료 후 호출
+    void StartGameplay();
+
     bool IsShuttingDown() const { return m_isShuttingDown; }
 
 public:

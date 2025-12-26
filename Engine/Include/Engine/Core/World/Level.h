@@ -46,6 +46,9 @@ public:
     virtual void OnBeginPlay();
     virtual void Tick(float deltaTime);
 
+    // Level + GameMode가 모두 준비된 후 호출
+    virtual void OnGamePlayStart();
+
     // World 종료 시 호출
     virtual void Shutdown();
 

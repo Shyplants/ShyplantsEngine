@@ -38,6 +38,9 @@ public:
     virtual void Tick(float deltaTime);
     virtual void OnEndPlay();
 
+    // Level + GameMode가 모두 준비된 후 호출
+    virtual void OnGamePlayStart();
+
 public:
     // =====================================================
     // Accessors

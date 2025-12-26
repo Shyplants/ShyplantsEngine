@@ -65,6 +65,15 @@ void World::Shutdown()
     m_activeCamera = nullptr;
 }
 
+void World::StartGameplay()
+{
+    if (m_gameplayLevel)
+        m_gameplayLevel->OnGamePlayStart();
+
+    if (m_gameMode)
+        m_gameMode->OnGamePlayStart();
+}
+
 // =====================================================
 // Tick
 // =====================================================
