@@ -4,12 +4,12 @@
 #include <type_traits>
 
 #include "Common/Types.h"
+#include "Engine/Core/World/GameplayLevel.h"
 
 // Forward declarations
 class Actor;
 class Level;
 class PersistentLevel;
-class GameplayLevel;
 
 class RenderSystem;
 class RenderQueue;
@@ -74,6 +74,18 @@ public:
     }
 
     void DestroyActor(Actor* actor);
+
+    // =====================================================
+    // Actor Query
+    // =====================================================
+    template<typename T>
+    T* FindActorInGameplayLevel() const
+    {
+        if (!m_gameplayLevel)
+            return nullptr;
+
+        return m_gameplayLevel->FindActor<T>();
+    }
 
 public:
     // =====================================================

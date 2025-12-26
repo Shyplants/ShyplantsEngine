@@ -67,6 +67,38 @@ public:
     Actor* SpawnActorInternal(std::unique_ptr<Actor> actor);
     void   MarkActorForDestroy(Actor* actor);
 
+    // =====================================================
+    // Actor Query
+    // =====================================================
+    template<typename T>
+    T* FindActor() const
+    {
+        for (const auto& actor : m_actors)
+        {
+            if (!actor)
+                continue;
+
+            if (auto* casted = dynamic_cast<T*>(actor.get()))
+                return casted;
+        }
+        return nullptr;
+    }
+
+    template<typename T>
+    std::vector<T*> FindActors() const
+    {
+        std::vector<T*> result;
+        for (const auto& actor : m_actors)
+        {
+            if (!actor)
+                continue;
+
+            if (auto* casted = dynamic_cast<T*>(actor.get()))
+                result.push_back(casted);
+        }
+        return result;
+    }
+
 protected:
     World& GetWorld() const;
 
