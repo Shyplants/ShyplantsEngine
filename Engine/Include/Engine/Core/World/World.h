@@ -88,10 +88,12 @@ public:
     // =====================================================
     void SetGameMode(std::unique_ptr<GameModeBase> gameMode);
 
+    GameModeBase* GetGameMode() const;
+
     template<typename T>
-    T* GetGameMode() const
+    T* GetGameModeAs() const
     {
-        return dynamic_cast<T*>(m_gameMode.get());
+        return static_cast<T*>(GetGameMode);
     }
 
     GameState* GetGameState() const;

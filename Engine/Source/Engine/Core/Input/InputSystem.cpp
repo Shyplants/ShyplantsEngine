@@ -65,8 +65,6 @@ void InputSystem::BindAction(InputActionID action, uint32 key)
 
 void InputSystem::Dispatch(PlayerInput& playerInput)
 {
-    playerInput.BeginFrame();
-
     for (const auto& binding : s_bindings)
     {
         auto it = s_keyStates.find(binding.key);

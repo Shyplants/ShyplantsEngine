@@ -1,6 +1,7 @@
 #pragma once
 
 #include <unordered_map>
+#include <vector>
 
 #include "Engine/Core/Input/InputAction.h"
 
@@ -9,8 +10,7 @@
     -------------------------------------------------
     - 플레이어 단위 입력 상태 컨테이너
     - InputSystem으로부터 InputEvent를 받아 상태 갱신
-    - consumed 개념 포함 (Pressed / Released)
-    - PlayerController가 소유
+    - Consume + Input Buffer 지원
 */
 class PlayerInput
 {
@@ -25,7 +25,7 @@ public:
     // =====================================================
     // Frame lifecycle
     // =====================================================
-    void BeginFrame();
+    void BeginFrame(float deltaTime);
 
 public:
     // =====================================================
@@ -48,6 +48,13 @@ public:
     bool ConsumePressed(InputActionID action);
     bool ConsumeReleased(InputActionID action);
 
+public:
+    // =====================================================
+    // Input Buffer
+    // =====================================================
+    void BufferAction(InputActionID action, float duration = 0.15f);
+    bool ConsumeBuffered(InputActionID action);
+
 private:
     struct ActionState
     {
@@ -58,10 +65,17 @@ private:
         bool consumedReleased{ false };
     };
 
+    struct BufferedAction
+    {
+        InputActionID action;
+        float timeLeft;
+    };
+
 private:
     ActionState& GetOrCreateState(InputActionID action);
     const ActionState* FindState(InputActionID action) const;
 
 private:
     std::unordered_map<InputActionID, ActionState> m_states;
+    std::vector<BufferedAction> m_bufferedActions;
 };

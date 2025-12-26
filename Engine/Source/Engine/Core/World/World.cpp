@@ -186,6 +186,11 @@ void World::SetGameMode(std::unique_ptr<GameModeBase> gameMode)
     }
 }
 
+GameModeBase* World::GetGameMode() const
+{
+    return m_gameMode.get();
+}
+
 GameState* World::GetGameState() const
 {
     return m_gameMode ? m_gameMode->GetGameState() : nullptr;

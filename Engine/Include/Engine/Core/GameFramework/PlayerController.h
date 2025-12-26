@@ -6,6 +6,7 @@
 // Forward declarations
 class World;
 class Pawn;
+class GameModeBase;
 class CameraActor;
 class PlayerState;
 
@@ -51,6 +52,14 @@ public:
     CameraActor* GetCamera() const { return m_camera; }
 
 public:
+    GameModeBase* GetGameMode() const;
+
+    template<typename T>
+    T* GetGameModeAs() const
+    {
+        return static_cast<T*>(GetGameMode());
+    }
+
     World& GetWorld() const { return m_world; }
 
 protected:

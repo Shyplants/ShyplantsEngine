@@ -2,6 +2,7 @@
 
 #include "Engine/Core/GameFramework/PlayerController.h"
 #include "Engine/Core/GameFramework/Pawn.h"
+#include "Engine/Core/GameFramework/GameModeBase.h"
 #include "Engine/Core/World/World.h"
 #include "Engine/Core/World/CameraActor.h"
 
@@ -34,11 +35,12 @@ void PlayerController::Tick(float deltaTime)
     if (!m_pawn || m_pawn->IsPendingDestroy())
         return;
 
+    m_playerInput.BeginFrame(deltaTime);
+
     // ---------------------------------
-    // Input Dispatch (ÇÙ½É)
+    // Input Dispatch
     // ---------------------------------
     InputSystem::Dispatch(m_playerInput);
-
     ProcessInput(deltaTime);
 }
 
@@ -116,4 +118,9 @@ bool PlayerController::CanPossess(Pawn* pawn) const
         return false;
 
     return true;
+}
+
+GameModeBase* PlayerController::GetGameMode() const
+{
+    return m_world.GetGameMode();
 }

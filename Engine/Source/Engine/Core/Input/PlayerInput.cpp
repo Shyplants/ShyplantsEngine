@@ -1,12 +1,11 @@
 #include "Engine/PCH/EnginePCH.h"
-
 #include "Engine/Core/Input/PlayerInput.h"
 
 // =====================================================
 // Frame lifecycle
 // =====================================================
 
-void PlayerInput::BeginFrame()
+void PlayerInput::BeginFrame(float deltaTime)
 {
     for (auto& [_, state] : m_states)
     {
@@ -14,15 +13,23 @@ void PlayerInput::BeginFrame()
         state.consumedPressed = false;
         state.consumedReleased = false;
     }
+
+    // Input buffer 감소
+    for (auto it = m_bufferedActions.begin(); it != m_bufferedActions.end(); )
+    {
+        it->timeLeft -= deltaTime;
+        if (it->timeLeft <= 0.0f)
+            it = m_bufferedActions.erase(it);
+        else
+            ++it;
+    }
 }
 
 // =====================================================
 // Input injection
 // =====================================================
 
-void PlayerInput::ApplyAction(
-    InputActionID action,
-    EInputActionState state)
+void PlayerInput::ApplyAction(InputActionID action, EInputActionState state)
 {
     ActionState& s = GetOrCreateState(action);
 
@@ -30,6 +37,7 @@ void PlayerInput::ApplyAction(
     {
     case EInputActionState::Pressed:
         s.current = true;
+        BufferAction(action);
         break;
 
     case EInputActionState::Released:
@@ -37,10 +45,8 @@ void PlayerInput::ApplyAction(
         break;
 
     case EInputActionState::Held:
-        // Held는 상태 변화 없음 (current 유지)
         break;
 
-    case EInputActionState::None:
     default:
         break;
     }
@@ -53,28 +59,19 @@ void PlayerInput::ApplyAction(
 bool PlayerInput::IsPressed(InputActionID action) const
 {
     const ActionState* s = FindState(action);
-    if (!s)
-        return false;
-
-    return s->current && !s->previous;
+    return s && s->current && !s->previous;
 }
 
 bool PlayerInput::IsHeld(InputActionID action) const
 {
     const ActionState* s = FindState(action);
-    if (!s)
-        return false;
-
-    return s->current;
+    return s && s->current;
 }
 
 bool PlayerInput::IsReleased(InputActionID action) const
 {
     const ActionState* s = FindState(action);
-    if (!s)
-        return false;
-
-    return !s->current && s->previous;
+    return s && !s->current && s->previous;
 }
 
 // =====================================================
@@ -90,7 +87,6 @@ bool PlayerInput::ConsumePressed(InputActionID action)
         s.consumedPressed = true;
         return true;
     }
-
     return false;
 }
 
@@ -103,12 +99,33 @@ bool PlayerInput::ConsumeReleased(InputActionID action)
         s.consumedReleased = true;
         return true;
     }
-
     return false;
 }
 
 // =====================================================
-// Internal helpers
+// Input Buffer
+// =====================================================
+
+void PlayerInput::BufferAction(InputActionID action, float duration)
+{
+    m_bufferedActions.push_back({ action, duration });
+}
+
+bool PlayerInput::ConsumeBuffered(InputActionID action)
+{
+    for (auto it = m_bufferedActions.begin(); it != m_bufferedActions.end(); ++it)
+    {
+        if (it->action == action)
+        {
+            m_bufferedActions.erase(it);
+            return true;
+        }
+    }
+    return false;
+}
+
+// =====================================================
+// Internal
 // =====================================================
 
 PlayerInput::ActionState&
@@ -121,8 +138,5 @@ const PlayerInput::ActionState*
 PlayerInput::FindState(InputActionID action) const
 {
     auto it = m_states.find(action);
-    if (it == m_states.end())
-        return nullptr;
-
-    return &it->second;
+    return (it != m_states.end()) ? &it->second : nullptr;
 }
