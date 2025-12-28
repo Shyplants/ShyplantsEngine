@@ -7,10 +7,12 @@
 
 #include "Engine/Graphics/Renderer/RenderDevice.h"
 #include "Engine/Graphics/PSO/GraphicsPSOManager.h"
+#include "Engine/Graphics/PSO/GraphicsPSO.h"
+#include "Engine/Graphics/Render/DrawCommand.h"
 
-// =========================================================
+// =====================================================
 // Constructor / Destructor
-// =========================================================
+// =====================================================
 
 RenderSystem::RenderSystem(
     RenderDevice* device,
@@ -18,8 +20,8 @@ RenderSystem::RenderSystem(
     : m_device(device)
     , m_renderer(renderer)
 {
-    SP_ASSERT(m_device != nullptr);
-    SP_ASSERT(m_renderer != nullptr);
+    SP_ASSERT(m_device);
+    SP_ASSERT(m_renderer);
 
     m_renderQueue = std::make_unique<RenderQueue>();
     m_commandBuffer = std::make_unique<CommandBuffer>();
@@ -27,9 +29,9 @@ RenderSystem::RenderSystem(
 
 RenderSystem::~RenderSystem() = default;
 
-// =========================================================
-// Frame
-// =========================================================
+// =====================================================
+// Frame lifecycle
+// =====================================================
 
 void RenderSystem::BeginFrame(const float clearColor[4])
 {
@@ -46,31 +48,91 @@ void RenderSystem::Render(GraphicsPSOManager& psoManager)
 {
     SP_ASSERT(m_frameBegun);
 
-    for (const DrawCommand& draw : m_renderQueue->GetCommands())
+    // -------------------------------------------------
+    // World Pass
+    // -------------------------------------------------
+    ExecutePass(
+        m_renderQueue->GetWorldPass(),
+        psoManager);
+
+    // -------------------------------------------------
+    // Screen Pass (UI)
+    // -------------------------------------------------
+    ExecutePass(
+        m_renderQueue->GetScreenPass(),
+        psoManager);
+
+    // -------------------------------------------------
+    // Debug Pass
+    // -------------------------------------------------
+    ExecutePass(
+        m_renderQueue->GetDebugPass(),
+        psoManager);
+}
+
+void RenderSystem::EndFrame()
+{
+    SP_ASSERT(m_frameBegun);
+
+    m_device->EndFrame();
+    m_frameBegun = false;
+}
+
+// =====================================================
+// Submission
+// =====================================================
+
+RenderQueue& RenderSystem::GetRenderQueue()
+{
+    return *m_renderQueue;
+}
+
+const RenderQueue& RenderSystem::GetRenderQueue() const
+{
+    return *m_renderQueue;
+}
+
+// =====================================================
+// Defaults
+// =====================================================
+
+void RenderSystem::SetDefaults(const RenderDefaults& defaults)
+{
+    m_defaults = defaults;
+}
+
+const RenderDefaults& RenderSystem::GetDefaults() const
+{
+    return m_defaults;
+}
+
+// =====================================================
+// Pass execution
+// =====================================================
+
+void RenderSystem::ExecutePass(
+    const std::vector<DrawCommand>& drawCommands,
+    GraphicsPSOManager& psoManager)
+{
+    if (drawCommands.empty())
+        return;
+
+    m_commandBuffer->Clear();
+
+    for (const DrawCommand& draw : drawCommands)
     {
-        // -------------------------------------------------
-        // (1) DrawCommand validation
-        // -------------------------------------------------
 #if defined(_DEBUG)
         SP_ASSERT(draw.IsValid());
 #endif
         if (!draw.IsValid())
-            continue; // release safety
+            continue;
 
-        // -------------------------------------------------
-        // (2) Resolve / create PSO
-        // -------------------------------------------------
-        GraphicsPSO* pso = psoManager.GetOrCreate(draw.Pipeline);
+        GraphicsPSO* pso =
+            psoManager.GetOrCreate(draw.Pipeline);
 
-#if defined(_DEBUG)
-        SP_ASSERT(pso != nullptr);
-#endif
-        if (pso == nullptr)
-            continue; // fail-safe (PSO 생성 실패)
+        if (!pso)
+            continue;
 
-        // -------------------------------------------------
-        // Build GPU command
-        // -------------------------------------------------
         GPUCommand gpu{};
         gpu.PSO = pso;
         gpu.MaterialInstance = draw.MaterialInstance;
@@ -82,27 +144,8 @@ void RenderSystem::Render(GraphicsPSOManager& psoManager)
         m_commandBuffer->Add(gpu);
     }
 
-    m_renderer->Execute(*m_commandBuffer);
-}
-
-void RenderSystem::EndFrame()
-{
-    SP_ASSERT(m_frameBegun);
-
-    m_device->EndFrame();
-    m_frameBegun = false;
-}
-
-// =========================================================
-// Access
-// =========================================================
-
-RenderQueue& RenderSystem::GetRenderQueue()
-{
-    return *m_renderQueue;
-}
-
-const RenderQueue& RenderSystem::GetRenderQueue() const
-{
-    return *m_renderQueue;
+    if (!m_commandBuffer->IsEmpty())
+    {
+        m_renderer->Execute(*m_commandBuffer);
+    }
 }

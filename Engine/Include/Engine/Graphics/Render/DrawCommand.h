@@ -2,6 +2,7 @@
 
 #include <string>
 #include "Engine/Graphics/PSO/PipelineID.h"
+#include "Engine/Graphics/Render/RenderCategory.h"
 
 class MaterialInstance;
 class Mesh;
@@ -26,8 +27,10 @@ struct DrawCommand
     uint32 StartIndex{ 0 };
     int32  BaseVertex{ 0 };
 
+    RenderCategory Category;
+
     // Render sorting
-    uint32 SortKey{ 0 };
+    uint64 SortKey{ 0 };
 
     bool IsValid() const
     {

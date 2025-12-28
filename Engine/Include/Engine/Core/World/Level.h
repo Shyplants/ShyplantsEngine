@@ -12,7 +12,6 @@ class Actor;
 class World;
 class RenderQueue;
 class CameraComponent2D;
-class RendererComponent;
 
 /*
     Level
@@ -54,11 +53,11 @@ public:
 
 public:
     // =====================================================
-    // Rendering (Submit-only)
+    // Rendering
     // =====================================================
-    void SubmitRenderCommands(
+    virtual void SubmitRenderCommands(
         RenderQueue& queue,
-        const CameraComponent2D& camera);
+        CameraComponent2D& activeCamera);
 
 public:
     // =====================================================
@@ -108,12 +107,6 @@ private:
     // =====================================================
     void ProcessDestroyedActors();
     void DestroyAllActors();
-
-    void SubmitWorldRenderers(
-        RenderQueue& queue,
-        const CameraComponent2D& camera);
-
-    void SubmitUIRenderers(RenderQueue& queue);
 
 private:
     World* m_world{ nullptr };

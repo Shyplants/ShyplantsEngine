@@ -75,6 +75,7 @@ public:
 
     void DestroyActor(Actor* actor);
 
+public:
     // =====================================================
     // Actor Query
     // =====================================================
@@ -125,7 +126,7 @@ public:
 
 public:
     // =====================================================
-    // Rendering Access
+    // Rendering Access (STRICTLY PASS-THROUGH)
     // =====================================================
     RenderQueue& GetRenderQueue() const;
     RenderSystem& GetRenderSystem() const;

@@ -21,9 +21,9 @@ class ConstantBuffer;
 /*
     SpriteRendererComponent
     -------------------------------------------------
-    - Sprite 상태의 Source of Truth
-    - Material은 Pipeline 정책 제공자
-    - SubmitWorld는 DrawCommand 생성만 수행
+    - Sprite 렌더링 전용 RendererComponent
+    - World / Screen 구분은 RenderCategory로 처리
+    - 좌표 계산은 SceneComponent 결과를 그대로 사용
 */
 class SpriteRendererComponent final : public RendererComponent
 {
@@ -32,14 +32,26 @@ public:
     ~SpriteRendererComponent() override;
 
 public:
+    // =====================================================
+    // Lifecycle
+    // =====================================================
     void OnRegister() override;
 
 public:
+    // =====================================================
+    // Submit
+    // =====================================================
     void SubmitWorld(
         RenderQueue& queue,
         const DirectX::XMMATRIX& viewProj) override;
 
+    void SubmitScreen(
+        RenderQueue& queue) override;
+
 public:
+    // =====================================================
+    // Policy
+    // =====================================================
     void SetMaterial(Material* material);
     void SetMesh(Mesh* mesh);
 
@@ -56,7 +68,15 @@ private:
     void EnsureConstantBuffer();
     void ApplyCachedResources();
 
+    void BuildDrawCommand(
+        RenderQueue& queue,
+        const DirectX::XMMATRIX& world,
+        const DirectX::XMMATRIX& viewProj);
+
 private:
+    // -------------------------------------------------
+    // Render resources
+    // -------------------------------------------------
     Material* m_material{ nullptr };
     Mesh* m_mesh{ nullptr };
 
@@ -66,6 +86,9 @@ private:
     std::unordered_map<uint32, TextureResource*> m_textures;
     TextureResource* m_activeTexture{ nullptr };
 
+    // -------------------------------------------------
+    // Sprite state
+    // -------------------------------------------------
     DirectX::XMFLOAT2 m_scale{ 1.f, 1.f };
     DirectX::XMFLOAT4 m_color{ 1.f, 1.f, 1.f, 1.f };
     Rect              m_sourceRect{};

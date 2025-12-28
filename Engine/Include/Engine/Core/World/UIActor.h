@@ -2,20 +2,27 @@
 
 #include "Engine/Core/World/Actor.h"
 
-// UI 전용 Actor
-// - 항상 화면 공간(Screen Space)에 렌더링
-// - Level::RenderUI() 패스에서만 렌더링됨
-// - World 공간 Transform은 무시하고, 위치는 스크린 픽셀 좌표로 해석
-
-class UIActor :public Actor
+/*
+    UIActor
+    -------------------------------------------------
+    - Screen-space UI 전용 Actor
+    - World Transform / Camera / Gameplay와 무관
+    - 항상 PersistentLevel에 소속
+*/
+class UIActor : public Actor
 {
 public:
-	UIActor();
-	~UIActor() override;
+    UIActor();
+    ~UIActor() override = default;
 
-	bool IsUIActor() const override { return true; }
+public:
+    // =====================================================
+    // Actor override
+    // =====================================================
+    bool IsPersistentActor() const override
+    {
+        return true;
+    }
 
-protected:
-	void OnSpawned() override;
-	void BeginPlay() override;
+    void OnSpawned() override;
 };

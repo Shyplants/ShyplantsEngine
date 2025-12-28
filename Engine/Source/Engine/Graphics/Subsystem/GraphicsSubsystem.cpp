@@ -33,7 +33,10 @@ GraphicsSubsystem::~GraphicsSubsystem() = default;
 // Initialize
 // =========================================================
 
-bool GraphicsSubsystem::Initialize(void* nativeWindowHandle, uint32 width, uint32 height)
+bool GraphicsSubsystem::Initialize(
+    void* nativeWindowHandle,
+    uint32 width,
+    uint32 height)
 {
     SP_ASSERT(nativeWindowHandle != nullptr);
     SP_ASSERT(width > 0 && height > 0);
@@ -63,7 +66,7 @@ bool GraphicsSubsystem::Initialize(void* nativeWindowHandle, uint32 width, uint3
     m_psoManager = std::make_unique<GraphicsPSOManager>(m_pipelineLibrary.get());
 
     // -------------------------------------------------
-    // Renderer
+    // Renderer (GPU executor)
     // -------------------------------------------------
     m_renderer = std::make_unique<Renderer>(
         m_renderDevice.get(),
@@ -73,10 +76,14 @@ bool GraphicsSubsystem::Initialize(void* nativeWindowHandle, uint32 width, uint3
     // Built-in shaders
     // -------------------------------------------------
     m_shaderManager->LoadVertexShader(
-        L"SpriteVS", L"../Shaders/SpriteVS.hlsl", "main");
+        L"SpriteVS",
+        L"../Shaders/SpriteVS.hlsl",
+        "main");
 
     m_shaderManager->LoadPixelShader(
-        L"SpritePS", L"../Shaders/SpritePS.hlsl", "main");
+        L"SpritePS",
+        L"../Shaders/SpritePS.hlsl",
+        "main");
 
     // -------------------------------------------------
     // Built-in samplers
@@ -91,7 +98,7 @@ bool GraphicsSubsystem::Initialize(void* nativeWindowHandle, uint32 width, uint3
         *m_renderDevice);
 
     // -------------------------------------------------
-    // RenderSystem
+    // RenderSystem (Phase 3)
     // -------------------------------------------------
     m_renderSystem = std::make_unique<RenderSystem>(
         m_renderDevice.get(),
@@ -122,7 +129,7 @@ bool GraphicsSubsystem::Initialize(void* nativeWindowHandle, uint32 width, uint3
 
 #if defined(_DEBUG)
     SP_LOG(LogRender, ELogLevel::Trace,
-        "GraphicsSubsystem initialized");
+        "GraphicsSubsystem initialized (Phase 3)");
 #endif
 
     return true;

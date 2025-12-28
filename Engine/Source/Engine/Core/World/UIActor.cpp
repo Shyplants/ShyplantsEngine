@@ -1,26 +1,29 @@
 #include "Engine/PCH/EnginePCH.h"
 
 #include "Engine/Core/World/UIActor.h"
-#include "Engine/Core/Component/SceneComponent.h"
+
+#include "Engine/UI/Components/UIScreenRootComponent.h"
+#include "Engine/UI/Layout/UIScreenTransform.h"
+#include "Engine/Core/World/World.h"
 
 UIActor::UIActor()
-{
-	// UIActor는 SceneComponent를 갖지만,
-	// World 변환이 아닌 Screen 좌표 용도로 사용됨.
-	m_rootComponent = AddComponent<SceneComponent>();
-	m_rootComponent->SetLocalPosition({ 0.0f, 0.0f, 0.0f });
-}
-
-UIActor::~UIActor()
+    : Actor()
 {
 }
 
 void UIActor::OnSpawned()
 {
-	Actor::OnSpawned();
-}
+    Actor::OnSpawned();
 
-void UIActor::BeginPlay()
-{
-	Actor::BeginPlay();
+    // -------------------------------------------------
+    // Screen UI Root
+    // -------------------------------------------------
+    auto* root = AddComponent<UIScreenRootComponent>();
+    SetRootComponent(root);
+
+    // -------------------------------------------------
+    // Root UIScreenTransform (optional but recommended)
+    // -------------------------------------------------
+    auto* transform = AddComponent<UIScreenTransform>();
+    transform->SetRoot(root);
 }

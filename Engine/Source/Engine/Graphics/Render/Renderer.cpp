@@ -26,7 +26,7 @@ Renderer::Renderer(
 Renderer::~Renderer() = default;
 
 // =========================================================
-// Execute
+// Batch execution (legacy / future)
 // =========================================================
 
 void Renderer::Execute(const CommandBuffer& commandBuffer)
@@ -43,39 +43,77 @@ void Renderer::Execute(const CommandBuffer& commandBuffer)
     for (const GPUCommand& cmd : commandBuffer.GetCommands())
     {
 #if defined(_DEBUG)
-        // -------------------------------------------------
-        // Fail-fast validation (debug only)
-        // -------------------------------------------------
         SP_ASSERT(cmd.PSO != nullptr);
         SP_ASSERT(cmd.MaterialInstance != nullptr);
         SP_ASSERT(cmd.Mesh != nullptr);
         SP_ASSERT(cmd.IndexCount > 0);
 #endif
 
-        // -------------------------------------------------
-        // Bind PSO (pipeline state)
-        // -------------------------------------------------
         cmd.PSO->Bind(context);
 
-        // -------------------------------------------------
-        // Bind material resources
-        // -------------------------------------------------
         cmd.MaterialInstance->BindResources(
             *m_samplerManager,
             device,
             context);
 
-        // -------------------------------------------------
-        // Bind mesh buffers
-        // -------------------------------------------------
         cmd.Mesh->Bind(context);
 
-        // -------------------------------------------------
-        // Draw
-        // -------------------------------------------------
         context->DrawIndexed(
             cmd.IndexCount,
             cmd.StartIndex,
             cmd.BaseVertex);
     }
+}
+
+// =========================================================
+// Immediate execution (Phase 4 RenderPass)
+// =========================================================
+
+void Renderer::ExecuteSingle(
+    RenderDevice& device,
+    GraphicsPSO* pso,
+    MaterialInstance* material,
+    Mesh* mesh,
+    uint32 indexCount,
+    uint32 startIndex,
+    int32 baseVertex)
+{
+#if defined(_DEBUG)
+    SP_ASSERT(pso != nullptr);
+    SP_ASSERT(material != nullptr);
+    SP_ASSERT(mesh != nullptr);
+    SP_ASSERT(indexCount > 0);
+#endif
+
+    ID3D11Device* d3dDevice = device.GetDevice();
+    ID3D11DeviceContext* context = device.GetImmediateContext();
+
+    SP_ASSERT(d3dDevice != nullptr);
+    SP_ASSERT(context != nullptr);
+
+    // -------------------------------------------------
+    // Bind PSO
+    // -------------------------------------------------
+    pso->Bind(context);
+
+    // -------------------------------------------------
+    // Bind material
+    // -------------------------------------------------
+    material->BindResources(
+        *m_samplerManager,
+        d3dDevice,
+        context);
+
+    // -------------------------------------------------
+    // Bind mesh
+    // -------------------------------------------------
+    mesh->Bind(context);
+
+    // -------------------------------------------------
+    // Draw
+    // -------------------------------------------------
+    context->DrawIndexed(
+        indexCount,
+        startIndex,
+        baseVertex);
 }

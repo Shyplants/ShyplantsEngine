@@ -31,7 +31,7 @@ World::World(RenderSystem* renderSystem)
 
 World::~World()
 {
-    // Shutdown은 외부에서 명시적으로 호출되어야 함
+    // Shutdown은 외부에서 명시적으로 호출
 }
 
 // =====================================================
@@ -45,17 +45,23 @@ void World::Shutdown()
 
     m_isShuttingDown = true;
 
-    // 1. GameMode 종료
+    // -------------------------------------------------
+    // GameMode 종료
+    // -------------------------------------------------
     if (m_gameMode)
     {
         m_gameMode->OnEndPlay();
         m_gameMode.reset();
     }
 
-    // 2. GameplayLevel 종료
+    // -------------------------------------------------
+    // GameplayLevel 종료
+    // -------------------------------------------------
     ShutdownGameplayLevel();
 
-    // 3. PersistentLevel 종료
+    // -------------------------------------------------
+    // PersistentLevel 종료
+    // -------------------------------------------------
     if (m_persistentLevel)
     {
         m_persistentLevel->Shutdown();
@@ -64,6 +70,10 @@ void World::Shutdown()
 
     m_activeCamera = nullptr;
 }
+
+// =====================================================
+// Gameplay start
+// =====================================================
 
 void World::StartGameplay()
 {
@@ -104,6 +114,10 @@ void World::SubmitRenderCommands()
 
     RenderQueue& queue = m_renderSystem->GetRenderQueue();
 
+    // -------------------------------------------------
+    // World-space / Screen-space submit은
+    // Level 내부에서 RendererComponent 기준으로 분기됨
+    // -------------------------------------------------
     if (m_gameplayLevel)
         m_gameplayLevel->SubmitRenderCommands(queue, *m_activeCamera);
 

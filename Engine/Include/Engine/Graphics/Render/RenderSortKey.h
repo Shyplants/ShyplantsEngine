@@ -1,36 +1,101 @@
 #pragma once
+
+#include "Common/Types.h"
+
 #include "Engine/Graphics/Render/RenderCategory.h"
 
-inline uint32 MakeSortKey(
-    ERenderCategory category,
-    int32 order,
-    float worldZ)
+/*
+    RenderSortKey
+    -------------------------------------------------
+    64-bit 정렬 키 구조
+
+    [63..62] RenderSpace
+    [61..56] RenderLayer
+    [55..40] RenderOrder
+    [39..00] Depth (World only, inverted)
+
+    - 작은 값일수록 먼저 렌더링됨
+    - Screen Space는 Depth = 0
+*/
+
+using RenderSortKey = uint64;
+
+// ------------------------------------------------------------
+// Internal helpers
+// ------------------------------------------------------------
+
+namespace RenderSortKeyInternal
 {
-    // -------------------------------
-    // 1. Clamp & pack Order (16bit)
-    // -------------------------------
-    uint32 orderKey =
-        static_cast<uint32>(order) & 0x0000FFFF;
+    /*
+        DepthToBits
+        -------------------------------------------------
+        - float depth 값을 정렬 가능한 정수로 변환
+        - 카메라에서 가까울수록 더 나중에 그려야 하므로 "반전"
+        - NaN / Inf 방어 포함
+    */
+    inline uint32 DepthToBits(float depth)
+    {
+        // NaN 방어
+        if (!std::isfinite(depth))
+            depth = 0.0f;
 
-    // -------------------------------
-    // 2. Normalize Z to 0~255
-    // (가까울수록 앞에 그려지게)
-    // -------------------------------
-    constexpr float Z_MIN = -1000.0f;
-    constexpr float Z_MAX = 1000.0f;
+        uint32 bits = 0;
+        memcpy(&bits, &depth, sizeof(uint32));
 
-    float zNorm =
-        (worldZ - Z_MIN) / (Z_MAX - Z_MIN);
+        // IEEE754 float ordering trick
+        // 음수/양수 정렬 보정
+        if (bits & 0x80000000)
+            bits = ~bits;
+        else
+            bits ^= 0x80000000;
 
-    zNorm = std::clamp(zNorm, 0.0f, 1.0f);
+        return bits;
+    }
+}
 
-    uint32 zKey =
-        static_cast<uint32>(zNorm * 255.0f);
+// ------------------------------------------------------------
+// Public API
+// ------------------------------------------------------------
 
-    // -------------------------------
-    // 3. Pack SortKey
-    // -------------------------------
-    return (uint32(category) << 24) |
-        (orderKey << 8) |
-        (zKey);
+/*
+    MakeSortKey
+    -------------------------------------------------
+    - RendererComponent / SpriteRendererComponent에서 사용
+*/
+inline RenderSortKey MakeSortKey(
+    ERenderSpace space,
+    ERenderLayer layer,
+    uint32 renderOrder,
+    float depth = 0.0f)
+{
+    RenderSortKey key = 0;
+
+    // -------------------------------------------------
+    // RenderSpace (2 bits)
+    // -------------------------------------------------
+    key |= (static_cast<RenderSortKey>(space) & 0x3) << 62;
+
+    // -------------------------------------------------
+    // RenderLayer (6 bits)
+    // -------------------------------------------------
+    key |= (static_cast<RenderSortKey>(layer) & 0x3F) << 56;
+
+    // -------------------------------------------------
+    // RenderOrder (16 bits)
+    // -------------------------------------------------
+    key |= (static_cast<RenderSortKey>(renderOrder) & 0xFFFF) << 40;
+
+    // -------------------------------------------------
+    // Depth (40 bits)
+    // -------------------------------------------------
+    if (space == ERenderSpace::World)
+    {
+        uint32 depthBits =
+            RenderSortKeyInternal::DepthToBits(depth);
+
+        // 상위 40비트만 사용
+        key |= static_cast<RenderSortKey>(depthBits);
+    }
+
+    return key;
 }

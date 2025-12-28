@@ -64,7 +64,8 @@ bool Engine::Initialize(Window& window)
     if (m_initialized)
         return true;
 
-    void* native = window.GetNativeHandle();
+    void* nativeHandle = window.GetNativeHandle();
+    SP_ASSERT(nativeHandle != nullptr);
 
     // -------------------------------------------------
     // LogSystem (first)
@@ -90,7 +91,7 @@ bool Engine::Initialize(Window& window)
     // -------------------------------------------------
     m_graphics = std::make_unique<GraphicsSubsystem>();
     if (!m_graphics->Initialize(
-        native,
+        nativeHandle,
         window.GetWidth(),
         window.GetHeight()))
     {
@@ -102,9 +103,9 @@ bool Engine::Initialize(Window& window)
     // -------------------------------------------------
     // ResourceLoadContext
     // -------------------------------------------------
-    ResourceLoadContext context{};
-    context.renderDevice = &m_graphics->GetRenderDevice();
-    ResourceManager::Get().SetLoadContext(context);
+    ResourceLoadContext loadContext{};
+    loadContext.renderDevice = &m_graphics->GetRenderDevice();
+    ResourceManager::Get().SetLoadContext(loadContext);
 
     // -------------------------------------------------
     // World
@@ -197,11 +198,14 @@ void Engine::Tick()
     // -------------------------------------------------
     // Time
     // -------------------------------------------------
-    double now = Platform::GetTimeSeconds();
+    const double now = Platform::GetTimeSeconds();
     m_time.Update(now);
-    float deltaTime = m_time.GetDeltaTime();
+    const float deltaTime = m_time.GetDeltaTime();
 
-    static const float clearColor[4] = { 0.2f, 0.2f, 0.2f, 1.0f };
+    static const float clearColor[4] =
+    {
+        0.2f, 0.2f, 0.2f, 1.0f
+    };
 
     // -------------------------------------------------
     // Frame begin
@@ -258,7 +262,7 @@ void Engine::SetGameMode(std::unique_ptr<GameModeBase> gameMode)
 
     m_world->SetGameMode(std::move(gameMode));
 
-    // Level + GameMode가 모두 준비된 시점
+    // Level + GameMode 준비 완료 시점
     m_world->StartGameplay();
 }
 

@@ -1,14 +1,17 @@
 #pragma once
 
+#include "Common/Types.h"
+
+// Forward declarations
 class Actor;
 class World;
 
 /*
     ActorComponent
     -------------------------------------------------
-    - Actor에 부착되는 기본 컴포넌트
-    - Tick / 활성 상태 관리
-    - 렌더링 책임 없음
+    - Actor에 부착되는 모든 컴포넌트의 최상위 베이스
+    - 수명은 Actor에 의해 관리됨
+    - Transform / Render / UI 책임 없음
 */
 class ActorComponent
 {
@@ -21,38 +24,43 @@ public:
 
 public:
     // =====================================================
-    // Lifecycle
+    // Lifecycle (Actor-driven)
     // =====================================================
-    virtual void OnRegister() {}
-    virtual void OnUnregister() {}
-    virtual void OnDestroy() {}
-    virtual void Tick(float deltaTime) {}
+    virtual void OnRegister();
+    virtual void OnUnregister();
+
+    virtual void OnBeginPlay();
+    virtual void OnEndPlay();
+
+    virtual void Tick(float /*deltaTime*/) {}
 
 public:
     // =====================================================
     // State
     // =====================================================
     bool IsActive() const { return m_active; }
-    void SetActive(bool active) { m_active = active; }
+    void SetActive(bool active);
 
-    bool IsTickEnabled() const { return m_canTick; }
-    void SetTickEnabled(bool enabled) { m_canTick = enabled; }
+    bool IsTickEnabled() const { return m_tickEnabled; }
+    void SetTickEnabled(bool enable) { m_tickEnabled = enable; }
 
 public:
     // =====================================================
-    // Owner / World
+    // Ownership
     // =====================================================
     Actor* GetOwner() const { return m_owner; }
     World* GetWorld() const;
 
 protected:
-    friend class Actor;
-    void SetWorld(World* world) { m_world = world; }
+    // =====================================================
+    // Internal hooks
+    // =====================================================
+    virtual void OnActivated() {}
+    virtual void OnDeactivated() {}
 
 protected:
     Actor* m_owner{ nullptr };
-    World* m_world{ nullptr };
 
     bool m_active{ true };
-    bool m_canTick{ true };
+    bool m_tickEnabled{ false };
 };

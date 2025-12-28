@@ -8,18 +8,23 @@
 #include "Engine/Core/Component/FAttachmentTransformRules.h"
 
 // Forward declarations
+class World;
+class Level;
+
 class ActorComponent;
 class SceneComponent;
 class RendererComponent;
-class World;
-class Level;
+class CameraComponent2D;
+
+class RenderQueue;
 
 /*
     Actor
     -------------------------------------------------
-    - World에 존재하는 게임 오브젝트
-    - Component 소유
-    - Component 간 Attach 정책은 Actor가 중재
+    - World에 소속되는 Gameplay 단위
+    - Component 기반 확장
+    - Transform의 Root는 SceneComponent
+    - Render / Tick 정책 없음 (조립자 역할)
 */
 class Actor
 {
@@ -44,10 +49,17 @@ public:
 
 public:
     // =====================================================
-    // Level Ownership Policy
+    // World / Level
     // =====================================================
+    World* GetWorld() const { return m_world; }
+    Level* GetLevel() const { return m_level; }
+
     virtual bool IsPersistentActor() const { return false; }
-    virtual bool IsUIActor() const { return false; }
+
+protected:
+    friend class Level;
+    void SetWorld(World* world) { m_world = world; }
+    void SetLevel(Level* level) { m_level = level; }
 
 public:
     // =====================================================
@@ -61,8 +73,6 @@ public:
 
         auto comp = std::make_unique<T>(this, std::forward<Args>(args)...);
         T* rawPtr = comp.get();
-
-        comp->SetWorld(m_world);
 
         // SceneComponent → root attach
         if constexpr (std::is_base_of_v<SceneComponent, T>)
@@ -114,11 +124,11 @@ public:
 
 public:
     // =====================================================
-    // Renderer Attachment (PUBLIC / SAFE)
+    // Rendering
     // =====================================================
-    void AttachRendererTo(
-        RendererComponent* renderer,
-        SceneComponent* scene);
+    void SubmitRenderCommands(
+        RenderQueue& queue,
+        CameraComponent2D& activeCamera);
 
 public:
     // =====================================================
@@ -136,32 +146,27 @@ public:
         const FDetachmentTransformRules& rules =
         FDetachmentTransformRules::KeepWorldTransform);
 
-public:
-    // =====================================================
-    // World
-    // =====================================================
-    World* GetWorld() const { return m_world; }
-
-private:
-    friend class World;
-    friend class Level;
-    void SetWorld(World* world);
-
-    // =====================================================
-    // Renderer Attachment (INTERNAL / UNSAFE)
-    // =====================================================
-    void AttachRendererToUnsafe(
-        RendererComponent* renderer,
-        SceneComponent* scene);
-
 protected:
-    SceneComponent* m_rootComponent{ nullptr };
-
-    std::vector<std::unique_ptr<ActorComponent>> m_components;
-    std::vector<Actor*> m_childActors;
-
-    Actor* m_parentActor{ nullptr };
     World* m_world{ nullptr };
+    Level* m_level{ nullptr };
 
     bool m_pendingDestroy{ false };
+
+    // -------------------------------------------------
+    // Components
+    // -------------------------------------------------
+    std::vector<std::unique_ptr<ActorComponent>> m_components;
+
+
+    // -------------------------------------------------
+    // Scene
+    // -------------------------------------------------
+    SceneComponent* m_rootComponent{ nullptr };
+
+    
+    // -------------------------------------------------
+    // Parent / Children
+    // -------------------------------------------------
+    Actor* m_parentActor{ nullptr };
+    std::vector<Actor*> m_childActors;
 };

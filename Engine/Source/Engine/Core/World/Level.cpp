@@ -9,6 +9,10 @@
 
 #include "Engine/Graphics/Render/RenderQueue.h"
 
+// =====================================================
+// Constructor / Destructor
+// =====================================================
+
 Level::Level() = default;
 
 Level::~Level() = default;
@@ -93,13 +97,18 @@ void Level::OnGamePlayStart()
 
 void Level::SubmitRenderCommands(
     RenderQueue& queue,
-    const CameraComponent2D& camera)
+    CameraComponent2D& activeCamera)
 {
     if (!m_world || !m_hasBegunPlay || m_isShuttingDown)
         return;
 
-    SubmitWorldRenderers(queue, camera);
-    SubmitUIRenderers(queue);
+    for (auto& actor : m_actors)
+    {
+        if (!actor->IsPendingDestroy())
+        {
+            actor->SubmitRenderCommands(queue, activeCamera);
+        }
+    }
 }
 
 // =====================================================
@@ -167,56 +176,6 @@ void Level::DestroyAllActors()
     }
 
     m_actors.clear();
-}
-
-// =====================================================
-// Render internals
-// =====================================================
-
-void Level::SubmitWorldRenderers(
-    RenderQueue& queue,
-    const CameraComponent2D& camera)
-{
-    const auto& viewProj = camera.GetViewProjectionMatrix();
-
-    for (auto& actor : m_actors)
-    {
-        if (actor->IsPendingDestroy())
-            continue;
-
-        for (const auto& comp : actor->GetComponents())
-        {
-            auto* rc = dynamic_cast<RendererComponent*>(comp.get());
-            if (!rc || !rc->IsVisible())
-                continue;
-
-            if (rc->IsUIRenderer())
-                continue;
-
-            rc->SubmitWorld(queue, viewProj);
-        }
-    }
-}
-
-void Level::SubmitUIRenderers(RenderQueue& queue)
-{
-    for (auto& actor : m_actors)
-    {
-        if (actor->IsPendingDestroy())
-            continue;
-
-        for (const auto& comp : actor->GetComponents())
-        {
-            auto* rc = dynamic_cast<RendererComponent*>(comp.get());
-            if (!rc || !rc->IsVisible())
-                continue;
-
-            if (!rc->IsUIRenderer())
-                continue;
-
-            rc->SubmitUI(queue);
-        }
-    }
 }
 
 // =====================================================

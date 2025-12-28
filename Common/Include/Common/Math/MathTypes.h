@@ -44,6 +44,37 @@ struct IVec2
     static constexpr IVec2 Right() noexcept { return { 1, 0 }; }
 };
 
+// -----------------------------------------------------------------------------
+// Vec2 : Float 2D Vector
+// -----------------------------------------------------------------------------
+struct Vec2
+{
+    float x = 0;
+    float y = 0;
+
+    constexpr Vec2() noexcept = default;
+    constexpr Vec2(float x_, float y_) noexcept : x(x_), y(y_) {}
+
+    // --- Basic arithmetic -----------------------------------------------------
+    constexpr Vec2 operator+(const Vec2& rhs) const noexcept { return { x + rhs.x, y + rhs.y }; }
+    constexpr Vec2 operator-(const Vec2& rhs) const noexcept { return { x - rhs.x, y - rhs.y }; }
+    constexpr Vec2 operator*(float s) const noexcept { return { x * s, y * s }; }
+    constexpr Vec2 operator/(float s) const noexcept { return { x / s, y / s }; }
+
+    constexpr Vec2& operator+=(const Vec2& rhs) noexcept { x += rhs.x; y += rhs.y; return *this; }
+    constexpr Vec2& operator-=(const Vec2& rhs) noexcept { x -= rhs.x; y -= rhs.y; return *this; }
+    constexpr Vec2& operator*=(float s) noexcept { x *= s; y *= s; return *this; }
+    constexpr Vec2& operator/=(float s) noexcept { x /= s; y /= s; return *this; }
+
+    // --- Comparison ------------------------------------------------------------
+    constexpr bool operator==(const Vec2& rhs) const noexcept { return x == rhs.x && y == rhs.y; }
+    constexpr bool operator!=(const Vec2& rhs) const noexcept { return !(*this == rhs); }
+
+    // --- Utility ---------------------------------------------------------------
+    static constexpr Vec2 Zero() noexcept { return { 0, 0 }; }
+    static constexpr Vec2 One() noexcept { return { 1, 1 }; }
+};
+
 
 // -----------------------------------------------------------------------------
 // IVec3 : Integer 3D Vector

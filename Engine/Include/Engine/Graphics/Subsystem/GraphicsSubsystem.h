@@ -24,7 +24,7 @@ class Mesh;
     GraphicsSubsystem
     -------------------------------------------------
     - 그래픽스 전역 소유자
-    - RenderSystem + PipelineStateLibrary + Managers 조립 책임
+    - RenderDevice / RenderSystem / Managers 조립
     - Engine lifetime 동안 유지
 */
 class GraphicsSubsystem final

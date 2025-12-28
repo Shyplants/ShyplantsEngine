@@ -7,6 +7,9 @@
 #include "Engine/Core/Component/ActorComponent.h"
 #include "Engine/Core/Component/SceneComponent.h"
 #include "Engine/Core/Component/RendererComponent.h"
+#include "Engine/Core/Component/CameraComponent2D.h"
+
+#include "Engine/Graphics/Render/RenderQueue.h"
 
 // =====================================================
 // Constructor / Destructor
@@ -63,20 +66,6 @@ void Actor::Destroy()
 }
 
 // =====================================================
-// World
-// =====================================================
-
-void Actor::SetWorld(World* world)
-{
-    m_world = world;
-
-    for (auto& comp : m_components)
-    {
-        comp->SetWorld(world);
-    }
-}
-
-// =====================================================
 // Root Component
 // =====================================================
 
@@ -103,50 +92,26 @@ void Actor::SetRootComponent(SceneComponent* newRoot)
     {
         m_rootComponent->DetachUnsafe(FDetachmentTransformRules::KeepWorldTransform);
     }
+}
 
-    // Renderer rebind (ONLY if previously bound to old root)
+// =====================================================
+// Rendering
+// =====================================================
+
+void Actor::SubmitRenderCommands(
+    RenderQueue& queue,
+    CameraComponent2D& activeCamera)
+{
     for (auto& comp : m_components)
     {
-        if (auto* renderer =
-            dynamic_cast<RendererComponent*>(comp.get()))
-        {
-            if (renderer->GetAttachComponent() == oldRoot)
-            {
-                AttachRendererToUnsafe(renderer, newRoot);
-            }
-        }
+        auto* renderer =
+            dynamic_cast<RendererComponent*>(comp.get());
+
+        if (!renderer)
+            continue;
+
+        renderer->Submit(queue, &activeCamera);
     }
-}
-
-// =====================================================
-// Renderer Attachment (PUBLIC / SAFE)
-// =====================================================
-
-void Actor::AttachRendererTo(
-    RendererComponent* renderer,
-    SceneComponent* scene)
-{
-    SP_ASSERT(renderer);
-    SP_ASSERT(scene);
-
-    SP_ASSERT(renderer->GetOwner() == this);
-    SP_ASSERT(scene->GetOwner() == this);
-
-    AttachRendererToUnsafe(renderer, scene);
-}
-
-// =====================================================
-// Renderer Attachment (INTERNAL / UNSAFE)
-// =====================================================
-
-void Actor::AttachRendererToUnsafe(
-    RendererComponent* renderer,
-    SceneComponent* scene)
-{
-    SP_ASSERT(renderer);
-    SP_ASSERT(scene);
-
-    renderer->SetAttachComponent(scene);
 }
 
 // =====================================================
