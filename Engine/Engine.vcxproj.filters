@@ -178,7 +178,7 @@
     <ClInclude Include="Include\Engine\Core\Component\TextRendererComponent.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="Include\Engine\Core\World\UIActor.h">
+    <ClInclude Include="Include\Engine\UI\UIActor.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="Include\Engine\Core\GameFramework\GameState.h">
@@ -421,10 +421,22 @@
     <ClInclude Include="Include\Engine\Graphics\Render\ScreenProjection.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="Include\Engine\UI\Components\UIScreenRootComponent.h">
+    <ClInclude Include="Include\Engine\UI\Component\UIScreenRootComponent.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="Include\Engine\UI\Components\UIComponent.h">
+    <ClInclude Include="Include\Engine\UI\Component\UIComponent.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Engine\Core\Component\WorldTransformComponent.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Engine\Core\Component\TransformComponent.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Engine\UI\Component\UITransformComponent.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Engine\Core\World\WorldActor.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>
@@ -513,7 +525,7 @@
     <ClCompile Include="Source\Engine\Core\Component\TextRendererComponent.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Engine\Core\World\UIActor.cpp">
+    <ClCompile Include="Source\Engine\UI\UIActor.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="Source\Engine\Core\GameFramework\GameState.cpp">
@@ -642,7 +654,7 @@
     <ClCompile Include="Source\Engine\UI\Layout\UIScreenTransform.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Engine\UI\Components\UIScreenRootComponent.cpp">
+    <ClCompile Include="Source\Engine\UI\Component\UIScreenRootComponent.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="Source\Engine\Core\World\PersistentLevel.cpp">
@@ -651,7 +663,19 @@
     <ClCompile Include="Source\Engine\UI\Layout\UIAnchorResolver.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Engine\UI\Components\UIComponent.cpp">
+    <ClCompile Include="Source\Engine\UI\Component\UIComponent.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\Core\Component\TransformComponent.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\UI\Component\UITransformComponent.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\Core\Component\WorldTransformComponent.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\Core\World\WorldActor.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>

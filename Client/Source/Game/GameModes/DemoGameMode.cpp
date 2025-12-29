@@ -7,7 +7,7 @@
 #include "Engine/Core/GameFramework/Pawn.h"
 #include "Engine/Core/GameFramework/PlayerController.h"
 
-#include "Engine/Core/Component/SceneComponent.h"
+#include "Engine/Core/Component/TransformComponent.h"
 
 #include "Game/Actors/DemoActor.h"
 
@@ -75,8 +75,8 @@ void DemoGameMode::OnBeginPlay()
     auto& world = GetWorld();
 
     auto* demoActor = world.SpawnActor<DemoActor>();
-    demoActor->GetRootComponent()->SetLocalPosition({ -300.0f, 0.0f, 20.0f });
+    // demoActor->GetRootTransform()->SetLocalPosition({ -300.0f, 0.0f, 20.0f });
 
     auto* demoActor2 = world.SpawnActor<DemoActor>();
-    demoActor2->GetRootComponent()->SetLocalPosition({ 0.0f, 0.0f, 11.0f });
+    // demoActor2->GetRootTransform()->SetLocalPosition({ 0.0f, 0.0f, 11.0f });
 }

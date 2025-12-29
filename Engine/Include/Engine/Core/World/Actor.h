@@ -3,28 +3,22 @@
 #include <vector>
 #include <memory>
 #include <type_traits>
-#include <algorithm>
 
-#include "Engine/Core/Component/FAttachmentTransformRules.h"
-
-// Forward declarations
 class World;
 class Level;
 
 class ActorComponent;
-class SceneComponent;
+class TransformComponent;
 class RendererComponent;
-class CameraComponent2D;
 
 class RenderQueue;
+class CameraComponent2D;
 
 /*
     Actor
     -------------------------------------------------
-    - World에 소속되는 Gameplay 단위
-    - Component 기반 확장
-    - Transform의 Root는 SceneComponent
-    - Render / Tick 정책 없음 (조립자 역할)
+    - 정책 없는 Gameplay 컨테이너
+    - World / UI Actor의 공통 베이스
 */
 class Actor
 {
@@ -37,10 +31,16 @@ public:
 
 public:
     // =====================================================
+    // Identity
+    // =====================================================
+    virtual bool IsUIActor() const = 0;
+
+public:
+    // =====================================================
     // Lifecycle
     // =====================================================
     virtual void OnSpawned() {}
-    virtual void BeginPlay() {}
+    virtual void OnBeginPlay() {}
     virtual void Tick(float deltaTime);
     virtual void OnDestroyed() {}
 
@@ -74,27 +74,6 @@ public:
         auto comp = std::make_unique<T>(this, std::forward<Args>(args)...);
         T* rawPtr = comp.get();
 
-        // SceneComponent → root attach
-        if constexpr (std::is_base_of_v<SceneComponent, T>)
-        {
-            if (m_rootComponent && rawPtr != m_rootComponent)
-            {
-                static_cast<SceneComponent*>(rawPtr)
-                    ->AttachTo(
-                        m_rootComponent,
-                        FAttachmentTransformRules::KeepRelativeTransform);
-            }
-        }
-        // RendererComponent → default root binding
-        else if constexpr (std::is_base_of_v<RendererComponent, T>)
-        {
-            if (m_rootComponent)
-            {
-                static_cast<RendererComponent*>(rawPtr)
-                    ->SetAttachComponent(m_rootComponent);
-            }
-        }
-
         m_components.push_back(std::move(comp));
         rawPtr->OnRegister();
 
@@ -106,7 +85,7 @@ public:
     {
         for (auto& comp : m_components)
         {
-            if (auto casted = dynamic_cast<T*>(comp.get()))
+            if (auto* casted = dynamic_cast<T*>(comp.get()))
                 return casted;
         }
         return nullptr;
@@ -117,10 +96,12 @@ public:
 
 public:
     // =====================================================
-    // Root Component
+    // Transform
     // =====================================================
-    SceneComponent* GetRootComponent() const { return m_rootComponent; }
-    void SetRootComponent(SceneComponent* newRoot);
+    TransformComponent* GetRootTransform() const { return m_rootTransform; }
+
+protected:
+    void SetRootTransform(TransformComponent* root);
 
 public:
     // =====================================================
@@ -130,43 +111,12 @@ public:
         RenderQueue& queue,
         CameraComponent2D& activeCamera);
 
-public:
-    // =====================================================
-    // Actor Hierarchy
-    // =====================================================
-    Actor* GetParentActor() const { return m_parentActor; }
-    const std::vector<Actor*>& GetChildActors() const { return m_childActors; }
-
-    void AttachToActor(
-        Actor* parent,
-        const FAttachmentTransformRules& rules =
-        FAttachmentTransformRules::KeepWorldTransform);
-
-    void DetachFromParent(
-        const FDetachmentTransformRules& rules =
-        FDetachmentTransformRules::KeepWorldTransform);
-
 protected:
     World* m_world{ nullptr };
     Level* m_level{ nullptr };
 
     bool m_pendingDestroy{ false };
 
-    // -------------------------------------------------
-    // Components
-    // -------------------------------------------------
     std::vector<std::unique_ptr<ActorComponent>> m_components;
-
-
-    // -------------------------------------------------
-    // Scene
-    // -------------------------------------------------
-    SceneComponent* m_rootComponent{ nullptr };
-
-    
-    // -------------------------------------------------
-    // Parent / Children
-    // -------------------------------------------------
-    Actor* m_parentActor{ nullptr };
-    std::vector<Actor*> m_childActors;
+    TransformComponent* m_rootTransform{ nullptr };
 };

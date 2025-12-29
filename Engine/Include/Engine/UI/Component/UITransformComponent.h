@@ -6,62 +6,73 @@
 
 #include <DirectXMath.h>
 
+// Forward declarations
+class UIScreenRootComponent;
+
 /*
     UITransformComponent
     -------------------------------------------------
     - Screen-space 전용 Transform
     - Anchor + Offset + UISpaceContext 기반
-    - UISpace는 Root에서만 직접 보유
-    - 자식은 부모를 통해 간접 참조
 */
 class UITransformComponent final : public TransformComponent
 {
 public:
     explicit UITransformComponent(Actor* owner);
-    ~UITransformComponent() override = default;
+    ~UITransformComponent() override;
 
 public:
     // =====================================================
-    // Root-only API
-    // =====================================================
-    void SetUISpace(const UISpaceContext* space);
-
-public:
-    // =====================================================
-    // Layout
+    // Layout configuration
     // =====================================================
     void SetAnchor(const UIAnchorData& anchor);
     void SetLocalOffset(const DirectX::XMFLOAT2& offset);
 
+    void MarkLayoutDirty();
+
+    // Root에서만 호출
+    void SetUISpace(const UISpaceContext* space);
+
 public:
     // =====================================================
-    // Transform Interface
+    // TransformComponent override
     // =====================================================
     DirectX::XMMATRIX GetWorldMatrix() const override;
     DirectX::XMFLOAT3 GetWorldPositionFast() const override;
 
+public:
+    // =====================================================
+    // ActorComponent lifecycle
+    // =====================================================
+    void OnRegister() override;
+    void OnUnregister() override;
+
 protected:
     // =====================================================
-    // Dirty propagation hook
+    // Transform dirty hook
     // =====================================================
     void OnTransformDirty() override;
 
 private:
-    // =====================================================
-    // Internal
-    // =====================================================
-    const UISpaceContext* GetUISpace() const;
+    void ResolveRoot();
     void Recalculate() const;
 
 private:
-    // Root-only (nullable for children)
+    // -------------------------------------------------
+    // UISpace
+    // -------------------------------------------------
     const UISpaceContext* m_space{ nullptr };
+    UIScreenRootComponent* m_root{ nullptr };
 
-    // Layout data
+    // -------------------------------------------------
+    // Layout state
+    // -------------------------------------------------
     UIAnchorData m_anchor{};
     DirectX::XMFLOAT2 m_localOffset{ 0.f, 0.f };
 
+    // -------------------------------------------------
     // Cached result
+    // -------------------------------------------------
     mutable DirectX::XMFLOAT2 m_cachedPos{ 0.f, 0.f };
     mutable bool m_dirty{ true };
 };

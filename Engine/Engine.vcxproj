@@ -84,13 +84,19 @@
     <ClInclude Include="Include\Engine\Core\Component\CameraComponent2D.h" />
     <ClInclude Include="Include\Engine\Core\Component\FAttachmentTransformRules.h" />
     <ClInclude Include="Include\Engine\Core\Component\RendererComponent.h" />
-    <ClInclude Include="Include\Engine\Core\Component\SceneComponent.h" />
+    <ClInclude Include="Include\Engine\Core\Component\SceneComponent.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </ClInclude>
     <ClInclude Include="Include\Engine\Core\Component\SpriteAnimatorComponent.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="Include\Engine\Core\Component\TextRendererComponent.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </ClInclude>
+    <ClInclude Include="Include\Engine\Core\Component\TransformComponent.h" />
+    <ClInclude Include="Include\Engine\Core\World\WorldActor.h" />
+    <ClInclude Include="Include\Engine\UI\Component\UITransformComponent.h" />
+    <ClInclude Include="Include\Engine\Core\Component\WorldTransformComponent.h" />
     <ClInclude Include="Include\Engine\Core\Engine.h" />
     <ClInclude Include="Include\Engine\Core\GameFramework\GameModeBase.h" />
     <ClInclude Include="Include\Engine\Core\GameFramework\GameState.h" />
@@ -114,7 +120,7 @@
     <ClInclude Include="Include\Engine\Core\World\LevelResourceSet.h" />
     <ClInclude Include="Include\Engine\Core\World\LevelTypes.h" />
     <ClInclude Include="Include\Engine\Core\World\PersistentLevel.h" />
-    <ClInclude Include="Include\Engine\Core\World\UIActor.h">
+    <ClInclude Include="Include\Engine\UI\UIActor.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="Include\Engine\Core\World\World.h" />
@@ -147,11 +153,13 @@
     <ClInclude Include="Include\Engine\Graphics\Render\ScreenProjection.h" />
     <ClInclude Include="Include\Engine\Graphics\Render\ScreenRenderContext.h" />
     <ClInclude Include="Include\Engine\Graphics\Render\SpritePivot.h" />
-    <ClInclude Include="Include\Engine\UI\Components\UIComponent.h" />
-    <ClInclude Include="Include\Engine\UI\Components\UIScreenRootComponent.h" />
+    <ClInclude Include="Include\Engine\UI\Component\UIComponent.h" />
+    <ClInclude Include="Include\Engine\UI\Component\UIScreenRootComponent.h" />
     <ClInclude Include="Include\Engine\UI\Layout\UIAnchor.h" />
     <ClInclude Include="Include\Engine\UI\Layout\UIAnchorResolver.h" />
-    <ClInclude Include="Include\Engine\UI\Layout\UIScreenTransform.h" />
+    <ClInclude Include="Include\Engine\UI\Layout\UIScreenTransform.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </ClInclude>
     <ClInclude Include="Include\Engine\UI\UISpaceContext.h" />
     <ClInclude Include="Include\Engine\Graphics\Sampler\SamplerDesc.h" />
     <ClInclude Include="Include\Engine\Graphics\Sampler\SamplerID.h" />
@@ -224,6 +232,16 @@
     <ClInclude Include="ThirdParty\DirectXTK\Src\SharedResourcePool.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Source\Engine\Core\Component\TransformComponent.cpp" />
+    <ClCompile Include="Source\Engine\Core\World\WorldActor.cpp">
+      <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)\EnginePCH.pch</PrecompiledHeaderOutputFile>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\UI\Component\UITransformComponent.cpp">
+      <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)\EnginePCH.pch</PrecompiledHeaderOutputFile>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\Core\Component\WorldTransformComponent.cpp">
+      <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)\EnginePCH.pch</PrecompiledHeaderOutputFile>
+    </ClCompile>
     <ClCompile Include="Source\Engine\Core\Input\PlayerInput.cpp">
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)\EnginePCH.pch</PrecompiledHeaderOutputFile>
     </ClCompile>
@@ -310,6 +328,7 @@
     </ClCompile>
     <ClCompile Include="Source\Engine\Core\Component\SceneComponent.cpp">
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)\EnginePCH.pch</PrecompiledHeaderOutputFile>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="Source\Engine\Core\Component\SpriteAnimatorComponent.cpp">
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)\EnginePCH.pch</PrecompiledHeaderOutputFile>
@@ -338,7 +357,7 @@
     <ClCompile Include="Source\Engine\Core\World\Level.cpp">
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)\EnginePCH.pch</PrecompiledHeaderOutputFile>
     </ClCompile>
-    <ClCompile Include="Source\Engine\Core\World\UIActor.cpp">
+    <ClCompile Include="Source\Engine\UI\UIActor.cpp">
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)\EnginePCH.pch</PrecompiledHeaderOutputFile>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
     </ClCompile>
@@ -377,10 +396,10 @@
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Engine/PCH/GraphicsPCH.h</PrecompiledHeaderFile>
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)\GraphicsPCH.pch</PrecompiledHeaderOutputFile>
     </ClCompile>
-    <ClCompile Include="Source\Engine\UI\Components\UIComponent.cpp">
+    <ClCompile Include="Source\Engine\UI\Component\UIComponent.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="Source\Engine\UI\Components\UIScreenRootComponent.cpp">
+    <ClCompile Include="Source\Engine\UI\Component\UIScreenRootComponent.cpp">
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)\EnginePCH.pch</PrecompiledHeaderOutputFile>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
@@ -389,6 +408,7 @@
     </ClCompile>
     <ClCompile Include="Source\Engine\UI\Layout\UIScreenTransform.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="Source\Engine\Graphics\Sampler\SamplerManager.cpp">
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Engine/PCH/GraphicsPCH.h</PrecompiledHeaderFile>

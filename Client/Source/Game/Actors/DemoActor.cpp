@@ -2,18 +2,19 @@
 #include "Game/Actors/DemoActor.h"
 
 #include "Engine/Core/Component/SpriteRendererComponent.h"
+#include "Engine/Core/Component/TransformComponent.h"
 
 #include "Engine/Resource/ResourceManager.h"
 #include "Engine/Resource/Texture/TextureResource.h"
 
 DemoActor::DemoActor()
-    : Actor()
+    : WorldActor()
 {
 }
 
 void DemoActor::OnSpawned()
 {
-    Actor::OnSpawned();
+    WorldActor::OnSpawned();
 
     // --------------------------------------------------
     // SpriteRendererComponent
@@ -31,8 +32,8 @@ void DemoActor::OnSpawned()
     //m_spriteRenderer->SetPivot(SpritePivot::TopRight);
 }
 
-void DemoActor::BeginPlay()
+void DemoActor::OnBeginPlay()
 {
-    Actor::BeginPlay();
+    WorldActor::OnBeginPlay();
     // Gameplay logic only
 }

@@ -15,6 +15,8 @@ public:
     explicit SceneComponent(Actor* owner);
     ~SceneComponent() override;
 
+    void OnRegister() override;
+
 public:
     // =====================================================
     // Local Transform (Source of Truth)

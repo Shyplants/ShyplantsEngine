@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Engine/Core/World/Actor.h"
+#include "Engine/Core/World/WorldActor.h"
 
 // Forward declarations
 class CameraComponent2D;
@@ -8,29 +8,28 @@ class CameraComponent2D;
 /*
     CameraActor
     -------------------------------------------------
-    - 엔진 기본 제공 카메라 Actor
-    - PersistentLevel에 소속
-    - CameraComponent2D를 기본 소유
-    - World에 ActiveCamera로 자동 등록
+    - World-space 2D Camera Actor
+    - PersistentLevel 소속
+    - WorldTransform + CameraComponent2D 조립자
 */
-class CameraActor : public Actor
+class CameraActor final : public WorldActor
 {
 public:
     CameraActor();
-    ~CameraActor() override;
+    ~CameraActor() override = default;
 
     CameraActor(const CameraActor&) = delete;
     CameraActor& operator=(const CameraActor&) = delete;
 
 public:
     // =====================================================
-    // Actor Overrides
+    // Actor overrides
     // =====================================================
     void OnSpawned() override;
 
 public:
     // =====================================================
-    // Level Ownership Policy
+    // Level ownership
     // =====================================================
     bool IsPersistentActor() const override { return true; }
 

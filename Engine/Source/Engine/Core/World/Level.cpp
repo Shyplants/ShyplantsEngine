@@ -67,7 +67,7 @@ void Level::OnBeginPlay()
 
     for (auto& actor : m_actors)
     {
-        actor->BeginPlay();
+        actor->OnBeginPlay();
     }
 }
 
@@ -132,7 +132,7 @@ Actor* Level::SpawnActorInternal(std::unique_ptr<Actor> actor)
 
     if (m_hasBegunPlay)
     {
-        rawPtr->BeginPlay();
+        rawPtr->OnBeginPlay();
     }
 
     return rawPtr;

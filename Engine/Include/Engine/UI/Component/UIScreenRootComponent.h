@@ -1,31 +1,31 @@
 #pragma once
 
 #include <vector>
+#include <algorithm>
 
-#include "Engine/Core/Component/SceneComponent.h"
+#include "Engine/Core/Component/ActorComponent.h"
 #include "Engine/UI/UISpaceContext.h"
 
 // Forward declarations
-class UIScreenTransform;
+class UITransformComponent;
 
 /*
     UIScreenRootComponent
     -------------------------------------------------
-    - Screen-space UI 트리의 Root
-    - World Transform과 무관
-    - UISpaceContext(Viewport / DPI / SafeArea) 관리
-    - 하위 UIScreenTransform Dirty 전파 책임
+    - UI Space (viewport / dpi / safe area) 소유자
+    - UITransformComponent 등록 및 Dirty 전파 담당
 */
-class UIScreenRootComponent final : public SceneComponent
+class UIScreenRootComponent final : public ActorComponent
 {
 public:
     explicit UIScreenRootComponent(Actor* owner);
+    ~UIScreenRootComponent() override;
 
 public:
     // =====================================================
-    // UI Space
+    // UISpace
     // =====================================================
-    const UISpaceContext& GetUISpaceContext() const;
+    const UISpaceContext& GetUISpace() const { return m_space; }
 
     void UpdateUISpace(
         uint32 viewportW,
@@ -35,15 +35,15 @@ public:
 
 public:
     // =====================================================
-    // UI Tree management
+    // Registration
     // =====================================================
-    void RegisterChild(UIScreenTransform* child);
-    void UnregisterChild(UIScreenTransform* child);
+    void RegisterUITransform(UITransformComponent* transform);
+    void UnregisterUITransform(UITransformComponent* transform);
 
 private:
-    void MarkChildrenDirty();
+    void MarkAllUITransformsDirty();
 
 private:
     UISpaceContext m_space;
-    std::vector<UIScreenTransform*> m_children;
+    std::vector<UITransformComponent*> m_uiTransforms;
 };

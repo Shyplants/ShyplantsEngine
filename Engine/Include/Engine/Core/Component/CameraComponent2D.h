@@ -1,50 +1,44 @@
 #pragma once
 
-#include "Engine/Core/Component/SceneComponent.h"
+#include "Engine/Core/Component/ActorComponent.h"
 
 #include <DirectXMath.h>
+
+// Forward declarations
+class WorldTransformComponent;
 
 /*
     CameraComponent2D
     -------------------------------------------------
     - 2D Orthographic Camera
-    - ViewSize는 반드시 외부에서 주입되어야 함
-    - 초기 상태는 INVALID
+    - WorldTransformComponent 기반
+    - Transform Dirty 연동 최적화
 */
-class CameraComponent2D final : public SceneComponent
+class CameraComponent2D final : public ActorComponent
 {
 public:
     explicit CameraComponent2D(Actor* owner);
-    ~CameraComponent2D() override = default;
+    ~CameraComponent2D() override;
 
     CameraComponent2D(const CameraComponent2D&) = delete;
     CameraComponent2D& operator=(const CameraComponent2D&) = delete;
 
 public:
     // =====================================================
-    // View Size (Visible World Area)
+    // View size
     // =====================================================
     void SetViewSize(float width, float height);
 
-    float GetViewWidth()  const { return m_viewSize.x; }
-    float GetViewHeight() const { return m_viewSize.y; }
-
     bool IsViewSizeValid() const
     {
-        return m_viewSize.x > 0.0f && m_viewSize.y > 0.0f;
+        return m_viewSize.x > 0.f && m_viewSize.y > 0.f;
     }
 
 public:
     // =====================================================
-    // Zoom (scale factor)
+    // Camera parameters
     // =====================================================
     void SetZoom(float zoom);
-    float GetZoom() const { return m_zoom; }
-
-public:
-    // =====================================================
-    // Near / Far
-    // =====================================================
     void SetNearFar(float nearZ, float farZ);
 
 public:
@@ -57,9 +51,16 @@ public:
 
 public:
     // =====================================================
-    // SceneComponent
+    // Transform Dirty notification
     // =====================================================
-    void OnTransformDirty() override;
+    void OnOwnerTransformDirty();
+
+public:
+    // =====================================================
+    // ActorComponent lifecycle
+    // =====================================================
+    void OnRegister() override;
+    void OnUnregister() override;
 
 private:
     void RecalculateView() const;
@@ -67,19 +68,22 @@ private:
     void RecalculateViewProjection() const;
 
 private:
-    // =====================================================
-    // Camera parameters
-    // =====================================================
-    DirectX::XMFLOAT2 m_viewSize{ 0.0f, 0.0f }; // INVALID by default
-    float m_zoom{ 1.0f };
+    // -------------------------------------------------
+    // Dependencies
+    // -------------------------------------------------
+    WorldTransformComponent* m_transform{ nullptr };
 
-    float m_nearZ{ 0.0f };
-    float m_farZ{ 1000.0f };
+    // -------------------------------------------------
+    // Parameters
+    // -------------------------------------------------
+    DirectX::XMFLOAT2 m_viewSize{ 0.f, 0.f };
+    float m_zoom{ 1.f };
+    float m_nearZ{ 0.f };
+    float m_farZ{ 1000.f };
 
-private:
-    // =====================================================
-    // Cached matrices (mutable for const access)
-    // =====================================================
+    // -------------------------------------------------
+    // Cached matrices
+    // -------------------------------------------------
     mutable DirectX::XMMATRIX m_view{};
     mutable DirectX::XMMATRIX m_projection{};
     mutable DirectX::XMMATRIX m_viewProjection{};

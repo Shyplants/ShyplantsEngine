@@ -5,19 +5,14 @@
 
 #include <DirectXMath.h>
 
-// Forward declarations
-class SceneComponent;
 class RenderQueue;
-class CameraComponent2D;
 
 /*
     RendererComponent
     -------------------------------------------------
-    - Submit-only rendering component
-    - DrawCommand를 생성하여 RenderQueue에 제출
-    - GPU 실행 책임 없음
-    - RenderCategory : 정렬 정책
-    - RenderSpace    : World / Screen 좌표 정책
+    - 순수 렌더링 Submit 컴포넌트
+    - Transform / Camera / World / UI 개념 없음
+    - Actor가 Submit 경로(World/UI)를 결정
 */
 class RendererComponent : public ActorComponent
 {
@@ -30,45 +25,16 @@ public:
 
 public:
     // =====================================================
-    // Lifecycle
+    // Submit Interface (Actor가 호출)
     // =====================================================
-    void OnRegister() override;
 
-public:
-    // =====================================================
-    // Submit Interface
-    // =====================================================
-    void Submit(
-        RenderQueue& queue,
-        CameraComponent2D* activeCamera);
-
-protected:
-    // =====================================================
-    // Space-specific hooks (파생 클래스 구현)
-    // =====================================================
+    // World-space rendering
     virtual void SubmitWorld(
         RenderQueue& queue,
-        const DirectX::XMMATRIX& viewProj) 
-    {}
+        const DirectX::XMMATRIX& viewProj) = 0;
 
-    virtual void SubmitScreen(
-        RenderQueue& queue) 
-    {}
-    
-
-public:
-    // =====================================================
-    // Render Space
-    // =====================================================
-    bool IsScreenSpace() const
-    {
-        return m_category.Space == ERenderSpace::Screen;
-    }
-
-    bool IsWorldSpace() const
-    {
-        return m_category.Space == ERenderSpace::World;
-    }
+    // Screen-space rendering (UI)
+    virtual void SubmitUI(RenderQueue& /*queue*/) {}
 
 public:
     // =====================================================
@@ -76,15 +42,6 @@ public:
     // =====================================================
     void SetVisible(bool visible) { m_visible = visible; }
     bool IsVisible() const { return m_visible; }
-
-public:
-    // =====================================================
-    // Attachment
-    // =====================================================
-    SceneComponent* GetAttachComponent() const
-    {
-        return m_attachComponent;
-    }
 
 public:
     // =====================================================
@@ -100,6 +57,16 @@ public:
         return m_category;
     }
 
+    bool IsScreenSpace() const
+    {
+        return m_category.Space == ERenderSpace::Screen;
+    }
+
+    bool IsWorldSpace() const
+    {
+        return m_category.Space == ERenderSpace::World;
+    }
+
     void SetRenderOrder(int32 order)
     {
         m_renderOrder = order;
@@ -110,48 +77,18 @@ public:
         return m_renderOrder;
     }
 
-public:
+protected:
     // =====================================================
-    // Render Offset (local 2D pixel offset)
+    // Helper
     // =====================================================
-    void SetRenderOffset(const DirectX::XMFLOAT2& offset)
+    bool CanRender() const
     {
-        m_renderOffset = offset;
-    }
-
-    DirectX::XMFLOAT2 GetRenderOffset() const
-    {
-        return m_renderOffset;
+        return m_visible && IsActive();
     }
 
 protected:
-    // Actor만 Attachment를 설정 가능
-    friend class Actor;
-
-    void SetAttachComponent(SceneComponent* component)
-    {
-        m_attachComponent = component;
-    }
-
-protected:
-    // -------------------------------------------------
-    // Attachment
-    // -------------------------------------------------
-    SceneComponent* m_attachComponent{ nullptr };
-
-    // -------------------------------------------------
-    // Visibility
-    // -------------------------------------------------
     bool m_visible{ true };
 
-    // -------------------------------------------------
-    // Render policy
-    // -------------------------------------------------
     RenderCategory m_category{};
     int32          m_renderOrder{ 0 };
-
-    // -------------------------------------------------
-    // Local 2D render offset (pixel)
-    // -------------------------------------------------
-    DirectX::XMFLOAT2 m_renderOffset{ 0.0f, 0.0f };
 };

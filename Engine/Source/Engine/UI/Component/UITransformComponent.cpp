@@ -17,8 +17,6 @@ UITransformComponent::UITransformComponent(Actor* owner)
 {
 }
 
-UITransformComponent::~UITransformComponent() = default;
-
 // =====================================================
 // ActorComponent lifecycle
 // =====================================================

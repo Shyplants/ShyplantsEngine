@@ -21,6 +21,7 @@ public:
     // Level Ownership
     // -------------------------------------------------
     bool IsPersistentActor() const override { return true; }
+    bool IsUIActor() const override { return false; }
 
     // -------------------------------------------------
     // Possession

@@ -16,6 +16,17 @@ SceneComponent::SceneComponent(Actor* owner)
 
 SceneComponent::~SceneComponent() = default;
 
+void SceneComponent::OnRegister()
+{
+    ActorComponent::OnRegister();
+
+    auto ownerRootComp = GetOwner()->GetRootComponent();
+    if (ownerRootComp && ownerRootComp != this)
+    {
+        AttachToUnsafe(ownerRootComp, FAttachmentTransformRules::KeepRelativeTransform);
+    }
+}
+
 // =====================================================
 // Local Transform Setters
 // =====================================================

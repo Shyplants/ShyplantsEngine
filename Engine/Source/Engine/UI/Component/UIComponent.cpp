@@ -1,4 +1,4 @@
-#include "Engine/UI/Components/UIComponent.h"
+#include "Engine/UI/Component/UIComponent.h"
 
 UIComponent::UIComponent(Actor* owner)
 	: ActorComponent(owner)

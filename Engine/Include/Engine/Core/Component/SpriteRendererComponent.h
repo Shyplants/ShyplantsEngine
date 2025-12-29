@@ -1,17 +1,17 @@
 #pragma once
 
 #include "Engine/Core/Component/RendererComponent.h"
+#include "Common/Math/Rect.h"
+#include "Engine/Graphics/Render/SpritePivot.h"
 
 #include <DirectXMath.h>
 #include <memory>
 #include <unordered_map>
 
-#include "Common/Math/Rect.h"
-#include "Engine/Graphics/Render/SpritePivot.h"
-
 // Forward declarations
 class RenderQueue;
-class SceneComponent;
+class TransformComponent;
+
 class Material;
 class MaterialInstance;
 class Mesh;
@@ -21,9 +21,8 @@ class ConstantBuffer;
 /*
     SpriteRendererComponent
     -------------------------------------------------
-    - Sprite 렌더링 전용 RendererComponent
-    - World / Screen 구분은 RenderCategory로 처리
-    - 좌표 계산은 SceneComponent 결과를 그대로 사용
+    - World / Screen 공용 Sprite Renderer
+    - TransformComponent 추상 인터페이스만 사용
 */
 class SpriteRendererComponent final : public RendererComponent
 {
@@ -45,7 +44,7 @@ public:
         RenderQueue& queue,
         const DirectX::XMMATRIX& viewProj) override;
 
-    void SubmitScreen(
+    void SubmitUI(
         RenderQueue& queue) override;
 
 public:
@@ -74,6 +73,11 @@ private:
         const DirectX::XMMATRIX& viewProj);
 
 private:
+    // -------------------------------------------------
+    // Cached Transform
+    // -------------------------------------------------
+    TransformComponent* m_transform{ nullptr };
+
     // -------------------------------------------------
     // Render resources
     // -------------------------------------------------

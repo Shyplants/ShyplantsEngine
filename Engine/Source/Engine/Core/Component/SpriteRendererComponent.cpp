@@ -1,14 +1,14 @@
 #include "Engine/PCH/EnginePCH.h"
 
 #include "Engine/Core/Component/SpriteRendererComponent.h"
-#include "Engine/Core/Component/SceneComponent.h"
+#include "Engine/Core/Component/TransformComponent.h"
 #include "Engine/Core/World/World.h"
 #include "Engine/Core/World/Actor.h"
 
-#include "Engine/Graphics/Render/RenderSystem.h"
 #include "Engine/Graphics/Render/RenderQueue.h"
 #include "Engine/Graphics/Render/DrawCommand.h"
 #include "Engine/Graphics/Render/RenderSortKey.h"
+#include "Engine/Graphics/Render/RenderSystem.h"
 
 #include "Engine/Graphics/Material/Material.h"
 #include "Engine/Graphics/Material/MaterialInstance.h"
@@ -44,6 +44,9 @@ void SpriteRendererComponent::OnRegister()
 {
     RendererComponent::OnRegister();
 
+    m_transform = GetOwner()->GetRootTransform();
+    SP_ASSERT(m_transform != nullptr);
+
     auto& defaults =
         GetWorld()->GetRenderSystem().GetDefaults();
 
@@ -66,26 +69,25 @@ void SpriteRendererComponent::SubmitWorld(
     RenderQueue& queue,
     const XMMATRIX& viewProj)
 {
-    if (!IsVisible())
+    if (!CanRender())
         return;
 
-    SceneComponent* scene = GetAttachComponent();
-    SP_ASSERT(scene);
-
-    XMMATRIX world = scene->GetWorldMatrix();
-    BuildDrawCommand(queue, world, viewProj);
+    BuildDrawCommand(
+        queue,
+        m_transform->GetWorldMatrix(),
+        viewProj);
 }
 
-void SpriteRendererComponent::SubmitScreen(RenderQueue& queue)
+void SpriteRendererComponent::SubmitUI(
+    RenderQueue& queue)
 {
-    if (!IsVisible())
+    if (!CanRender())
         return;
 
-    SceneComponent* scene = GetAttachComponent();
-    SP_ASSERT(scene);
-
-    XMMATRIX world = scene->GetWorldMatrix();
-    BuildDrawCommand(queue, world, XMMatrixIdentity());
+    BuildDrawCommand(
+        queue,
+        m_transform->GetWorldMatrix(),
+        XMMatrixIdentity());
 }
 
 // =====================================================
@@ -94,18 +96,20 @@ void SpriteRendererComponent::SubmitScreen(RenderQueue& queue)
 
 void SpriteRendererComponent::BuildDrawCommand(
     RenderQueue& queue,
-    const DirectX::XMMATRIX& world,
-    const DirectX::XMMATRIX& viewProj)
+    const XMMATRIX& world,
+    const XMMATRIX& viewProj)
 {
     SP_ASSERT(m_material);
     SP_ASSERT(m_materialInstance);
     SP_ASSERT(m_mesh);
     SP_ASSERT(m_activeTexture);
 
-    float spriteW = float(m_sourceRect.right - m_sourceRect.left);
-    float spriteH = float(m_sourceRect.bottom - m_sourceRect.top);
+    const float spriteW =
+        float(m_sourceRect.right - m_sourceRect.left);
+    const float spriteH =
+        float(m_sourceRect.bottom - m_sourceRect.top);
 
-    XMFLOAT2 pivotPixel{ 0.f, 0.f };
+    XMFLOAT2 pivotPixel{};
 
     switch (m_pivot)
     {
@@ -121,22 +125,17 @@ void SpriteRendererComponent::BuildDrawCommand(
     case SpritePivot::BottomRight:  pivotPixel = { spriteW, 0.f }; break;
     }
 
-    XMMATRIX scale = XMMatrixScaling(
+    const XMMATRIX S = XMMatrixScaling(
         spriteW * m_scale.x,
         spriteH * m_scale.y,
         1.f);
 
-    XMMATRIX pivot = XMMatrixTranslation(
+    const XMMATRIX P = XMMatrixTranslation(
         -pivotPixel.x,
         -pivotPixel.y,
         0.f);
 
-    XMMATRIX offset = XMMatrixTranslation(
-        m_renderOffset.x,
-        m_renderOffset.y,
-        0.f);
-
-    XMMATRIX finalWorld = scale * pivot * offset * world;
+    const XMMATRIX finalWorld = S * P * world;
 
     // -------------------------------------------------
     // Constant buffer
@@ -145,14 +144,15 @@ void SpriteRendererComponent::BuildDrawCommand(
     cb.WVP = XMMatrixTranspose(finalWorld * viewProj);
     cb.Color = m_color;
 
-    float invW = 1.f / m_activeTexture->GetWidth();
-    float invH = 1.f / m_activeTexture->GetHeight();
+    const float invW = 1.f / m_activeTexture->GetWidth();
+    const float invH = 1.f / m_activeTexture->GetHeight();
 
-    cb.UVRect = XMFLOAT4(
+    cb.UVRect = {
         m_sourceRect.left * invW,
         m_sourceRect.top * invH,
-        (m_sourceRect.right - m_sourceRect.left) * invW,
-        (m_sourceRect.bottom - m_sourceRect.top) * invH);
+        spriteW * invW,
+        spriteH * invH
+    };
 
     m_materialInstance->UpdateConstantBuffer(
         PerObjectCB, cb);
@@ -164,13 +164,13 @@ void SpriteRendererComponent::BuildDrawCommand(
     cmd.Pipeline = m_material->GetPipeline();
     cmd.MaterialInstance = m_materialInstance.get();
     cmd.Mesh = m_mesh;
-
     cmd.IndexCount = m_mesh->GetIndexCount();
+
     cmd.SortKey = MakeSortKey(
         m_category.Space,
         m_category.Layer,
         static_cast<uint32>(m_renderOrder),
-        GetAttachComponent()->GetWorldPositionFast().z);
+        m_transform->GetWorldPositionFast().z);
 
     queue.Submit(cmd);
 }

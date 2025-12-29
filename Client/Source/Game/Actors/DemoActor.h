@@ -1,17 +1,17 @@
 #pragma once
 
-#include "Engine/Core/World/Actor.h"
+#include "Engine/Core/World/WorldActor.h"
 
 class SpriteRendererComponent;
 
-class DemoActor : public Actor
+class DemoActor : public WorldActor
 {
 public:
     DemoActor();
     ~DemoActor() override = default;
 
     void OnSpawned() override;
-    void BeginPlay() override;
+    void OnBeginPlay() override;
 
 private:
     SpriteRendererComponent* m_spriteRenderer = nullptr;

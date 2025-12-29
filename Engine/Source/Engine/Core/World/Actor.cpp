@@ -2,25 +2,18 @@
 
 #include "Engine/Core/World/Actor.h"
 #include "Engine/Core/World/World.h"
-#include "Engine/Core/World/Level.h"
-
 #include "Engine/Core/Component/ActorComponent.h"
-#include "Engine/Core/Component/SceneComponent.h"
+#include "Engine/Core/Component/TransformComponent.h"
 #include "Engine/Core/Component/RendererComponent.h"
-#include "Engine/Core/Component/CameraComponent2D.h"
 
 #include "Engine/Graphics/Render/RenderQueue.h"
+#include "Engine/Core/Component/CameraComponent2D.h"
 
 // =====================================================
 // Constructor / Destructor
 // =====================================================
 
-Actor::Actor()
-{
-    m_rootComponent = AddComponent<SceneComponent>();
-    SetRootComponent(m_rootComponent);
-}
-
+Actor::Actor() = default;
 Actor::~Actor() = default;
 
 // =====================================================
@@ -49,12 +42,12 @@ void Actor::Destroy()
 
     m_pendingDestroy = true;
 
-    for (Actor* child : m_childActors)
+    // -------------------------------------------------
+    // Component Unregister (Áß¿ä)
+    // -------------------------------------------------
+    for (auto& comp : m_components)
     {
-        if (child && !child->IsPendingDestroy())
-        {
-            child->Destroy();
-        }
+        comp->OnUnregister();
     }
 
     OnDestroyed();
@@ -66,32 +59,16 @@ void Actor::Destroy()
 }
 
 // =====================================================
-// Root Component
+// Root Transform
 // =====================================================
 
-void Actor::SetRootComponent(SceneComponent* newRoot)
+void Actor::SetRootTransform(TransformComponent* root)
 {
-    if (!newRoot || newRoot == m_rootComponent)
-        return;
-
-    SceneComponent* oldRoot = m_rootComponent;
-    m_rootComponent = newRoot;
-
-    // Scene hierarchy migration
-    if (oldRoot)
-    {
-        auto children = oldRoot->GetChildren();
-        for (SceneComponent* child : children)
-        {
-            child->DetachUnsafe(FDetachmentTransformRules::KeepWorldTransform);
-            child->AttachToUnsafe(newRoot, FAttachmentTransformRules::KeepWorldTransform);
-        }
-    }
-
-    if (m_rootComponent->GetParent())
-    {
-        m_rootComponent->DetachUnsafe(FDetachmentTransformRules::KeepWorldTransform);
-    }
+#if defined(_DEBUG)
+    SP_ASSERT(m_rootTransform == nullptr);
+    SP_ASSERT(root != nullptr);
+#endif
+    m_rootTransform = root;
 }
 
 // =====================================================
@@ -107,53 +84,18 @@ void Actor::SubmitRenderCommands(
         auto* renderer =
             dynamic_cast<RendererComponent*>(comp.get());
 
-        if (!renderer)
+        if (!renderer || !renderer->IsVisible())
             continue;
 
-        renderer->Submit(queue, &activeCamera);
+        if (renderer->IsScreenSpace())
+        {
+            renderer->SubmitUI(queue);
+        }
+        else
+        {
+            renderer->SubmitWorld(
+                queue,
+                activeCamera.GetViewProjectionMatrix());
+        }
     }
-}
-
-// =====================================================
-// Actor Hierarchy
-// =====================================================
-
-void Actor::AttachToActor(
-    Actor* parent,
-    const FAttachmentTransformRules& rules)
-{
-    if (!parent || parent == this)
-        return;
-
-    if (m_parentActor)
-    {
-        DetachFromParent();
-    }
-
-    m_parentActor = parent;
-    parent->m_childActors.push_back(this);
-
-    if (m_rootComponent && parent->m_rootComponent)
-    {
-        m_rootComponent->AttachToUnsafe(parent->m_rootComponent, rules);
-    }
-}
-
-void Actor::DetachFromParent(
-    const FDetachmentTransformRules& rules)
-{
-    if (!m_parentActor)
-        return;
-
-    auto& siblings = m_parentActor->m_childActors;
-    siblings.erase(
-        std::remove(siblings.begin(), siblings.end(), this),
-        siblings.end());
-
-    if (m_rootComponent)
-    {
-        m_rootComponent->DetachUnsafe(rules);
-    }
-
-    m_parentActor = nullptr;
 }
