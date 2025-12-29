@@ -18,7 +18,7 @@ class UIActor : public Actor
 {
 public:
     UIActor();
-    ~UIActor() override = default;
+    ~UIActor() override;
 
 public:
     // =====================================================
