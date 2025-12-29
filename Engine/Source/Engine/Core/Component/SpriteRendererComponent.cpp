@@ -109,6 +109,9 @@ void SpriteRendererComponent::BuildDrawCommand(
     const float spriteH =
         float(m_sourceRect.bottom - m_sourceRect.top);
 
+    // -------------------------------------------------
+    // Pivot
+    // -------------------------------------------------
     XMFLOAT2 pivotPixel{};
 
     switch (m_pivot)
@@ -125,6 +128,9 @@ void SpriteRendererComponent::BuildDrawCommand(
     case SpritePivot::BottomRight:  pivotPixel = { spriteW, 0.f }; break;
     }
 
+    // -------------------------------------------------
+    // World matrix assembly
+    // -------------------------------------------------
     const XMMATRIX S = XMMatrixScaling(
         spriteW * m_scale.x,
         spriteH * m_scale.y,
@@ -135,7 +141,13 @@ void SpriteRendererComponent::BuildDrawCommand(
         -pivotPixel.y,
         0.f);
 
-    const XMMATRIX finalWorld = S * P * world;
+    const XMMATRIX O = XMMatrixTranslation(
+        m_renderOffset.x,
+        m_renderOffset.y,
+        0.f);
+
+    const XMMATRIX finalWorld =
+        S * P * O * world;
 
     // -------------------------------------------------
     // Constant buffer
@@ -230,6 +242,18 @@ void SpriteRendererComponent::SetAlpha(float alpha)
 void SpriteRendererComponent::SetScale(const XMFLOAT2& scale)
 {
     m_scale = scale;
+}
+
+void SpriteRendererComponent::SetRenderOffset(
+    const XMFLOAT2& offset)
+{
+    m_renderOffset = offset;
+}
+
+const XMFLOAT2&
+SpriteRendererComponent::GetRenderOffset() const
+{
+    return m_renderOffset;
 }
 
 void SpriteRendererComponent::SetSourceRect(const Rect& rect)

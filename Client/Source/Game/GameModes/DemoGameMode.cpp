@@ -8,6 +8,7 @@
 #include "Engine/Core/GameFramework/PlayerController.h"
 
 #include "Engine/Core/Component/TransformComponent.h"
+#include "Engine/Core/Component/SpriteRendererComponent.h"
 
 #include "Game/Actors/DemoActor.h"
 
@@ -78,5 +79,9 @@ void DemoGameMode::OnBeginPlay()
     // demoActor->GetRootTransform()->SetLocalPosition({ -300.0f, 0.0f, 20.0f });
 
     auto* demoActor2 = world.SpawnActor<DemoActor>();
-    // demoActor2->GetRootTransform()->SetLocalPosition({ 0.0f, 0.0f, 11.0f });
+    auto spriteComp = demoActor2->GetComponent<SpriteRendererComponent>();
+    if (spriteComp)
+    {
+        spriteComp->SetRenderOffset({ -400.0f, 50.0f });
+    }
 }

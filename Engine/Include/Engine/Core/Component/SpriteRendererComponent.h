@@ -23,6 +23,7 @@ class ConstantBuffer;
     -------------------------------------------------
     - World / Screen 공용 Sprite Renderer
     - TransformComponent 추상 인터페이스만 사용
+    - Sprite 전용 조립 파라미터(Pivot / Scale / RenderOffset)를 소유
 */
 class SpriteRendererComponent final : public RendererComponent
 {
@@ -49,7 +50,7 @@ public:
 
 public:
     // =====================================================
-    // Policy
+    // Policy (Sprite state)
     // =====================================================
     void SetMaterial(Material* material);
     void SetMesh(Mesh* mesh);
@@ -59,10 +60,17 @@ public:
     void SetColor(const DirectX::XMFLOAT4& color);
     void SetAlpha(float alpha);
     void SetScale(const DirectX::XMFLOAT2& scale);
+
+    void SetRenderOffset(const DirectX::XMFLOAT2& offset);
+    const DirectX::XMFLOAT2& GetRenderOffset() const;
+
     void SetSourceRect(const Rect& rect);
     void SetPivot(SpritePivot pivot) { m_pivot = pivot; }
 
 private:
+    // =====================================================
+    // Internal
+    // =====================================================
     void EnsureMaterialInstance();
     void EnsureConstantBuffer();
     void ApplyCachedResources();
@@ -94,6 +102,8 @@ private:
     // Sprite state
     // -------------------------------------------------
     DirectX::XMFLOAT2 m_scale{ 1.f, 1.f };
+    DirectX::XMFLOAT2 m_renderOffset{ 0.f, 0.f };
+
     DirectX::XMFLOAT4 m_color{ 1.f, 1.f, 1.f, 1.f };
     Rect              m_sourceRect{};
 

@@ -14,7 +14,7 @@ class UITransformComponent;
     - 모든 UI 요소의 루트
     - UISpaceContext 소유
 */
-class UIActor final : public Actor
+class UIActor : public Actor
 {
 public:
     UIActor();
