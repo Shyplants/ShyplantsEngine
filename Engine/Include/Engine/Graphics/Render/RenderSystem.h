@@ -1,9 +1,12 @@
 #pragma once
 
 #include <memory>
+#include <vector>
 
 #include "Common/Types.h"
 #include "Engine/Graphics/Render/RenderDefaults.h"
+
+#include <DirectXMath.h>
 
 // Forward declarations
 class RenderDevice;
@@ -14,11 +17,9 @@ class GraphicsPSOManager;
 struct DrawCommand;
 
 /*
-    RenderSystem (Phase 4)
-    -------------------------------------------------
     - 명시적 RenderPass 기반 렌더링
-    - Pass 순서: World → Screen → Debug
-    - RenderQueue는 Pass별 DrawCommand 제공
+    - Pass 순서: World → Screen(UI) → Debug
+    - UI Projection Matrix는 RenderSystem이 보관 / 제공
 */
 class RenderSystem final
 {
@@ -53,6 +54,13 @@ public:
     void SetDefaults(const RenderDefaults& defaults);
     const RenderDefaults& GetDefaults() const;
 
+public:
+    // =====================================================
+    // UI Projection
+    // =====================================================
+    void SetUIProjection(const DirectX::XMMATRIX& projection);
+    const DirectX::XMMATRIX& GetUIProjection() const;
+
 private:
     // =====================================================
     // Pass execution
@@ -69,5 +77,13 @@ private:
     std::unique_ptr<CommandBuffer> m_commandBuffer;
 
     bool m_frameBegun{ false };
-    RenderDefaults m_defaults;
+
+    RenderDefaults m_defaults{};
+
+    // -------------------------------------------------
+    // UI Projection (Screen-space)
+    // -------------------------------------------------
+    DirectX::XMMATRIX m_uiProjection{
+        DirectX::XMMatrixIdentity()
+    };
 };

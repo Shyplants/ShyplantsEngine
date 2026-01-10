@@ -1,29 +1,42 @@
 #include "ClientPCH/ClientPCH.h"
-#include "Actors/DemoUIActor.h"
+#include "Game/Actors/DemoUIActor.h"
 
-#include "Engine/Core/Component/TextRendererComponent.h"
-#include "Engine/Core/Component/SceneComponent.h"
+#include "Engine/Core/Component/SpriteRendererComponent.h"
+#include "Engine/Core/Component/TransformComponent.h"
+#include "Engine/UI/Component/UITransformComponent.h"
 
-DemoUIActor::DemoUIActor()
-{
+#include "Engine/Resource/ResourceManager.h"
+#include "Engine/Resource/Texture/TextureResource.h"
 
-}
+DemoUIActor::DemoUIActor() = default;
 
-DemoUIActor::~DemoUIActor()
-{
-}
+DemoUIActor::~DemoUIActor() = default;
 
 void DemoUIActor::OnSpawned()
 {
-	m_text = AddComponent<TextRendererComponent>();
-	m_text->SetText(L"Shyplants Engine!");
-	m_text->SetScale(1.0f);
+	UIActor::OnSpawned();
 
-	GetRootComponent()->SetLocalPosition({ 20.0f, 20.0f, 0.0f });
-}
+    auto* uiRoot = GetRootUITransform();
+    SP_ASSERT(uiRoot);
 
-void DemoUIActor::SetText(std::wstring& text)
-{
-	if (m_text)
-		m_text->SetText(text);
+    UIAnchorData anchor{};
+    anchor.Anchor = EUIAnchor::Center;
+
+    uiRoot->SetAnchor(anchor);
+
+
+    // --------------------------------------------------
+    // SpriteRendererComponent
+    // --------------------------------------------------
+    m_spriteRenderer = AddComponent<SpriteRendererComponent>();
+    SP_ASSERT(m_spriteRenderer != nullptr);
+
+    auto& resourceManager = ResourceManager::Get();
+    auto texture = resourceManager.Get<TextureResource>(L"../Resources/test.png");
+
+    m_spriteRenderer->SetTexture(0, texture.get());
+    m_spriteRenderer->SetRenderCategory({ ERenderSpace::Screen, ERenderLayer::Default });
+
+    // _spriteRenderer->SetRenderOffset({ +400.0f, -200.0f });
+    //m_spriteRenderer->SetPivot(SpritePivot::TopRight);
 }

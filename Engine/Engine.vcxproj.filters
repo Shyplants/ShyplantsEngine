@@ -412,9 +412,6 @@
     <ClInclude Include="Include\Engine\UI\Layout\UIAnchorResolver.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="Include\Engine\UI\Layout\UIScreenTransform.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
     <ClInclude Include="Include\Engine\Graphics\Render\ScreenRenderContext.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
@@ -649,9 +646,6 @@
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="Source\Engine\Core\Input\PlayerInput.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Engine\UI\Layout\UIScreenTransform.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="Source\Engine\UI\Component\UIScreenRootComponent.cpp">

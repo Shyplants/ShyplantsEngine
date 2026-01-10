@@ -11,6 +11,7 @@
 #include "Engine/Core/Component/SpriteRendererComponent.h"
 
 #include "Game/Actors/DemoActor.h"
+#include "Game/Actors/DemoUIActor.h"
 
 // =====================================================
 // Constructor / 
@@ -75,13 +76,22 @@ void DemoGameMode::OnBeginPlay()
 
     auto& world = GetWorld();
 
-    auto* demoActor = world.SpawnActor<DemoActor>();
+    /*auto* demoActor = world.SpawnActor<DemoActor>();
+    {
+        auto spriteComp = demoActor->GetComponent<SpriteRendererComponent>();
+        spriteComp->SetPivot(SpritePivot::BottomLeft);
+    }*/
     // demoActor->GetRootTransform()->SetLocalPosition({ -300.0f, 0.0f, 20.0f });
 
-    auto* demoActor2 = world.SpawnActor<DemoActor>();
+    /*auto* demoActor2 = world.SpawnActor<DemoActor>();
     auto spriteComp = demoActor2->GetComponent<SpriteRendererComponent>();
     if (spriteComp)
     {
         spriteComp->SetRenderOffset({ -400.0f, 50.0f });
+    }*/
+
+    auto demoUIActor = world.SpawnActor<DemoUIActor>();
+    {
+        auto spriteComp = demoUIActor->GetComponent<SpriteRendererComponent>();
     }
 }

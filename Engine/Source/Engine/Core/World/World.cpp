@@ -6,6 +6,8 @@
 #include "Engine/Core/World/PersistentLevel.h"
 #include "Engine/Core/World/GameplayLevel.h"
 
+#include "Engine/UI/UIActor.h"
+
 #include "Engine/Core/Component/CameraComponent2D.h"
 
 #include "Engine/Core/GameFramework/GameModeBase.h"
@@ -13,6 +15,8 @@
 
 #include "Engine/Graphics/Render/RenderSystem.h"
 #include "Engine/Graphics/Render/RenderQueue.h"
+
+#include <DirectXMath.h>
 
 // =====================================================
 // Constructor / Destructor
@@ -23,16 +27,12 @@ World::World(RenderSystem* renderSystem)
 {
     SP_ASSERT(m_renderSystem != nullptr);
 
-    // PersistentLevel은 World 수명 동안 유지
     m_persistentLevel = std::make_unique<PersistentLevel>();
     m_persistentLevel->OnEnter(*this);
     m_persistentLevel->OnBeginPlay();
 }
 
-World::~World()
-{
-    // Shutdown은 외부에서 명시적으로 호출
-}
+World::~World() = default;
 
 // =====================================================
 // Shutdown
@@ -45,23 +45,14 @@ void World::Shutdown()
 
     m_isShuttingDown = true;
 
-    // -------------------------------------------------
-    // GameMode 종료
-    // -------------------------------------------------
     if (m_gameMode)
     {
         m_gameMode->OnEndPlay();
         m_gameMode.reset();
     }
 
-    // -------------------------------------------------
-    // GameplayLevel 종료
-    // -------------------------------------------------
     ShutdownGameplayLevel();
 
-    // -------------------------------------------------
-    // PersistentLevel 종료
-    // -------------------------------------------------
     if (m_persistentLevel)
     {
         m_persistentLevel->Shutdown();
@@ -114,10 +105,6 @@ void World::SubmitRenderCommands()
 
     RenderQueue& queue = m_renderSystem->GetRenderQueue();
 
-    // -------------------------------------------------
-    // World-space / Screen-space submit은
-    // Level 내부에서 RendererComponent 기준으로 분기됨
-    // -------------------------------------------------
     if (m_gameplayLevel)
         m_gameplayLevel->SubmitRenderCommands(queue, *m_activeCamera);
 
@@ -142,9 +129,7 @@ void World::DestroyActor(Actor* actor)
         : static_cast<Level*>(m_gameplayLevel.get());
 
     if (ownerLevel)
-    {
         ownerLevel->MarkActorForDestroy(actor);
-    }
 }
 
 Actor* World::SpawnActor_Internal(std::unique_ptr<Actor> actor)
@@ -159,7 +144,35 @@ Actor* World::SpawnActor_Internal(std::unique_ptr<Actor> actor)
     if (!targetLevel)
         return nullptr;
 
-    return targetLevel->SpawnActorInternal(std::move(actor));
+    Actor* spawned =
+        targetLevel->SpawnActorInternal(std::move(actor));
+
+    InjectUISpaceIfNeeded(spawned);
+
+    return spawned;
+}
+
+// =====================================================
+// UI Injection
+// =====================================================
+
+void World::InjectUISpaceIfNeeded(Actor* actor)
+{
+    if (!actor)
+        return;
+
+    if (!actor->IsUIActor())
+        return;
+
+    if (m_lastViewportW == 0 || m_lastViewportH == 0)
+        return;
+
+    UIActor* uiActor = static_cast<UIActor*>(actor);
+    uiActor->UpdateUISpace(
+        m_lastViewportW,
+        m_lastViewportH,
+        1.0f,
+        UISafeArea{});
 }
 
 // =====================================================
@@ -220,7 +233,7 @@ GameState* World::GetGameState() const
 }
 
 // =====================================================
-// Camera
+// Camera / Viewport
 // =====================================================
 
 void World::SetActiveCamera(CameraComponent2D* camera)
@@ -256,6 +269,23 @@ void World::OnViewportResized(uint32 width, uint32 height)
             static_cast<float>(width),
             static_cast<float>(height));
     }
+
+    // UI Projection
+    DirectX::XMMATRIX uiProj =
+        DirectX::XMMatrixOrthographicOffCenterLH(
+            0.0f, static_cast<float>(width),
+            static_cast<float>(height), 0.0f,
+            0.0f, 1.0f);
+
+    m_renderSystem->SetUIProjection(uiProj);
+
+
+    if (m_persistentLevel)
+        m_persistentLevel->ForEachActor(
+            [this](Actor* actor)
+            {
+                InjectUISpaceIfNeeded(actor);
+            });
 }
 
 void World::NotifyActorDestroyed(Actor* actor)

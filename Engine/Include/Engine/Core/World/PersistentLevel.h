@@ -1,5 +1,7 @@
 #pragma once
 
+#include <functional>
+
 #include "Engine/Core/World/Level.h"
 
 /*
@@ -37,4 +39,14 @@ public:
     // Tick
     // =====================================================
     void Tick(float deltaTime) override;
+
+public:
+    // =====================================================
+    // Actor iteration (World Áö¿ø)
+    // =====================================================
+    template<typename Fn>
+    void ForEachActor(Fn&& fn) const
+    {
+        ForEachActorInternal(std::forward<Fn>(fn));
+    }
 };

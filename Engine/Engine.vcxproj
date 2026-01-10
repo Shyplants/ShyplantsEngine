@@ -157,9 +157,6 @@
     <ClInclude Include="Include\Engine\UI\Component\UIScreenRootComponent.h" />
     <ClInclude Include="Include\Engine\UI\Layout\UIAnchor.h" />
     <ClInclude Include="Include\Engine\UI\Layout\UIAnchorResolver.h" />
-    <ClInclude Include="Include\Engine\UI\Layout\UIScreenTransform.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-    </ClInclude>
     <ClInclude Include="Include\Engine\UI\UISpaceContext.h" />
     <ClInclude Include="Include\Engine\Graphics\Sampler\SamplerDesc.h" />
     <ClInclude Include="Include\Engine\Graphics\Sampler\SamplerID.h" />
@@ -405,10 +402,6 @@
     </ClCompile>
     <ClCompile Include="Source\Engine\UI\Layout\UIAnchorResolver.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="Source\Engine\UI\Layout\UIScreenTransform.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="Source\Engine\Graphics\Sampler\SamplerManager.cpp">
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Engine/PCH/GraphicsPCH.h</PrecompiledHeaderFile>

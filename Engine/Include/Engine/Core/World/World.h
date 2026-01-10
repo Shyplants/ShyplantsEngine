@@ -18,13 +18,15 @@ class CameraComponent2D;
 class GameModeBase;
 class GameState;
 
+class UIActor;
+
 /*
     World
     -------------------------------------------------
     - 엔진의 최상위 Gameplay 컨테이너
     - PersistentLevel + GameplayLevel 소유
     - GameModeBase 생명주기 관리
-    - 정책 없는 오케스트레이터
+    - Viewport / UI Context의 유일한 제공자
 */
 class World
 {
@@ -41,8 +43,6 @@ public:
     // =====================================================
     void Tick(float deltaTime);
     void Shutdown();
-
-    // Level + GameMode 준비 완료 후 호출
     void StartGameplay();
 
     bool IsShuttingDown() const { return m_isShuttingDown; }
@@ -116,17 +116,18 @@ public:
 
 public:
     // =====================================================
-    // Camera
+    // Camera / Viewport
     // =====================================================
     void SetActiveCamera(CameraComponent2D* camera);
     CameraComponent2D* GetActiveCamera() const { return m_activeCamera; }
 
     void OnViewportResized(uint32 width, uint32 height);
+
     void NotifyActorDestroyed(Actor* actor);
 
 public:
     // =====================================================
-    // Rendering Access (STRICTLY PASS-THROUGH)
+    // Rendering Access
     // =====================================================
     RenderQueue& GetRenderQueue() const;
     RenderSystem& GetRenderSystem() const;
@@ -136,6 +137,7 @@ private:
     // Internal
     // =====================================================
     Actor* SpawnActor_Internal(std::unique_ptr<Actor> actor);
+    void   InjectUISpaceIfNeeded(Actor* actor);
 
 private:
     RenderSystem* m_renderSystem{ nullptr };

@@ -4,11 +4,6 @@
 #include "Engine/Core/World/World.h"
 #include "Engine/Core/World/Actor.h"
 
-#include "Engine/Core/Component/RendererComponent.h"
-#include "Engine/Core/Component/CameraComponent2D.h"
-
-#include "Engine/Graphics/Render/RenderQueue.h"
-
 // =====================================================
 // Constructor / Destructor
 // =====================================================

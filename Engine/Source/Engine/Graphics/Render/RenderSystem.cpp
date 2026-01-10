@@ -107,6 +107,22 @@ const RenderDefaults& RenderSystem::GetDefaults() const
 }
 
 // =====================================================
+// UI Projection
+// =====================================================
+
+void RenderSystem::SetUIProjection(
+    const DirectX::XMMATRIX& projection)
+{
+    m_uiProjection = projection;
+}
+
+const DirectX::XMMATRIX&
+RenderSystem::GetUIProjection() const
+{
+    return m_uiProjection;
+}
+
+// =====================================================
 // Pass execution
 // =====================================================
 

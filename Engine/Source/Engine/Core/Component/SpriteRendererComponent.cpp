@@ -84,10 +84,13 @@ void SpriteRendererComponent::SubmitUI(
     if (!CanRender())
         return;
 
+    const auto& uiProj =
+        GetWorld()->GetRenderSystem().GetUIProjection();
+
     BuildDrawCommand(
         queue,
         m_transform->GetWorldMatrix(),
-        XMMatrixIdentity());
+        uiProj);
 }
 
 // =====================================================

@@ -3,6 +3,7 @@
 #include <vector>
 #include <memory>
 #include <algorithm>
+#include <functional>
 
 #include "Common/Types.h"
 #include "Engine/Core/World/LevelTypes.h"
@@ -45,10 +46,7 @@ public:
     virtual void OnBeginPlay();
     virtual void Tick(float deltaTime);
 
-    // Level + GameMode가 모두 준비된 후 호출
     virtual void OnGamePlayStart();
-
-    // World 종료 시 호출
     virtual void Shutdown();
 
 public:
@@ -66,6 +64,7 @@ public:
     Actor* SpawnActorInternal(std::unique_ptr<Actor> actor);
     void   MarkActorForDestroy(Actor* actor);
 
+public:
     // =====================================================
     // Actor Query
     // =====================================================
@@ -100,6 +99,24 @@ public:
 
 protected:
     World& GetWorld() const;
+
+    // =====================================================
+    // Actor iteration utility (World / derived Levels)
+    // =====================================================
+    template<typename Fn>
+    void ForEachActorInternal(Fn&& fn) const
+    {
+        for (const auto& actor : m_actors)
+        {
+            if (!actor)
+                continue;
+
+            if (actor->IsPendingDestroy())
+                continue;
+
+            fn(actor.get());
+        }
+    }
 
 private:
     // =====================================================
