@@ -115,6 +115,7 @@ bool GraphicsSubsystem::Initialize(
     // -------------------------------------------------
     Material* defaultMaterial = GetDefaultSpriteMaterial();
     Mesh* defaultMesh = GetDefaultSpriteMesh();
+    Mesh* defaultUIMesh = GetDefaultUISpriteMesh();
 
 #if defined(_DEBUG)
     SP_ASSERT(defaultMaterial != nullptr);
@@ -124,6 +125,7 @@ bool GraphicsSubsystem::Initialize(
     RenderDefaults defaults{};
     defaults.SpriteMaterial = defaultMaterial;
     defaults.SpriteMesh = defaultMesh;
+    defaults.UISpriteMesh = defaultUIMesh;
 
     m_renderSystem->SetDefaults(defaults);
 
@@ -255,6 +257,13 @@ Material* GraphicsSubsystem::GetDefaultSpriteMaterial() const
 Mesh* GraphicsSubsystem::GetDefaultSpriteMesh() const
 {
     return m_meshManager
-        ? m_meshManager->GetMesh(L"__Builtin_Quad")
+        ? m_meshManager->GetQuad()
+        : nullptr;
+}
+
+Mesh* GraphicsSubsystem::GetDefaultUISpriteMesh() const
+{
+    return m_meshManager
+        ? m_meshManager->GetUIQuad()
         : nullptr;
 }

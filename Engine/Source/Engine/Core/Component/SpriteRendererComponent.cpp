@@ -54,7 +54,18 @@ void SpriteRendererComponent::OnRegister()
         m_material = defaults.SpriteMaterial;
 
     if (!m_mesh)
-        m_mesh = defaults.SpriteMesh;
+    {
+        if (GetOwner()->IsUIActor())
+        {
+            m_mesh = defaults.UISpriteMesh;
+            m_pivot = SpritePivot::TopLeft;
+        }
+        else
+        {
+            m_mesh = defaults.SpriteMesh;
+            m_pivot = SpritePivot::Center;
+        }
+    }
 
     EnsureMaterialInstance();
     EnsureConstantBuffer();

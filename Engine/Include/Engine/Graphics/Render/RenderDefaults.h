@@ -8,4 +8,5 @@ struct RenderDefaults
 {
     Material* SpriteMaterial{ nullptr };
     Mesh* SpriteMesh{ nullptr };
+    Mesh* UISpriteMesh{ nullptr };
 };

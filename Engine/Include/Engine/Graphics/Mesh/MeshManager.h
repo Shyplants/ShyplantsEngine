@@ -51,6 +51,7 @@ public:
     // =========================================================
     void CreateBuiltinMeshes();
     Mesh* GetQuad() const;
+    Mesh* GetUIQuad() const;
 
 public:
     // =========================================================
@@ -65,4 +66,5 @@ private:
 
     // Built-in
     Mesh* m_quad{ nullptr };
+    Mesh* m_uiQuad{ nullptr };
 };

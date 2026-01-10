@@ -75,15 +75,15 @@ void MeshManager::CreateBuiltinMeshes()
     if (m_quad)
         return;
 
-    // -------------------------------------------------
-    // Quad (Position + UV)
-    // -------------------------------------------------
     struct Vertex
     {
         float x, y, z;
         float u, v;
     };
 
+    // =================================================
+    // World Quad (Y-up)
+    // =================================================
     static constexpr Vertex quadVertices[] =
     {
         { 0.0f, 0.0f, 0.0f, 0.0f, 1.0f }, // left-bottom
@@ -105,6 +105,31 @@ void MeshManager::CreateBuiltinMeshes()
         4,
         quadIndices,
         6);
+
+    // =================================================
+    // UI Quad (Y-down)
+    // =================================================
+    static constexpr Vertex uiQuadVertices[] =
+    {
+        { 0.0f, 0.0f, 0.0f, 0.0f, 0.0f }, // left-top
+        { 1.0f, 0.0f, 0.0f, 1.0f, 0.0f }, // right-top
+        { 1.0f, 1.0f, 0.0f, 1.0f, 1.0f }, // right-bottom
+        { 0.0f, 1.0f, 0.0f, 0.0f, 1.0f }, // left-bottom
+    };
+
+    static constexpr uint16 uiQuadIndices[] =
+    {
+        0, 1, 2,
+        0, 2, 3
+    };
+
+    m_uiQuad = CreateMesh(
+        L"__Builtin_UIQuad",
+        uiQuadVertices,
+        sizeof(Vertex),
+        4,
+        uiQuadIndices,
+        6);
 }
 
 // =========================================================
@@ -114,6 +139,11 @@ void MeshManager::CreateBuiltinMeshes()
 Mesh* MeshManager::GetQuad() const
 {
     return m_quad;
+}
+
+Mesh* MeshManager::GetUIQuad() const
+{
+    return m_uiQuad;
 }
 
 // =========================================================

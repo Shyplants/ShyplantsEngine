@@ -36,6 +36,7 @@ void DemoUIActor::OnSpawned()
 
     m_spriteRenderer->SetTexture(0, texture.get());
     m_spriteRenderer->SetRenderCategory({ ERenderSpace::Screen, ERenderLayer::Default });
+    // m_spriteRenderer->SetPivot(SpritePivot::BottomLeft);
 
     // _spriteRenderer->SetRenderOffset({ +400.0f, -200.0f });
     //m_spriteRenderer->SetPivot(SpritePivot::TopRight);

@@ -74,6 +74,7 @@ public:
 
     Material* GetDefaultSpriteMaterial() const;
     Mesh* GetDefaultSpriteMesh() const;
+    Mesh* GetDefaultUISpriteMesh() const;
 
 private:
     // =========================================================
